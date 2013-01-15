@@ -220,7 +220,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         }
 
         T target = available.poll();
-        target = validateOnTake(target);
+        target = readyToTake(target);
         takenCount.incrementAndGet();
         return target;
     }
@@ -232,18 +232,18 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         if (isTerminated())
             return;
 
-        target = validateOnRestore(target);
+        target = readyToRestore(target);
         available.add(target);
         takeSemaphore.release();
     }
 
-    private T validateOnTake(T target) {
+    private T readyToTake(T target) {
         try {
             if (target == null) {
                 createdTotal.incrementAndGet();
                 target = poolObjectFactory.create();
             }
-            else if (!poolObjectFactory.validateOnTake(target)) {
+            else if (!poolObjectFactory.readyToTake(target)) {
                 poolObjectFactory.destroy(target);
                 target = poolObjectFactory.create();
             }
@@ -253,9 +253,9 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         catch (Error e) { recoverInnerState(1); throw e; }
     }
 
-    private T validateOnRestore(T target) {
+    private T readyToRestore(T target) {
         try {
-            if (!poolObjectFactory.validateOnRestore(target)) {
+            if (!poolObjectFactory.readyToRestore(target)) {
                 poolObjectFactory.destroy(target);
                 target = poolObjectFactory.create();
             }

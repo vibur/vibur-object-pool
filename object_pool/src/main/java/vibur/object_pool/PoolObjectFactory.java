@@ -34,46 +34,46 @@ public interface PoolObjectFactory<T> {
     T create();
 
     /**
-     * A validation hook which will be called when an object from the object pool is taken
-     * in order to be given to the calling application. Validation on take is not
-     * always a required operation and the implementation of this method may simply
-     * always return {@code true}.
+     * A validation/initialization hook which will be called when an object from
+     * the object pool is taken in order to be given to the calling application.
+     * This is not an always required operation and the implementation
+     * of this method may simply always return {@code true}.
      *
      * <p>If there is a particular initialization/activation which needs to be done
-     * for this object, it could be done in this method.
+     * for this object, it must be done here.
      *
-     * @see #validateOnRestore(Object)
+     * @see #readyToRestore(Object)
      *
      * @param obj an object which is taken from the object pool and which is to be given
      *            to the calling application
-     * @return {@code true} if the validation is successful {@code false} otherwise
+     * @return {@code true} if the validation/initialization is successful, {@code false} otherwise
      */
-    boolean validateOnTake(T obj);
+    boolean readyToTake(T obj);
 
     /**
-     * A validation hook which will be called when an object which has been taken
+     * A validation/passivation hook which will be called when an object which has been taken
      * before that from the object pool is about to be restored (returned) back to the object pool.
-     * Validation on restore is recommended operation and the exact implementation of this
-     * method will depend on the concrete object pool object's type and semantics.
+     * This is a recommended operation and its exact implementation will depend on the
+     * concrete object pool object's type and semantics.
      *
      * <p>If there is a particular passivation which needs to be done for this
-     * object, it could be done in this method.
+     * object, it must be done here.
      *
-     * @see #validateOnTake(Object)
+     * @see #readyToTake
      *
      * @param obj an object which has been taken before that from this object pool and which is now
      *            to be restored to the object pool
-     * @return {@code true} if the validation is successful {@code false} otherwise
+     * @return {@code true} if the validation/passivation is successful, {@code false} otherwise
      */
-    boolean validateOnRestore(T obj);
+    boolean readyToRestore(T obj);
 
     /**
      * A method which will be called when an object from the object pool needs to be destroyed,
-     * which may happen after a validation error or when the object pool is shrinking its size
-     * or terminating. The simplest implementation of this method may do nothing, however
-     * if there are any allocated resources associated with this object, like network
-     * connections or similar, this will be the best place where these resources could be
-     * released.
+     * which may happen after a validation/initialization/passivation error or when the object
+     * pool is shrinking its size or terminating. The simplest implementation of this method may
+     * do nothing, however if there are any allocated resources associated with this object,
+     * like network connections or similar, this will be the best place where these resources
+     * could be released.
      *
      * @param obj the object which is to be destroyed
      */

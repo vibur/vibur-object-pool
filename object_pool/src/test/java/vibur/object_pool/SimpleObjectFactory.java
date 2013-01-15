@@ -27,12 +27,12 @@ public class SimpleObjectFactory implements PoolObjectFactory<Object> {
     }
 
     @Override
-    public boolean validateOnTake(Object obj) {
+    public boolean readyToTake(Object obj) {
         return true;
     }
 
     @Override
-    public boolean validateOnRestore(Object obj) {
+    public boolean readyToRestore(Object obj) {
         return true;
     }
 
