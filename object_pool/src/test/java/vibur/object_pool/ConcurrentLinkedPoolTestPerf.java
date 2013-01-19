@@ -17,28 +17,22 @@
 package vibur.object_pool;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Simeon Malchev
  */
-public class TestConcurrentPool {
+public class ConcurrentLinkedPoolTestPerf {
+
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        final AtomicInteger totalSleep = new AtomicInteger(0);
-//        final BasicObjectPool2<Object> bop = new BasicObjectPool2<Object>(new SimpleObjectFactory(), 20, 20);
-        final NonValidatingPoolService<Object> bop = new ConcurrentLinkedPool<Object>(
+        final NonValidatingPoolService<Object> clp = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), 10, 20, false);
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < 10000; i++) {
-                    Object obj = bop.tryTake(5000, TimeUnit.MILLISECONDS);
-//                    int sleep = (int) (Math.random() * 20);
-//                    totalSleep.addAndGet(sleep);
-//                    System.out.println(Thread.currentThread().getName() + ", obj = " + obj + ", id = " + id[0] + ", sleep = " + sleep);
-//                    Thread.sleep(sleep);
-                    bop.restore(obj);
+                    Object obj = clp.tryTake(5000, TimeUnit.MILLISECONDS);
+                    clp.restore(obj);
                 }
             }
         };
@@ -56,6 +50,6 @@ public class TestConcurrentPool {
                 e.printStackTrace();
             }
         }
-        System.out.println("millis = " + (System.currentTimeMillis() - start) + ", totalSleep = " + totalSleep.get());
+        System.out.println("Execution time millis = " + (System.currentTimeMillis() - start));
     }
 }

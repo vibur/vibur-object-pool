@@ -20,6 +20,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -57,15 +58,16 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     private final TimeUnit unit;
     private final Thread reducerThread;
 
-    private final AtomicLong takenCount;
+    private final AtomicLong takenCount = new AtomicLong(0);
 
     private volatile boolean reducerTerminated = false;
-    private volatile boolean terminated = false;
+    private final AtomicBoolean terminated = new AtomicBoolean(false);
 
     /**
      * Creates a new {@code ConcurrentLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * and the default auto-shrinking parameters.
+     * and the default auto-shrinking parameters which are {@code 30} seconds
+     * {@code timeout} and {@link DefaultPoolReducer}.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -126,7 +128,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         this.initialSize = initialSize;
         this.maxSize = new AtomicInteger(maxSize);
         createdTotal = new AtomicInteger(initialSize);
-        takenCount = new AtomicLong(0);
 
         this.timeout = timeout;
         this.unit = unit;
@@ -278,7 +279,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /** {@inheritDoc} */
     @Override
     public int remainingCapacity() {
-        return takeSemaphore.availablePermits();
+        return isTerminated() ? 0 : takeSemaphore.availablePermits();
     }
 
     /** {@inheritDoc} */
@@ -324,13 +325,15 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /** {@inheritDoc} */
     @Override
     public void terminate() {
-        terminated = true;
+        if (terminated.getAndSet(true))
+            return;
 
         reducerTerminated = true;
         if (reducerThread != null)
             reducerThread.interrupt();
 
-        takeSemaphore.release(takeSemaphore.getQueueLength() + 4096); // safety buffer
+        // best effort to unblock any waiting threads
+        takeSemaphore.release(takeSemaphore.getQueueLength() + 4096);
         do {
             try {
                 doReduceCreated(Integer.MAX_VALUE, true);
@@ -343,7 +346,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /** {@inheritDoc} */
     @Override
     public boolean isTerminated() {
-        return terminated;
+        return terminated.get();
     }
 
 

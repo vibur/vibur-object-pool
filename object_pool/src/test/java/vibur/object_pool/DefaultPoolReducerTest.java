@@ -16,28 +16,15 @@
 
 package vibur.object_pool;
 
+import org.junit.Test;
+
 /**
  * @author Simeon Malchev
  */
-public class SimpleObjectFactory implements PoolObjectFactory<Object> {
+public class DefaultPoolReducerTest {
 
-    @Override
-    public Object create() {
-        return new Object();
-    }
-
-    @Override
-    public boolean readyToTake(Object obj) {
-        return true;
-    }
-
-    @Override
-    public boolean readyToRestore(Object obj) {
-        return true;
-    }
-
-    @Override
-    public void destroy(Object obj) {
-        // do nothing
+    @Test
+    public void testReduceBy() throws Exception {
+        // todo
     }
 }

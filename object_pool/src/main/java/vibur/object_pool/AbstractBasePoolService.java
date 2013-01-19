@@ -27,13 +27,13 @@ public abstract class AbstractBasePoolService implements BasePoolService {
     /** {@inheritDoc} */
     @Override
     public int taken() {
-        return maxSize() - remainingCapacity();
+        return isTerminated() ? maxSize() : maxSize() - remainingCapacity();
     }
 
     /** {@inheritDoc} */
     @Override
     public int remainingCreated() {
-        return createdTotal() - taken(); // faster than calling {@code available.size())
+        return isTerminated() ? 0 : createdTotal() - taken(); // faster than calling {@code available.size())
     }
 
     /** {@inheritDoc} */
@@ -51,6 +51,7 @@ public abstract class AbstractBasePoolService implements BasePoolService {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return super.toString() + "[remainingCreated = " + remainingCreated() + "]";
+        return super.toString() + (isTerminated() ? "[terminated]"
+                : "[remainingCreated = " + remainingCreated() + "]");
     }
 }

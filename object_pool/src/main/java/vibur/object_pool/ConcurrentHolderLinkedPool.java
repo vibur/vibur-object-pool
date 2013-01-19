@@ -48,7 +48,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         implements HolderValidatingPoolService<T> {
 
     private final ConcurrentMap<Holder<T>, Boolean> taken;
-    private final AtomicInteger idGen;
+    private final AtomicInteger idGen = new AtomicInteger(0);
     private final boolean additionalInfo;
 
     private static class TargetHolder<T> implements Holder<T> {
@@ -97,7 +97,9 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * the default auto-shrinking parameters, and no additional {@code Holder} info.
+     * the default auto-shrinking parameters which are {@code 30} seconds
+     * {@code timeout} and {@link DefaultPoolReducer}, and <i>no</i> additional
+     * {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -119,7 +121,8 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * and the default auto-shrinking parameters.
+     * the default auto-shrinking parameters which are {@code 30} seconds
+     * {@code timeout} and {@link DefaultPoolReducer}, and additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -140,14 +143,13 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         super(new ConcurrentLinkedPool<T>(
                 poolObjectFactory, initialSize, maxSize, fair));
         taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
-        idGen = new AtomicInteger(0);
         this.additionalInfo = additionalInfo;
     }
 
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * auto-shrinking parameters, and no additional {@code Holder} info.
+     * auto-shrinking parameters, and <i>no</i> additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -175,7 +177,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     *  and auto-shrinking parameters.
+     * auto-shrinking parameters, and additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -203,7 +205,6 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         super(new ConcurrentLinkedPool<T>(
                 poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer));
         taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
-        idGen = new AtomicInteger(0);
         this.additionalInfo = additionalInfo;
     }
 
@@ -248,7 +249,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         StackTraceElement[] stackTrace;
         long timestamp;
         if (additionalInfo) {
-            stackTrace = new Exception().getStackTrace();
+            stackTrace = new Throwable().getStackTrace();
             timestamp = System.currentTimeMillis();
         } else {
             stackTrace = null;

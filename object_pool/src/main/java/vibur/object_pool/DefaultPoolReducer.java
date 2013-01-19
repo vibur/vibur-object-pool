@@ -32,7 +32,7 @@ public class DefaultPoolReducer implements PoolReducer {
 
     /**
      * Creates a new {@code DefaultPoolReducer} with default values for
-     * {@code takenRatio} and {@code reduceRatio}.
+     * {@code takenRatio = 0.90f} and {@code reduceRatio = 0.10f}.
      *
      * @throws NullPointerException if {@code poolService} is null
      */
