@@ -136,8 +136,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
             reducerThread.setDaemon(true);
             reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
             reducerThread.start();
-        }
-        else {
+        } else {
             reducerThread = null;
         }
     }
@@ -242,8 +241,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
             if (target == null) {
                 createdTotal.incrementAndGet();
                 target = poolObjectFactory.create();
-            }
-            else if (!poolObjectFactory.readyToTake(target)) {
+            } else if (!poolObjectFactory.readyToTake(target)) {
                 poolObjectFactory.destroy(target);
                 target = poolObjectFactory.create();
             }

@@ -16,13 +16,14 @@
 
 package vibur.object_pool;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>Extends the functionality defined by {@link BasePoolService} with
+ * Extends the functionality defined by {@link BasePoolService} with
  * take and restore methods which provide validation for whether the
  * restored (returned) object is one which has been taken before that from this object pool,
- * as well as whether the object is restored only once to the object pool.
+ * as well as whether the object is currently in taken state.
  *
  * <p>The object returned by the {@code take} methods is enclosed in a thin wrapper class which
  * is created by the object pool and which is implementing the described below {@link Holder}
@@ -79,14 +80,24 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
 
     /**
      * Restores (returns) an object to the object pool. The object pool <strong>validates</strong>
-     * whether the object restored has been taken before from this object pool and whether it is restored
-     * only once. If the object restored was not taken from the object pool or if it is restored more than
-     * once, this method will return {@code false} otherwise will return {@code true}.
+     * whether the object restored has been taken before from this object pool and whether it is
+     * currently in taken state. If the validation fails, this method will return {@code false}
+     * otherwise will return {@code true}.
      *
      * @param holder a thin wrapper enclosing the object that is to be restored to the object pool
      * @return {@code true} if the underlying object from the given {@code holder} was taken
-     * before that from this object pool and if it is returned once only (i.e. for a first time),
+     * before that from this object pool and if it is currently in taken state,
      * {@code false} otherwise
      */
     boolean restore(Holder<T> holder);
+
+    /**
+     * Returns list of all {@code Holder} objects (i.e the wrappers of the underlying target
+     * objects) which are currently (at the moment of the call) in taken state in this object
+     * pool. Useful for testing and debugging purposes. The objects in the returned list are
+     * in random order, i.e. the list is not sorted.
+     *
+     * @return see above
+     */
+    List<Holder<T>> takenHolders();
 }

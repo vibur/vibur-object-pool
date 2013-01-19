@@ -16,6 +16,8 @@
 
 package vibur.object_pool;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,27 +47,57 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService<T>
         implements HolderValidatingPoolService<T> {
 
-    private final ConcurrentMap<Integer, T> taken;
+    private final ConcurrentMap<Holder<T>, Boolean> taken;
     private final AtomicInteger idGen;
+    private final boolean additionalInfo;
 
     private static class TargetHolder<T> implements Holder<T> {
         private final int targetId;
         private final T target;
+        private final StackTraceElement[] stackTrace;
+        private final long timestamp;
 
-        private TargetHolder(int targetId, T target) {
+        private TargetHolder(int targetId, T target,
+                             StackTraceElement[] stackTrace, long timestamp) {
             this.targetId = targetId;
             this.target = target;
+            this.stackTrace = stackTrace;
+            this.timestamp = timestamp;
         }
 
+        @Override
         public final T getTarget() {
             return target;
+        }
+
+        @Override
+        public StackTraceElement[] getStackTrace() {
+            return stackTrace;
+        }
+
+        @Override
+        public long timestamp() {
+            return timestamp;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TargetHolder that = (TargetHolder) o;
+            return targetId == that.targetId;
+        }
+
+        @Override
+        public int hashCode() {
+            return targetId;
         }
     }
 
     /**
-     * Creates a new {@code ConcurrentLinkedPool} with the given
+     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * and the default auto-shrinking parameters.
+     * the default auto-shrinking parameters, and no additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -81,16 +113,41 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                       int initialSize, int maxSize,
                                       boolean fair) {
-        super(new ConcurrentLinkedPool<T>(
-                poolObjectFactory, initialSize, maxSize, fair));
-        taken = new ConcurrentHashMap<Integer, T>(maxSize);
-        idGen = new AtomicInteger(0);
+        this(poolObjectFactory, initialSize, maxSize, fair, false);
     }
 
     /**
-     * Creates a new {@code ConcurrentLinkedPool} with the given
+     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     *  and auto-shrinking parameters.
+     * and the default auto-shrinking parameters.
+     *
+     * @param poolObjectFactory the factory which will be used to create new objects
+     *                          in this object pool as well as to control their lifecycle
+     * @param initialSize       the object pool initial size, i.e. the initial number of
+     *                          allocated in the object pool objects
+     * @param maxSize           the object pool max size, i.e. the max number of allocated
+     *                          in the object pool objects
+     * @param fair              the object pool's fairness setting with regards to waiting threads
+     * @param additionalInfo    determines whether the returned holder to include information for
+     *                          the current stack trace and timestamp
+     * @throws IllegalArgumentException if one of the following holds:<br>
+     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
+     * @throws NullPointerException if {@code poolObjectFactory} is null
+     */
+    public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
+                                      int initialSize, int maxSize,
+                                      boolean fair, boolean additionalInfo) {
+        super(new ConcurrentLinkedPool<T>(
+                poolObjectFactory, initialSize, maxSize, fair));
+        taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
+        idGen = new AtomicInteger(0);
+        this.additionalInfo = additionalInfo;
+    }
+
+    /**
+     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
+     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
+     * auto-shrinking parameters, and no additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -112,17 +169,45 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                       int initialSize, int maxSize, boolean fair,
                                       long timeout, TimeUnit unit, PoolReducer poolReducer) {
-        super(new ConcurrentLinkedPool<T>(
-                poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer));
-        taken = new ConcurrentHashMap<Integer, T>(maxSize);
-        idGen = new AtomicInteger(0);
+        this(poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer, false);
     }
 
     /**
-    * {@inheritDoc}
-    * Note that a new wrapper object will be created and
-    * returned for every {@code take} call.
-    */
+     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
+     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
+     *  and auto-shrinking parameters.
+     *
+     * @param poolObjectFactory the factory which will be used to create new objects
+     *                          in this object pool as well as to control their lifecycle
+     * @param initialSize       the object pool initial size, i.e. the initial number of
+     *                          allocated in the object pool objects
+     * @param maxSize           the object pool max size, i.e. the max number of allocated
+     *                          in the object pool objects
+     * @param fair              the object pool's fairness setting with regards to waiting threads
+     * @param timeout           the amount of time for which to count the number of taken
+     *                          objects from the object pool. Set to {@code 0} to disable the
+     *                          auto-shrinking
+     * @param unit              the time unit of the {@code timeout} argument
+     * @param poolReducer       the object pool reducer
+     * @param additionalInfo    determines whether the returned holder to include information for
+     *                          the current stack trace and timestamp
+     * @throws IllegalArgumentException if the following holds:<br>
+     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
+     * @throws NullPointerException if {@code poolObjectFactory} is null or if
+     * (timeout > 0 && (unit == null || poolReducer == null))
+     */
+    public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
+                                      int initialSize, int maxSize, boolean fair,
+                                      long timeout, TimeUnit unit, PoolReducer poolReducer,
+                                      boolean additionalInfo) {
+        super(new ConcurrentLinkedPool<T>(
+                poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer));
+        taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
+        idGen = new AtomicInteger(0);
+        this.additionalInfo = additionalInfo;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public Holder<T> take() {
         T target = nonValidatingPoolService.take();
@@ -132,22 +217,14 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         return newHolder(target);
     }
 
-    /**
-     * {@inheritDoc}
-     * Note that a new wrapper object will be created and
-     * returned for every {@code takeUninterruptibly} call.
-     */
+    /** {@inheritDoc} */
     @Override
     public Holder<T> takeUninterruptibly() {
         T target = nonValidatingPoolService.takeUninterruptibly();
         return newHolder(target);
     }
 
-    /**
-     * {@inheritDoc}
-     * Note that a new wrapper object will be created and
-     * returned for every {@code tryTake} call.
-     */
+    /** {@inheritDoc} */
     @Override
     public Holder<T> tryTake(long timeout, TimeUnit unit) {
         T target = nonValidatingPoolService.tryTake(timeout, unit);
@@ -157,11 +234,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         return newHolder(target);
     }
 
-    /**
-     * {@inheritDoc}
-     * Note that a new wrapper object will be created and
-     * returned for every {@code tryTake} call.
-     */
+    /** {@inheritDoc} */
     @Override
     public Holder<T> tryTake() {
         T target = nonValidatingPoolService.tryTake();
@@ -172,19 +245,35 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     }
 
     private Holder<T> newHolder(T target) {
-        int targetId = idGen.getAndIncrement();
-        taken.put(targetId, target);
-        return new TargetHolder<T>(targetId, target);
+        StackTraceElement[] stackTrace;
+        long timestamp;
+        if (additionalInfo) {
+            stackTrace = new Exception().getStackTrace();
+            timestamp = System.currentTimeMillis();
+        } else {
+            stackTrace = null;
+            timestamp = -1;
+        }
+        Holder<T> holder = new TargetHolder<T>(
+                idGen.getAndIncrement(), target, stackTrace, timestamp);
+        taken.put(holder, Boolean.TRUE);
+        return holder;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean restore(Holder<T> holder) {
         T target = holder.getTarget();
-        if (!taken.remove(((TargetHolder<T>) holder).targetId, target))
+        if (taken.remove(holder) == null)
             return false;
 
         nonValidatingPoolService.restore(target);
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Holder<T>> takenHolders() {
+        return new ArrayList<Holder<T>>(taken.keySet());
     }
 }

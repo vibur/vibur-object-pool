@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * Extends the functionality defined by {@link BasePoolService} with simple
  * take and restore methods which don't provide any means for validation of whether the
  * restored (returned) object is one which has been taken before that from this object pool,
- * neither whether the object is restored more than once to the object pool. The correctness of
+ * neither whether the object is currently in taken state. The correctness of
  * the restore operation remains responsibility of the calling application.
  *
  * @author Simeon Malchev
@@ -70,9 +70,9 @@ public interface NonValidatingPoolService<T> extends BasePoolService {
     T tryTake();
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any validation
-     * whether the object restored has been taken before from this object pool or whether it is restored more
-     * than once.
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
+     * validation whether the object restored has been taken before from this object pool or whether
+     * it is currently in taken state.
      *
      * @param object an object to be restored (returned) to this object pool
      */

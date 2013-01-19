@@ -17,7 +17,7 @@
 package vibur.object_pool;
 
 /**
- * <p>Defines base objects object pool's functionality which is to be implemented by the validating
+ * Defines base objects object pool's functionality which is to be implemented by the validating
  * and non-validating pools. These validating and non-validating pools will provide
  * appropriate object's take and restore functionality (methods).
  *
@@ -124,9 +124,9 @@ public interface BasePoolService {
     boolean isFair();
 
     /**
-     * <p>Returns the total number of objects taken from this object pool since the creation of the object pool.
-     * This count starts from {@code 0} and never decreases. It will stop increasing once the
-     * object pool is terminated.
+     * Returns the <i>total</i> number of objects taken from this object pool since the
+     * creation of the object pool.This count starts from {@code 0} and never decreases.
+     * It will stop increasing once the object pool is terminated.
      *
      * <p>Intended for statistical and testing/debugging purposes.
      *

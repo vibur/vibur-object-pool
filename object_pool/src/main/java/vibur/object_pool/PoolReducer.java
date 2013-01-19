@@ -18,6 +18,8 @@ package vibur.object_pool;
 
 /**
  * The automated shrinking (reduction) of a {@link BasePoolService} is provided via this interface.
+ *
+ * @author Simeon Malchev
  */
 public interface PoolReducer {
 
