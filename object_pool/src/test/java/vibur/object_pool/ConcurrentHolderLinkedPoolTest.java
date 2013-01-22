@@ -19,7 +19,11 @@ package vibur.object_pool;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Simeon Malchev
@@ -38,7 +42,7 @@ public class ConcurrentHolderLinkedPoolTest {
     @Test
     public void testSimpleTakes() throws Exception {
         chlp = new ConcurrentHolderLinkedPool<Object>(
-                new SimpleObjectFactory(), 1, 3, false, 0, null, null);
+                new SimpleObjectFactory(), 1, 3, false);
 
         Holder<Object> hobj1 = chlp.take();
         Holder<Object> hobj2 = chlp.take();
@@ -59,7 +63,7 @@ public class ConcurrentHolderLinkedPoolTest {
     @SuppressWarnings("unchecked")
     public void testSimpleMetrics() throws Exception {
         chlp = new ConcurrentHolderLinkedPool<Object>(
-                new SimpleObjectFactory(), 1, 10, false, 0, null, null);
+                new SimpleObjectFactory(), 1, 10, false);
 
         // tests the initial pool state
         assertEquals(1, chlp.initialSize());
@@ -104,7 +108,7 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // restores the first 6 objects and test
         for (int i = 0; i < 6; i++) {
-            chlp.restore((Holder<Object>) hobjs[i]);
+            assertTrue(chlp.restore((Holder<Object>) hobjs[i]));
         }
         assertEquals(10, chlp.createdTotal());
         assertEquals(6, chlp.remainingCreated());
@@ -114,7 +118,7 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // restores the remaining 4 objects and test
         for (int i = 6; i < 10; i++) {
-            chlp.restore((Holder<Object>) hobjs[i]);
+            assertTrue(chlp.restore((Holder<Object>) hobjs[i]));
         }
         assertEquals(10, chlp.createdTotal());
         assertEquals(10, chlp.remainingCreated());
@@ -145,7 +149,60 @@ public class ConcurrentHolderLinkedPoolTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testPoolShrinking() throws Exception {
-        // todo
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch reductionLatch = new CountDownLatch(3);
+        chlp = new ConcurrentHolderLinkedPool<Object>(
+                new SimpleObjectFactory(), 10, 100, false, 100, TimeUnit.MILLISECONDS,
+                new SynchronizedDefaultPoolReducer(startLatch, reductionLatch));
+
+        // tests the initial pool state
+        assertEquals(10, chlp.initialSize());
+        assertEquals(100, chlp.maxSize());
+
+        assertEquals(10, chlp.createdTotal());
+        assertEquals(10, chlp.remainingCreated());
+        assertEquals(100, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(0, chlp.takenCount());
+
+        // takes 90 objects and test
+        Object[] hobjs = new Object[90];
+        for (int i = 0; i < 90; i++) {
+            hobjs[i] = chlp.take();
+            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+        }
+        assertEquals(90, chlp.createdTotal());
+        assertEquals(0, chlp.remainingCreated());
+        assertEquals(10, chlp.remainingCapacity());
+        assertEquals(90, chlp.taken());
+        assertEquals(90, chlp.takenCount());
+
+        // restores 90 objects and test
+        for (int i = 0; i < 90; i++) {
+            assertTrue(chlp.restore((Holder<Object>) hobjs[i]));
+        }
+        assertEquals(90, chlp.createdTotal());
+        assertEquals(90, chlp.remainingCreated());
+        assertEquals(100, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(90, chlp.takenCount());
+
+        // enable the pool reducer
+        startLatch.countDown();
+        // await for 3 calls to the pool reducer to be done:
+        // on the first call no reduction will happen
+        // on the second call a reduction of 9 objects should happen
+        // on the third call a reduction of 8 objects should happen
+        // the total reduction should be 17, that's why the created total will drop from 90 to 73.
+        reductionLatch.await();
+
+        // tests the pool metrics after the reducer was called 3 times
+        assertEquals(73, chlp.createdTotal());
+        assertEquals(73, chlp.remainingCreated());
+        assertEquals(100, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(90, chlp.takenCount());
     }
 }

@@ -17,7 +17,7 @@
 package vibur.object_pool;
 
 /**
- * The default implementation of {@code BasePoolService.PoolReducer}. The reduction is based on
+ * The default implementation of {@link PoolReducer}. The reduction is based on
  * comparing the ratio between the number of taken objects from the object pool and the number of
  * available objects in the object pool (for a given period of time) with a given threshold value.
  *
@@ -64,6 +64,10 @@ public class DefaultPoolReducer implements PoolReducer {
     @Override
     public int reduceBy(BasePoolService poolService) {
         int reduction = 0;
+        // quick exit if we're already at the minimal pool size
+        if (poolService.createdTotal() == poolService.initialSize())
+            return reduction;
+
         long takenCount = poolService.takenCount();
         float takenInInterval = takenCount - prevTakenCount;
         prevTakenCount = takenCount;

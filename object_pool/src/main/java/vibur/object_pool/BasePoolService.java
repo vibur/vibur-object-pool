@@ -69,14 +69,14 @@ public interface BasePoolService {
     int remainingCapacity();
 
     /**
-     * Returns the {@code initialSize} of this object pool.
+     * Returns the {@code initialSize} of this object pool. This parameter never changes.
      *
      * @return the object pool's {@code initialSize}
      */
     int initialSize();
 
     /**
-     * Returns the {@code maxSize} of this object pool.
+     * Returns the {@code maxSize} of this object pool. This parameter never changes.
      *
      * @return the object pool's {@code maxSize}
      */

@@ -37,7 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * <p>This object pool has also support for an automated shrinking (reduction) of the number of
  * allocated on the object pool objects. This functionality is provided by the underlying
- * {@link ConcurrentLinkedPool}.
+ * {@link ConcurrentLinkedPool}. Note that the shrinking does <b>never</b> reduce the
+ * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @see ConcurrentLinkedPool
  *
@@ -97,9 +98,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * the default auto-shrinking parameters which are {@code 30} seconds
-     * {@code timeout} and {@link DefaultPoolReducer}, and <i>no</i> additional
-     * {@code Holder} info.
+     * no auto-shrinking, and no additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -121,8 +120,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * the default auto-shrinking parameters which are {@code 30} seconds
-     * {@code timeout} and {@link DefaultPoolReducer}, and additional {@code Holder} info.
+     * no auto-shrinking, and additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -149,7 +147,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * auto-shrinking parameters, and <i>no</i> additional {@code Holder} info.
+     * auto-shrinking parameters, and no additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle

@@ -24,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class ConcurrentLinkedPoolTestPerf {
 
     public static void main(String[] args) {
+
+        // Creates pool with maxSize 20, and starts 200 threads where each thread is trying
+        // to take/restore 10000 objects from the pool. Measures the time taken in milliseconds.
+
         long start = System.currentTimeMillis();
         final NonValidatingPoolService<Object> clp = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), 10, 20, false);

@@ -35,7 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * object pool's creation time {@link PoolObjectFactory}.
  *
  * <p>This object pool has also support for an automated shrinking (reduction) of the number of
- * allocated on the object pool objects.
+ * allocated on the object pool objects. Note that the shrinking does <b>never</b> reduce the
+ * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @see ConcurrentHolderLinkedPool
  *
@@ -66,8 +67,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /**
      * Creates a new {@code ConcurrentLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * and the default auto-shrinking parameters which are {@code 30} seconds
-     * {@code timeout} and {@link DefaultPoolReducer}.
+     * and no auto-shrinking.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -82,8 +82,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair) {
-        this(poolObjectFactory, initialSize, maxSize, fair,
-                30, TimeUnit.SECONDS, new DefaultPoolReducer());
+        this(poolObjectFactory, initialSize, maxSize, fair, 0, null, null);
     }
 
     /**
@@ -332,7 +331,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         if (reducerThread != null)
             reducerThread.interrupt();
 
-        // best effort to unblock any waiting threads
+        // best effort to unblock any waiting on the takeSemaphore threads
         takeSemaphore.release(takeSemaphore.getQueueLength() + 4096);
         do {
             try {

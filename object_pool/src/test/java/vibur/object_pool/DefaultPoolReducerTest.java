@@ -18,13 +18,101 @@ package vibur.object_pool;
 
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
+
 /**
  * @author Simeon Malchev
  */
 public class DefaultPoolReducerTest {
 
     @Test
-    public void testReduceBy() throws Exception {
-        // todo
+    public void testDefault_ReduceBy() throws Exception {
+        DefaultPoolReducer defaultPoolReducer = new DefaultPoolReducer();
+        BasePoolService poolService = new PoolServiceTestSkeleton() {
+            @Override
+            public long takenCount() {
+                return 10;
+            }
+
+            @Override
+            public int remainingCreated() {
+                return 90;
+            }
+        };
+
+        int reduction = defaultPoolReducer.reduceBy(poolService);
+        assertEquals(9, reduction);
+    }
+
+    @Test
+    public void testArbitrary_ReduceBy() throws Exception {
+        DefaultPoolReducer defaultPoolReducer = new DefaultPoolReducer(0.5f, 0.2f);
+        BasePoolService poolService = new PoolServiceTestSkeleton() {
+            @Override
+            public long takenCount() {
+                return 20;
+            }
+
+            @Override
+            public int remainingCreated() {
+                return 80;
+            }
+        };
+
+        int reduction = defaultPoolReducer.reduceBy(poolService);
+        assertEquals(16, reduction);
+    }
+
+
+    private static abstract class PoolServiceTestSkeleton implements BasePoolService {
+        @Override
+        public int taken() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int createdTotal() {
+            return 100;
+        }
+
+        @Override
+        public int remainingCapacity() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int initialSize() {
+            return 1;
+        }
+
+        @Override
+        public int maxSize() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int reduceCreated(int reduction) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int drainCreated() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void terminate() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isFair() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
