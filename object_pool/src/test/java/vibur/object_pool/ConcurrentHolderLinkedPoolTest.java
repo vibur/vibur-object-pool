@@ -139,6 +139,102 @@ public class ConcurrentHolderLinkedPoolTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    public void testPoolReductions() throws Exception {
+        chlp = new ConcurrentHolderLinkedPool<Object>(
+                new SimpleObjectFactory(), 1, 10, false);
+
+        // takes all objects and test
+        Object[] hobjs = new Object[10];
+        for (int i = 0; i < 10; i++) {
+            hobjs[i] = chlp.take();
+            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+        }
+        Object obj1 = chlp.tryTake();
+        assertNull(obj1);
+
+        assertEquals(1, chlp.initialSize());
+        assertEquals(10, chlp.maxSize());
+
+        assertEquals(10, chlp.createdTotal());
+        assertEquals(0, chlp.remainingCreated());
+        assertEquals(0, chlp.remainingCapacity());
+        assertEquals(10, chlp.taken());
+        assertEquals(10, chlp.takenCount());
+
+        // restores all objects and test
+        for (int i = 0; i < 10; i++) {
+            assertTrue(chlp.restore((Holder<Object>) hobjs[i]));
+        }
+        assertEquals(10, chlp.createdTotal());
+        assertEquals(10, chlp.remainingCreated());
+        assertEquals(10, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(10, chlp.takenCount());
+
+        // reduce the number of created objects in the pool by 5 and test
+        int reduction = chlp.reduceCreated(5);
+        assertEquals(5, reduction);
+
+        assertEquals(1, chlp.initialSize());
+        assertEquals(10, chlp.maxSize());
+
+        assertEquals(5, chlp.createdTotal());
+        assertEquals(5, chlp.remainingCreated());
+        assertEquals(10, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(10, chlp.takenCount());
+
+        // now takes again all objects
+        for (int i = 0; i < 10; i++) {
+            hobjs[i] = chlp.take();
+            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+        }
+        obj1 = chlp.tryTake();
+        assertNull(obj1);
+        // then restores again all objects and test
+        for (int i = 0; i < 10; i++) {
+            assertTrue(chlp.restore((Holder<Object>) hobjs[i]));
+        }
+
+        assertEquals(1, chlp.initialSize());
+        assertEquals(10, chlp.maxSize());
+
+        assertEquals(10, chlp.createdTotal());
+        assertEquals(10, chlp.remainingCreated());
+        assertEquals(10, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(20, chlp.takenCount());
+
+        // drain all created objects from the pool and test
+        int drained = chlp.drainCreated();
+        assertEquals(9, drained);
+
+        assertEquals(1, chlp.initialSize());
+        assertEquals(10, chlp.maxSize());
+
+        assertEquals(1, chlp.createdTotal());
+        assertEquals(1, chlp.remainingCreated());
+        assertEquals(10, chlp.remainingCapacity());
+        assertEquals(0, chlp.taken());
+        assertEquals(20, chlp.takenCount());
+
+        // now takes 5 objects and test
+        for (int i = 0; i < 5; i++) {
+            hobjs[i] = chlp.take();
+            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+        }
+        assertEquals(1, chlp.initialSize());
+        assertEquals(10, chlp.maxSize());
+
+        assertEquals(5, chlp.createdTotal());
+        assertEquals(0, chlp.remainingCreated());
+        assertEquals(5, chlp.remainingCapacity());
+        assertEquals(5, chlp.taken());
+        assertEquals(25, chlp.takenCount());
+    }
+
+    @Test
     public void testValidations() throws Exception {
         // todo
     }
@@ -148,9 +244,10 @@ public class ConcurrentHolderLinkedPoolTest {
         // todo - including stack traces
     }
 
+    // todo refactor this after moving the reducer to external class
     @Test
     @SuppressWarnings("unchecked")
-    public void testPoolShrinking() throws Exception {
+    public void testPoolAutoShrinking() throws Exception {
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch reductionLatch = new CountDownLatch(3);
         chlp = new ConcurrentHolderLinkedPool<Object>(

@@ -141,6 +141,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         }
     }
 
+    // todo move this as an external class in the util package
     /**
      * The allocated objects reducer thread, which is wakening up when an
      * unit/timeout period of time expires, to check whether the number of available
