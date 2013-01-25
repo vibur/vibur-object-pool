@@ -252,7 +252,7 @@ public class ConcurrentHolderLinkedPoolTest {
         CountDownLatch reductionLatch = new CountDownLatch(3);
         chlp = new ConcurrentHolderLinkedPool<Object>(
                 new SimpleObjectFactory(), 10, 100, false, 100, TimeUnit.MILLISECONDS,
-                new SynchronizedDefaultPoolReducer(startLatch, reductionLatch));
+                new SynchronizedDefaultReducer(startLatch, reductionLatch));
 
         // tests the initial pool state
         assertEquals(10, chlp.initialSize());

@@ -16,17 +16,19 @@
 
 package vibur.object_pool;
 
+import vibur.object_pool.util.DefaultReducer;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Simeon Malchev
  */
-public class SynchronizedDefaultPoolReducer extends DefaultPoolReducer {
+public class SynchronizedDefaultReducer extends DefaultReducer {
 
     private CountDownLatch reductionLatch;
     private CountDownLatch startLatch;
 
-    public SynchronizedDefaultPoolReducer(CountDownLatch startLatch, CountDownLatch reductionLatch) {
+    public SynchronizedDefaultReducer(CountDownLatch startLatch, CountDownLatch reductionLatch) {
         this.startLatch = startLatch;
         this.reductionLatch = reductionLatch;
     }

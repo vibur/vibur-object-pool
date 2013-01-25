@@ -16,6 +16,8 @@
 
 package vibur.object_pool;
 
+import vibur.object_pool.util.Reducer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -160,16 +162,16 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
      *                          objects from the object pool. Set to {@code 0} to disable the
      *                          auto-shrinking
      * @param unit              the time unit of the {@code timeout} argument
-     * @param poolReducer       the object pool reducer
+     * @param reducer       the object pool reducer
      * @throws IllegalArgumentException if the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
      * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || poolReducer == null))
+     * (timeout > 0 && (unit == null || reducer == null))
      */
     public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                       int initialSize, int maxSize, boolean fair,
-                                      long timeout, TimeUnit unit, PoolReducer poolReducer) {
-        this(poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer, false);
+                                      long timeout, TimeUnit unit, Reducer reducer) {
+        this(poolObjectFactory, initialSize, maxSize, fair, timeout, unit, reducer, false);
     }
 
     /**
@@ -188,20 +190,20 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
      *                          objects from the object pool. Set to {@code 0} to disable the
      *                          auto-shrinking
      * @param unit              the time unit of the {@code timeout} argument
-     * @param poolReducer       the object pool reducer
+     * @param reducer       the object pool reducer
      * @param additionalInfo    determines whether the returned holder to include information for
      *                          the current stack trace and timestamp
      * @throws IllegalArgumentException if the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
      * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || poolReducer == null))
+     * (timeout > 0 && (unit == null || reducer == null))
      */
     public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                       int initialSize, int maxSize, boolean fair,
-                                      long timeout, TimeUnit unit, PoolReducer poolReducer,
+                                      long timeout, TimeUnit unit, Reducer reducer,
                                       boolean additionalInfo) {
         super(new ConcurrentLinkedPool<T>(
-                poolObjectFactory, initialSize, maxSize, fair, timeout, unit, poolReducer));
+                poolObjectFactory, initialSize, maxSize, fair, timeout, unit, reducer));
         taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
         this.additionalInfo = additionalInfo;
     }

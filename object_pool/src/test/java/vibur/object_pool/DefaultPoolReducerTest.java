@@ -17,6 +17,7 @@
 package vibur.object_pool;
 
 import org.junit.Test;
+import vibur.object_pool.util.DefaultReducer;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -27,7 +28,7 @@ public class DefaultPoolReducerTest {
 
     @Test
     public void testDefault_ReduceBy() throws Exception {
-        DefaultPoolReducer defaultPoolReducer = new DefaultPoolReducer();
+        DefaultReducer defaultPoolReducer = new DefaultReducer();
         BasePoolService poolService = new PoolServiceTestSkeleton() {
             @Override
             public long takenCount() {
@@ -46,7 +47,7 @@ public class DefaultPoolReducerTest {
 
     @Test
     public void testArbitrary_ReduceBy() throws Exception {
-        DefaultPoolReducer defaultPoolReducer = new DefaultPoolReducer(0.5f, 0.2f);
+        DefaultReducer defaultPoolReducer = new DefaultReducer(0.5f, 0.2f);
         BasePoolService poolService = new PoolServiceTestSkeleton() {
             @Override
             public long takenCount() {

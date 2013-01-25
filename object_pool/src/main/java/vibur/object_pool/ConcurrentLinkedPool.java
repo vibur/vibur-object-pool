@@ -16,6 +16,8 @@
 
 package vibur.object_pool;
 
+import vibur.object_pool.util.Reducer;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -101,19 +103,19 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      *                          objects from the object pool. Set to {@code 0} to disable the
      *                          auto-shrinking
      * @param unit              the time unit of the {@code timeout} argument
-     * @param poolReducer       the object pool reducer
+     * @param reducer       the object pool reducer
      * @throws IllegalArgumentException if the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
      * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || poolReducer == null))
+     * (timeout > 0 && (unit == null || reducer == null))
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair,
-                                long timeout, TimeUnit unit, PoolReducer poolReducer) {
+                                long timeout, TimeUnit unit, Reducer reducer) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
         if (poolObjectFactory == null
-                || (timeout > 0 && (unit == null || poolReducer == null)))
+                || (timeout > 0 && (unit == null || reducer == null)))
             throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
@@ -131,7 +133,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         this.timeout = timeout;
         this.unit = unit;
         if (timeout > 0) {
-            reducerThread = new Thread(new PoolReducerThread(poolReducer));
+            reducerThread = new Thread(new PoolReducerThread(reducer));
             reducerThread.setName(PoolReducerThread.class.getName());
             reducerThread.setDaemon(true);
             reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
@@ -148,10 +150,10 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      * allocated objects in the object pool needs to be reduced.
      */
     private class PoolReducerThread implements Runnable {
-        private final PoolReducer poolReducer;
+        private final Reducer reducer;
 
-        private PoolReducerThread(PoolReducer poolReducer) {
-            this.poolReducer = poolReducer;
+        private PoolReducerThread(Reducer reducer) {
+            this.reducer = reducer;
         }
 
         @Override
@@ -160,7 +162,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
                 try {
                     unit.sleep(timeout);
 
-                    int reduction = poolReducer.reduceBy(ConcurrentLinkedPool.this);
+                    int reduction = reducer.reduceBy(ConcurrentLinkedPool.this);
                     if (reduction > 0) {
                         try {
                             reduceCreated(reduction);

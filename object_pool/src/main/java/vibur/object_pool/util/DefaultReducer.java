@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.object_pool.util;
+
+import vibur.object_pool.BasePoolService;
 
 /**
- * The default implementation of {@link PoolReducer}. The reduction is based on
+ * The default implementation of {@link Reducer}. The reduction is based on
  * comparing the ratio between the number of taken objects from the object pool and the number of
  * available objects in the object pool (for a given period of time) with a given threshold value.
  *
  * @author Simeon Malchev
  */
-public class DefaultPoolReducer implements PoolReducer {
+public class DefaultReducer implements Reducer {
 
     private final float takenRatio;
     private final float reduceRatio;
@@ -31,17 +33,17 @@ public class DefaultPoolReducer implements PoolReducer {
     private long prevTakenCount = 0;
 
     /**
-     * Creates a new {@code DefaultPoolReducer} with default values for
+     * Creates a new {@code DefaultReducer} with default values for
      * {@code takenRatio = 0.90f} and {@code reduceRatio = 0.10f}.
      *
      * @throws NullPointerException if {@code poolService} is null
      */
-    public DefaultPoolReducer() {
+    public DefaultReducer() {
         this(0.90f, 0.10f);
     }
 
     /**
-     * Creates a new {@code DefaultPoolReducer}.
+     * Creates a new {@code DefaultReducer}.
      *
      * @param takenRatio        the ratio between the taken objects from the object pool and the available
      *                          objects in the object pool (measured for the given period of time)
@@ -52,7 +54,7 @@ public class DefaultPoolReducer implements PoolReducer {
      *         {@code takenRatio < 0.0f || reduceRatio < 0.0f || reduceRatio > 1.0f}
      * @throws NullPointerException if {@code poolService} is null
      */
-    public DefaultPoolReducer(float takenRatio, float reduceRatio) {
+    public DefaultReducer(float takenRatio, float reduceRatio) {
         if (takenRatio < 0.0f || reduceRatio < 0.0f || reduceRatio > 1.0f)
             throw new IllegalArgumentException();
 

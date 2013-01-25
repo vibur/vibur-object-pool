@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.object_pool.util;
+
+import vibur.object_pool.BasePoolService;
 
 /**
- * The automated shrinking (reduction) of a {@link BasePoolService} is provided via this interface.
+ * The automated shrinking (reduction) of a {@link vibur.object_pool.BasePoolService} is provided via this interface.
  *
  * @author Simeon Malchev
  */
-public interface PoolReducer {
+public interface Reducer {
 
     /**
      * Returns the number of elements by which this object pool needs to be reduced (shrinked).
