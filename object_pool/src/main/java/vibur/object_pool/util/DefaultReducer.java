@@ -19,8 +19,8 @@ package vibur.object_pool.util;
 import vibur.object_pool.BasePoolService;
 
 /**
- * The default implementation of {@link Reducer}. The reduction is based on
- * comparing the ratio between the number of taken objects from the object pool and the number of
+ * The default implementation of the {@link Reducer}. The reduction is based on
+ * comparison of the ratio between the number of taken objects from the object pool and the number of
  * available objects in the object pool (for a given period of time) with a given threshold value.
  *
  * @author Simeon Malchev

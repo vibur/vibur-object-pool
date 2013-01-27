@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * An allocated objects reducer util, which is wakening up when an
  * unit/timeout period of time expires, and checks whether the number of available
- * allocated objects in the object pool needs to be reduced.
+ * allocated objects in the object pool needs to be reduced. The exact reduction logic
+ * is provided via an instance of {@link Reducer}.
 
  * @author Simeon Malchev
  */
