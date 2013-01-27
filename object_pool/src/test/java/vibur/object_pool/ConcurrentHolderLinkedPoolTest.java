@@ -232,8 +232,49 @@ public class ConcurrentHolderLinkedPoolTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testValidations() throws Exception {
-        // todo
+        chlp = new ConcurrentHolderLinkedPool<Object>(
+                new SimpleObjectFactory(), 1, 2, false);
+
+        // takes one object and test
+        Holder<Object> hobj1 = chlp.take();
+        assertNotNull(hobj1.getTarget());
+        // takes second object and test
+        Holder<Object> hobj2 = chlp.take();
+        assertNotNull(hobj2.getTarget());
+        // tries to take third object and test
+        Holder<Object> hobj3 = chlp.tryTake();
+        assertNull(hobj3);
+
+        assertTrue(chlp.restore(hobj1));
+        assertTrue(chlp.restore(hobj2));
+
+        // This pool validates whether the object which is to be restored is one which
+        // has been taken before that from this object pool, as well as whether
+        // the object is currently in taken state
+        assertFalse(chlp.restore(new Holder<Object>() {
+            @Override
+            public Object getTarget() {
+                return null;
+            }
+
+            @Override
+            public StackTraceElement[] getStackTrace() {
+                return null;
+            }
+
+            @Override
+            public long timestamp() {
+                return 0;
+            }
+        }));
+        assertFalse(chlp.restore(hobj1));
+        assertFalse(chlp.restore(hobj2));
+
+        assertEquals(2, chlp.remainingCapacity());
+        assertEquals(2, chlp.createdTotal());
+        assertEquals(2, chlp.maxSize());
     }
 
     @Test

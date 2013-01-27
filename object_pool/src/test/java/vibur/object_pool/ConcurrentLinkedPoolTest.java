@@ -227,4 +227,32 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(5, clp.taken());
         assertEquals(25, clp.takenCount());
     }
+
+    @Test
+    public void testNoValidations() throws Exception {
+        clp = new ConcurrentLinkedPool<Object>(
+                new SimpleObjectFactory(), 1, 2, false);
+
+        // takes one object and test
+        Object obj1 = clp.take();
+        assertNotNull(obj1);
+        // takes second object and test
+        Object obj2 = clp.take();
+        assertNotNull(obj2);
+        // tries to take third object and test
+        Object obj3 = clp.tryTake();
+        assertNull(obj3);
+
+        clp.restore(obj1);
+        clp.restore(obj2);
+
+        // this pool doesn't provide any validation of the restored objects and allows
+        // an object which is not taken from the pool to be restored to it,
+        // even if the pool remainingCapacity() will increase above its maxSize() and createdTotal().
+        clp.restore(new Object());
+
+        assertEquals(3, clp.remainingCapacity());
+        assertEquals(2, clp.createdTotal());
+        assertEquals(2, clp.maxSize());
+    }
 }
