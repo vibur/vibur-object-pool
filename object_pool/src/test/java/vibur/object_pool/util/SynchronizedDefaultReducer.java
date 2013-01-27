@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.object_pool.util;
 
-import vibur.object_pool.util.DefaultReducer;
+import vibur.object_pool.BasePoolService;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.object_pool.util;
 
 import org.junit.Test;
-import vibur.object_pool.util.DefaultReducer;
+import vibur.object_pool.BasePoolService;
 
 import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Simeon Malchev
  */
-public class DefaultPoolReducerTest {
+public class DefaultReducerTest {
 
     @Test
     public void testDefault_ReduceBy() throws Exception {

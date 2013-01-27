@@ -16,8 +16,6 @@
 
 package vibur.object_pool;
 
-import vibur.object_pool.util.Reducer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -37,8 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>This object pool provides support for fairness with regards to the waiting taker's threads in
  * the same way as it is provided by the underlying {@link ConcurrentLinkedPool}.
  *
- * <p>This object pool has also support for an automated shrinking (reduction) of the number of
- * allocated on the object pool objects. This functionality is provided by the underlying
+ * <p>This object pool has support for shrinking (reduction) of the number of
+ * allocated on the pool objects. This functionality is provided by the underlying
  * {@link ConcurrentLinkedPool}. Note that the shrinking does <b>never</b> reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
@@ -100,7 +98,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * no auto-shrinking, and no additional {@code Holder} info.
+     * and no additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -122,7 +120,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     /**
      * Creates a new {@code ConcurrentHolderLinkedPool} with the given
      * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * no auto-shrinking, and additional {@code Holder} info.
+     * and additional {@code Holder} info.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -142,68 +140,6 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
                                       boolean fair, boolean additionalInfo) {
         super(new ConcurrentLinkedPool<T>(
                 poolObjectFactory, initialSize, maxSize, fair));
-        taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
-        this.additionalInfo = additionalInfo;
-    }
-
-    /**
-     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * auto-shrinking parameters, and no additional {@code Holder} info.
-     *
-     * @param poolObjectFactory the factory which will be used to create new objects
-     *                          in this object pool as well as to control their lifecycle
-     * @param initialSize       the object pool initial size, i.e. the initial number of
-     *                          allocated in the object pool objects
-     * @param maxSize           the object pool max size, i.e. the max number of allocated
-     *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
-     * @param timeout           the amount of time for which to count the number of taken
-     *                          objects from the object pool. Set to {@code 0} to disable the
-     *                          auto-shrinking
-     * @param unit              the time unit of the {@code timeout} argument
-     * @param reducer       the object pool reducer
-     * @throws IllegalArgumentException if the following holds:<br>
-     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
-     * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || reducer == null))
-     */
-    public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
-                                      int initialSize, int maxSize, boolean fair,
-                                      long timeout, TimeUnit unit, Reducer reducer) {
-        this(poolObjectFactory, initialSize, maxSize, fair, timeout, unit, reducer, false);
-    }
-
-    /**
-     * Creates a new {@code ConcurrentHolderLinkedPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * auto-shrinking parameters, and additional {@code Holder} info.
-     *
-     * @param poolObjectFactory the factory which will be used to create new objects
-     *                          in this object pool as well as to control their lifecycle
-     * @param initialSize       the object pool initial size, i.e. the initial number of
-     *                          allocated in the object pool objects
-     * @param maxSize           the object pool max size, i.e. the max number of allocated
-     *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
-     * @param timeout           the amount of time for which to count the number of taken
-     *                          objects from the object pool. Set to {@code 0} to disable the
-     *                          auto-shrinking
-     * @param unit              the time unit of the {@code timeout} argument
-     * @param reducer       the object pool reducer
-     * @param additionalInfo    determines whether the returned holder to include information for
-     *                          the current stack trace and timestamp
-     * @throws IllegalArgumentException if the following holds:<br>
-     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
-     * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || reducer == null))
-     */
-    public ConcurrentHolderLinkedPool(PoolObjectFactory<T> poolObjectFactory,
-                                      int initialSize, int maxSize, boolean fair,
-                                      long timeout, TimeUnit unit, Reducer reducer,
-                                      boolean additionalInfo) {
-        super(new ConcurrentLinkedPool<T>(
-                poolObjectFactory, initialSize, maxSize, fair, timeout, unit, reducer));
         taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
         this.additionalInfo = additionalInfo;
     }

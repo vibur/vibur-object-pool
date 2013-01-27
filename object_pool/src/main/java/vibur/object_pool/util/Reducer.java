@@ -19,7 +19,7 @@ package vibur.object_pool.util;
 import vibur.object_pool.BasePoolService;
 
 /**
- * The automated shrinking (reduction) of a {@link vibur.object_pool.BasePoolService} is provided via this interface.
+ * An automated shrinking (reduction) of a {@link vibur.object_pool.BasePoolService} is provided via this interface.
  *
  * @author Simeon Malchev
  */

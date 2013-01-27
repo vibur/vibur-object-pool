@@ -21,8 +21,8 @@ package vibur.object_pool;
  * and non-validating pools. These validating and non-validating pools will provide
  * appropriate object's take and restore functionality (methods).
  *
- * <p>This object pool may have support for an automated shrinking (reduction) of the number of
- * allocated on the object pool objects.
+ * <p>This object pool has support for shrinking (reduction) of the number of
+ * allocated on the pool objects.
  *
  * <p>The object pool may support optional fairness with regards to waiting taker threads.
  *

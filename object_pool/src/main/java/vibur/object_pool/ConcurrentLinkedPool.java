@@ -16,8 +16,6 @@
 
 package vibur.object_pool;
 
-import vibur.object_pool.util.Reducer;
-
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -36,8 +34,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * The creation of new objects and their lifecycle are controlled by a supplied during the
  * object pool's creation time {@link PoolObjectFactory}.
  *
- * <p>This object pool has also support for an automated shrinking (reduction) of the number of
- * allocated on the object pool objects. Note that the shrinking does <b>never</b> reduce the
+ * <p>This object pool has support for shrinking (reduction) of the number of
+ * allocated on the pool objects. Note that the shrinking does <b>never</b> reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @see ConcurrentHolderLinkedPool
@@ -57,19 +55,13 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     private final AtomicInteger maxSize;
     private final AtomicInteger createdTotal;
 
-    private final long timeout;
-    private final TimeUnit unit;
-    private final Thread reducerThread;
-
     private final AtomicLong takenCount = new AtomicLong(0);
 
-    private volatile boolean reducerTerminated = false;
     private final AtomicBoolean terminated = new AtomicBoolean(false);
 
     /**
      * Creates a new {@code ConcurrentLinkedPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     * and no auto-shrinking.
+     * {@link PoolObjectFactory}, initial and max sizes, fairness setting.
      *
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
@@ -84,39 +76,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair) {
-        this(poolObjectFactory, initialSize, maxSize, fair, 0, null, null);
-    }
-
-    /**
-     * Creates a new {@code ConcurrentLinkedPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting,
-     *  and auto-shrinking parameters.
-     *
-     * @param poolObjectFactory the factory which will be used to create new objects
-     *                          in this object pool as well as to control their lifecycle
-     * @param initialSize       the object pool initial size, i.e. the initial number of
-     *                          allocated in the object pool objects
-     * @param maxSize           the object pool max size, i.e. the max number of allocated
-     *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
-     * @param timeout           the amount of time for which to count the number of taken
-     *                          objects from the object pool. Set to {@code 0} to disable the
-     *                          auto-shrinking
-     * @param unit              the time unit of the {@code timeout} argument
-     * @param reducer       the object pool reducer
-     * @throws IllegalArgumentException if the following holds:<br>
-     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
-     * @throws NullPointerException if {@code poolObjectFactory} is null or if
-     * (timeout > 0 && (unit == null || reducer == null))
-     */
-    public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
-                                int initialSize, int maxSize, boolean fair,
-                                long timeout, TimeUnit unit, Reducer reducer) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
-        if (poolObjectFactory == null
-                || (timeout > 0 && (unit == null || reducer == null)))
-            throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
         takeSemaphore = new Semaphore(maxSize, fair);
@@ -129,50 +90,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         this.initialSize = initialSize;
         this.maxSize = new AtomicInteger(maxSize);
         createdTotal = new AtomicInteger(initialSize);
-
-        this.timeout = timeout;
-        this.unit = unit;
-        if (timeout > 0) {
-            reducerThread = new Thread(new PoolReducerThread(reducer));
-            reducerThread.setName(PoolReducerThread.class.getName());
-            reducerThread.setDaemon(true);
-            reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
-            reducerThread.start();
-        } else {
-            reducerThread = null;
-        }
-    }
-
-    // todo move this as an external class in the util package
-    /**
-     * The allocated objects reducer thread, which is wakening up when an
-     * unit/timeout period of time expires, to check whether the number of available
-     * allocated objects in the object pool needs to be reduced.
-     */
-    private class PoolReducerThread implements Runnable {
-        private final Reducer reducer;
-
-        private PoolReducerThread(Reducer reducer) {
-            this.reducer = reducer;
-        }
-
-        @Override
-        public void run() {
-            while (!reducerTerminated) {
-                try {
-                    unit.sleep(timeout);
-
-                    int reduction = reducer.reduceBy(ConcurrentLinkedPool.this);
-                    if (reduction > 0) {
-                        try {
-                            reduceCreated(reduction);
-                        }
-                        catch (RuntimeException ignored) { }
-                        catch (Error ignored) { }
-                    }
-                } catch (InterruptedException ignored) { }
-            }
-        }
     }
 
     /** {@inheritDoc} */
@@ -329,10 +246,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     public void terminate() {
         if (terminated.getAndSet(true))
             return;
-
-        reducerTerminated = true;
-        if (reducerThread != null)
-            reducerThread.interrupt();
 
         // best effort to unblock any waiting on the takeSemaphore threads
         takeSemaphore.release(takeSemaphore.getQueueLength() + 4096);

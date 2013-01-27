@@ -21,13 +21,13 @@ import vibur.object_pool.BasePoolService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The allocated objects reducer thread, which is wakening up when an
- * unit/timeout period of time expires, to check whether the number of available
+ * An allocated objects reducer util, which is wakening up when an
+ * unit/timeout period of time expires, and checks whether the number of available
  * allocated objects in the object pool needs to be reduced.
 
  * @author Simeon Malchev
  */
-public class PoolReducer implements Runnable {
+public class PoolReducer {
 
     private final BasePoolService poolService;
     private final Reducer reducer;
@@ -38,7 +38,7 @@ public class PoolReducer implements Runnable {
     private volatile boolean terminated = false;
 
     public PoolReducer(BasePoolService poolService, Reducer reducer,
-                        long timeout, TimeUnit unit) {
+                       long timeout, TimeUnit unit) {
         if (poolService == null || reducer == null || timeout <= 0 || unit == null)
             throw new IllegalArgumentException();
 
@@ -47,28 +47,33 @@ public class PoolReducer implements Runnable {
         this.timeout = timeout;
         this.unit = unit;
 
-        reducerThread = new Thread(this);
+        reducerThread = new Thread(new PoolReducerRunnable());
         reducerThread.setName(toString());
         reducerThread.setDaemon(true);
         reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
+    }
+
+    public void start() {
         reducerThread.start();
     }
 
-    @Override
-    public void run() {
-        while (!terminated) {
-            try {
-                unit.sleep(timeout);
+    private class PoolReducerRunnable implements Runnable {
+        @Override
+        public void run() {
+            while (!terminated) {
+                try {
+                    unit.sleep(timeout);
 
-                int reduction = reducer.reduceBy(poolService);
-                if (reduction > 0) {
-                    try {
-                        poolService.reduceCreated(reduction);
+                    int reduction = reducer.reduceBy(poolService);
+                    if (reduction > 0) {
+                        try {
+                            poolService.reduceCreated(reduction);
+                        }
+                        catch (RuntimeException ignored) { }
+                        catch (Error ignored) { }
                     }
-                    catch (RuntimeException ignored) { }
-                    catch (Error ignored) { }
-                }
-            } catch (InterruptedException ignored) { }
+                } catch (InterruptedException ignored) { }
+            }
         }
     }
 
