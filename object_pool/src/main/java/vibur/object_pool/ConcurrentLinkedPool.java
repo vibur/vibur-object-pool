@@ -78,6 +78,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
                                 int initialSize, int maxSize, boolean fair) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
+        if (poolObjectFactory == null)
+            throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
         takeSemaphore = new Semaphore(maxSize, fair);

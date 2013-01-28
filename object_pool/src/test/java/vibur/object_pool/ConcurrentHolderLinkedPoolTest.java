@@ -19,6 +19,8 @@ package vibur.object_pool;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -278,7 +280,55 @@ public class ConcurrentHolderLinkedPoolTest {
     }
 
     @Test
-    public void testTakenHolders() throws Exception {
-        // todo - including stack traces
+    public void testTakenHolders_NoAdditionalInfo() throws Exception {
+        chlp = new ConcurrentHolderLinkedPool<Object>(
+                new SimpleObjectFactory(), 1, 2, false, false);
+
+        // takes one object and test
+        Holder<Object> hobj1 = chlp.take();
+        assertNotNull(hobj1.getTarget());
+        // takes second object and test
+        Holder<Object> hobj2 = chlp.take();
+        assertNotNull(hobj2.getTarget());
+
+        List<Holder<Object>> takenHolders = chlp.takenHolders();
+        assertEquals(2, takenHolders.size());
+
+        Holder<Object> hobj = takenHolders.get(0);
+        assertNotNull(hobj.getTarget());
+        assertNull(hobj.getStackTrace());
+        assertTrue(hobj.timestamp() < 0);
+
+        hobj = takenHolders.get(1);
+        assertNotNull(hobj.getTarget());
+        assertNull(hobj.getStackTrace());
+        assertTrue(hobj.timestamp() < 0);
+    }
+
+    @Test
+    public void testTakenHolders_AdditionalInfo() throws Exception {
+        chlp = new ConcurrentHolderLinkedPool<Object>(
+                new SimpleObjectFactory(), 1, 2, false, true);
+        long currentTime = System.currentTimeMillis();
+
+        // takes one object and test
+        Holder<Object> hobj1 = chlp.take();
+        assertNotNull(hobj1.getTarget());
+        // takes second object and test
+        Holder<Object> hobj2 = chlp.take();
+        assertNotNull(hobj2.getTarget());
+
+        List<Holder<Object>> takenHolders = chlp.takenHolders();
+        assertEquals(2, takenHolders.size());
+
+        Holder<Object> hobj = takenHolders.get(0);
+        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.getStackTrace());
+        assertTrue(hobj.timestamp() >= currentTime);
+
+        hobj = takenHolders.get(1);
+        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.getStackTrace());
+        assertTrue(hobj.timestamp() >= currentTime);
     }
 }

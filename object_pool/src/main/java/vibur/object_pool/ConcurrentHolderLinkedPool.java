@@ -55,14 +55,14 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     private static class TargetHolder<T> implements Holder<T> {
         private final int targetId;
         private final T target;
-        private final StackTraceElement[] stackTrace;
+        private final Throwable stack;
         private final long timestamp;
 
         private TargetHolder(int targetId, T target,
-                             StackTraceElement[] stackTrace, long timestamp) {
+                             Throwable stack, long timestamp) {
             this.targetId = targetId;
             this.target = target;
-            this.stackTrace = stackTrace;
+            this.stack = stack;
             this.timestamp = timestamp;
         }
 
@@ -73,7 +73,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
 
         @Override
         public StackTraceElement[] getStackTrace() {
-            return stackTrace;
+            return stack != null ? stack.getStackTrace() : null;
         }
 
         @Override
@@ -182,17 +182,17 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     }
 
     private Holder<T> newHolder(T target) {
-        StackTraceElement[] stackTrace;
+        Throwable stack;
         long timestamp;
         if (additionalInfo) {
-            stackTrace = new Throwable().getStackTrace();
+            stack = new Throwable();
             timestamp = System.currentTimeMillis();
         } else {
-            stackTrace = null;
+            stack = null;
             timestamp = -1;
         }
         Holder<T> holder = new TargetHolder<T>(
-                idGen.getAndIncrement(), target, stackTrace, timestamp);
+                idGen.getAndIncrement(), target, stack, timestamp);
         taken.put(holder, Boolean.TRUE);
         return holder;
     }
