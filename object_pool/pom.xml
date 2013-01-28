@@ -22,7 +22,7 @@
 
     <groupId>vibur</groupId>
     <artifactId>object_pool</artifactId>
-    <version>0.8</version>
+    <version>0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Vibur generic object pool</name>
