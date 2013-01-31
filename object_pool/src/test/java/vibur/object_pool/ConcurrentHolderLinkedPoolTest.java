@@ -207,13 +207,13 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // drain all created objects from the pool and test
         int drained = chlp.drainCreated();
-        assertEquals(9, drained);
+        assertEquals(10, drained);
 
         assertEquals(1, chlp.initialSize());
         assertEquals(10, chlp.maxSize());
 
-        assertEquals(1, chlp.createdTotal());
-        assertEquals(1, chlp.remainingCreated());
+        assertEquals(0, chlp.createdTotal());
+        assertEquals(0, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
         assertEquals(20, chlp.takenCount());

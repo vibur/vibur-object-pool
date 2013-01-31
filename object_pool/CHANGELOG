@@ -1,0 +1,9 @@
+Version 0.8.1 (31/01/2013)
+==========================
+* Changed the reduceCreated(int) and drainCreated() contracts to allows the
+  createdTotal() to become less than the initialSize(). I.e. a call to
+  reduceCreated(int) may bring the number of created objects in the pool to zero.
+
+Version 0.8.0 (30/01/2013)
+==========================
+* First tagged release

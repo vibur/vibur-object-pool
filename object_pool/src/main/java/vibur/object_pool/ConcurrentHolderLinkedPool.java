@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * <p>This object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects. This functionality is provided by the underlying
- * {@link ConcurrentLinkedPool}. Note that the shrinking does <b>never</b> reduce the
+ * {@link ConcurrentLinkedPool}. Note that the shrinking may reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @see ConcurrentLinkedPool

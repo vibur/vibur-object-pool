@@ -33,7 +33,7 @@ public interface BasePoolService {
     /**
      * Returns the number of objects taken from this object pool.
      * This number is less than or equal to the object pool's {@link #createdTotal()}.
-     * Mainly useful for testing an debugging purposes.
+     * Typically used for testing an debugging purposes.
      *
      * @return the number of objects taken from this object pool
      */
@@ -42,7 +42,7 @@ public interface BasePoolService {
     /**
      * Returns the number of remaining created objects which currently exist in this object pool.
      * This number is less than or equal to the object pool's {@link #remainingCapacity()}.
-     * Mainly useful for testing an debugging purposes.
+     * Typically used for testing an debugging purposes.
      *
      * @return the number of remaining created objects in this object pool
      */
@@ -51,7 +51,7 @@ public interface BasePoolService {
     /**
      * Returns the total number of created objects which currently exist for this object pool.
      * This number is equal to {@link #taken()} + {@link #remainingCreated()}.
-     * Mainly useful for testing an debugging purposes.
+     * Typically used for testing an debugging purposes.
      *
      * @return the total number of created objects for this object pool
      */
@@ -62,14 +62,15 @@ public interface BasePoolService {
      * taken from this object pool without blocking. It is not guaranteed that all these objects
      * exist at the time of the call (i.e. are already created) in the object pool - some of them
      * might be created on demand upon take requests. Also see {@link #remainingCreated()}.
-     * Mainly useful for testing an debugging purposes.
+     * Typically used for testing an debugging purposes.
      *
      * @return the object pool's remaining capacity
      */
     int remainingCapacity();
 
     /**
-     * Returns the {@code initialSize} of this object pool. This parameter never changes.
+     * Returns the {@code initialSize} of this object pool at construction time.
+     * This parameter never changes.
      *
      * @return the object pool's {@code initialSize}
      */
@@ -85,7 +86,7 @@ public interface BasePoolService {
 
     /**
      * Tries to remove (and destroy) up to {@code reduction} objects from the object pool.
-     * Will not bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
+     * May bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
      *
      * @param reduction the desired amount of objects to be removed
      * @return the actual amount of objects removed
@@ -93,8 +94,8 @@ public interface BasePoolService {
     int reduceCreated(int reduction);
 
     /**
-     * Tries to remove (and destroy) as many created objects from this object pool as possible, without
-     * bringing the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
+     * Tries to remove (and destroy) as many created objects from this object pool as possible.
+     * May bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
      *
      * @return the actual amount of objects removed (and destroyed)
      */

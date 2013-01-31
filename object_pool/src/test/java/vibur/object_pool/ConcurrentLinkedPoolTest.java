@@ -202,13 +202,13 @@ public class ConcurrentLinkedPoolTest {
 
         // drain all created objects from the pool and test
         int drained = clp.drainCreated();
-        assertEquals(9, drained);
+        assertEquals(10, drained);
 
         assertEquals(1, clp.initialSize());
         assertEquals(10, clp.maxSize());
 
-        assertEquals(1, clp.createdTotal());
-        assertEquals(1, clp.remainingCreated());
+        assertEquals(0, clp.createdTotal());
+        assertEquals(0, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
         assertEquals(20, clp.takenCount());

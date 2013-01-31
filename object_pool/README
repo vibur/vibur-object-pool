@@ -1,0 +1,41 @@
+=== Quick Introduction ===
+
+Vibur object pool is a _general-use concurrent Java object pool_ which provides
+both non-validating and validating object pool implementations. 
+
+==== _Non-validating_ object pool: ====
+
+The implementation of the _non-validating_ object pool (_ConcurrentLinkedPool_)
+is based on a _ConcurrentLinkedQueue_ and a _Semaphore_. This pool does *not*
+implement any validation of whether the currently restored object has been taken
+before that from the pool, or whether the object is currently in taken state.
+
+The _non-validating_ object pool provides support for fairness with regards to the waiting
+taker's threads. The creation of new objects and their lifecycle are controlled by a
+supplied during the pool's creation time _PoolObjectFactory_.
+
+The _non-validating_ object pool has support for shrinking (reduction) of the number of
+allocated on the pool objects.
+
+==== _Validating_ object pool: ====
+
+The implementation of the _validating_ object pool (_ConcurrentHolderLinkedPool_)
+is build on (composed) using a _non-validating ConcurrentLinkedPool_ and is utilising
+a _ConcurrentHashMap_ for the validation of the restored objects. The validation checks
+whether the currently restored object has been taken before that from the pool, and
+whether the object is currently in taken state.
+
+The _validating_ object pool _take_ methods are returning the pool's objects enclosed
+in a thin wrapper class implementing the _Holder_ interface. The underlying object is
+accessible via the interface's _getTarget()_ method.
+
+The _validating_ object pool provides support for fairness with regards to the waiting
+taker's threads in the same way as it is provided by the underlying _ConcurrentLinkedPool_.
+
+The _validating_ object pool has support for shrinking (reduction) of the number of
+allocated on the pool objects. Again, this functionality is build on the one provided
+by the underlying _ConcurrentLinkedPool_.
+
+==== Build artifacts: ====
+
+Currently, the build artifacts can be obtained by the Downloads page.

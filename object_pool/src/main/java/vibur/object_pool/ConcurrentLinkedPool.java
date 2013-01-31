@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * object pool's creation time {@link PoolObjectFactory}.
  *
  * <p>This object pool has support for shrinking (reduction) of the number of
- * allocated on the pool objects. Note that the shrinking does <b>never</b> reduce the
+ * allocated on the pool objects. Note that the shrinking may reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @see ConcurrentHolderLinkedPool
@@ -219,16 +219,25 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /** {@inheritDoc} */
     @Override
     public int reduceCreated(int reduction) {
-        return doReduceCreated(reduction, false);
+        return doReduceCreated(reduction, true);
     }
 
+    /**
+     * Implements the {@link #reduceCreated(int)} logic.
+     *
+     * @param reduction         the desired amount of objects to be removed
+     * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
+     *                          reduced to less than {@link #initialSize()}
+     * @return the actual amount of objects removed
+     */
     private int doReduceCreated(int reduction, boolean ignoreInitialSize) {
         if (reduction < 0)
             throw new IllegalArgumentException();
 
         int cnt = 0;
         for (; cnt < reduction; cnt++) {
-            if (createdTotal.decrementAndGet() < initialSize && !ignoreInitialSize) {
+            int newTotal = createdTotal.decrementAndGet();
+            if (!ignoreInitialSize && newTotal < initialSize) {
                 createdTotal.incrementAndGet();
                 break;
             }
