@@ -1,4 +1,4 @@
-31/01/2013: Unit testing the pool metrics when the PoolObjectFactory's
-methods throw a RuntimeException.
+* Unit testing the pool metrics when the PoolObjectFactory's
+  methods throw a RuntimeException.
 
-30/01/2013: Prepare to upload build artifacts to central maven repo.
+* Prepare to upload build artifacts to central maven repo.
