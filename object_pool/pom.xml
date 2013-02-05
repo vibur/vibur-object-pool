@@ -25,7 +25,7 @@
     <packaging>jar</packaging>
 
     <name>Vibur Object Pool</name>
-    <description>Vibur is a Java generic object pool.</description>
+    <description>Vibur is a general-use concurrent Java object pool.</description>
     <url>https://code.google.com/p/vibur-object-pool</url>
     <inceptionYear>2013</inceptionYear>
 
