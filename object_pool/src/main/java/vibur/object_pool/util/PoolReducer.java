@@ -59,7 +59,6 @@ public class PoolReducer {
     }
 
     private class PoolReducerRunnable implements Runnable {
-        @Override
         public void run() {
             while (!terminated) {
                 try {

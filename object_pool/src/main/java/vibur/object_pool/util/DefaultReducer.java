@@ -63,7 +63,6 @@ public class DefaultReducer implements Reducer {
     }
 
     /** {@inheritDoc} */
-    @Override
     public int reduceBy(BasePoolService poolService) {
         int reduction = 0;
         // quick exit if we're already at the minimal pool size

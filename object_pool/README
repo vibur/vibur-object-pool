@@ -17,7 +17,11 @@
 === Quick Introduction ===
 
 Vibur object pool is a _general-use concurrent Java object pool_ which provides
-both non-validating and validating object pool implementations. 
+both non-validating and validating pool implementations. The pool is built
+entirely using the standard Java concurrent utilities, does not use any
+regular synchronization, and does not have any external dependencies.
+This pool is an excellent choice for pooling/caching expensive to create objects
+such as database connections, JMS connections/sessions, and similar.
 
 ==== _Non-validating_ object pool: ====
 
@@ -27,23 +31,24 @@ implement any validation of whether the currently restored object has been taken
 before that from the pool, or whether the object is currently in taken state.
 
 The _non-validating_ object pool provides support for fairness with regards to the waiting
-taker's threads. The creation of new objects and their lifecycle are controlled by a
-supplied during the pool's creation time _PoolObjectFactory_.
+taker's threads. The creation of new objects and their lifecycle are controlled by the
+provided during the pool's creation time _PoolObjectFactory_.
 
 The _non-validating_ object pool has support for shrinking (reduction) of the number of
-allocated on the pool objects.
+allocated on the pool objects via the _reduceCreated(int)_ pool method and the
+_PoolReducer_ util class.
 
 ==== _Validating_ object pool: ====
 
 The implementation of the _validating_ object pool (_ConcurrentHolderLinkedPool_)
 is build on (composed) using a _non-validating ConcurrentLinkedPool_ and is utilising
 a _ConcurrentHashMap_ for the validation of the restored objects. The validation checks
-whether the currently restored object has been taken before that from the pool, and
-whether the object is currently in taken state.
+whether the currently restored object holder has been taken before that from the pool,
+and whether it is currently in taken state.
 
 The _validating_ object pool _take_ methods are returning the pool's objects enclosed
 in a thin wrapper class implementing the _Holder_ interface. The underlying object is
-accessible via the interface's _getTarget()_ method.
+accessible via the interface's _value()_ method.
 
 The _validating_ object pool provides support for fairness with regards to the waiting
 taker's threads in the same way as it is provided by the underlying _ConcurrentLinkedPool_.
@@ -56,11 +61,13 @@ by the underlying _ConcurrentLinkedPool_.
 
 {{{
 HolderValidatingPoolService<Object> chlp = new ConcurrentHolderLinkedPool<Object>(
-        new SimpleObjectFactory(), 1, 3, false);
+        new SimpleObjectFactory(), 10, 60, false);
 Holder<Object> hobj = null;
 try {
-    hobj = chlp.take();
-    // do something
+    hobj = chlp.tryTake();
+
+    // do some work and use hobj.value()
+
 } finally {
     if (hobj != null)
         chlp.restore(hobj);

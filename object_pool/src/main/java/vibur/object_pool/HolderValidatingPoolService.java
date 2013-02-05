@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>The object returned by the {@code take} methods is enclosed in a thin wrapper class which
  * is created by the object pool and which is implementing the described below {@link Holder}
- * interface. The underlying object is accessible via the interface's {@code getTarget()}
+ * interface. The underlying object is accessible via the interface's {@code value()}
  * method.
  *
  * @author Simeon Malchev
@@ -37,7 +37,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call which
-     * waits indefinetly until an object becomes available. If the calling thread is interrupted
+     * waits indefinitely until an object becomes available. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
@@ -48,7 +48,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call which
-     * waits indefinetly until an object becomes available.
+     * waits indefinitely until an object becomes available.
      *
      * @return an object taken from the object pool and enclosed into a thin wrapper class implementing
      * the {@link Holder} interface
@@ -92,7 +92,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
     boolean restore(Holder<T> holder);
 
     /**
-     * Returns list of all {@code Holder} objects (i.e the wrappers of the underlying target
+     * Returns list of all {@code Holder} objects (i.e the wrappers of the underlying
      * objects) which are currently (at the moment of the call) in taken state in this object
      * pool. Useful for testing and debugging purposes. The objects in the returned list are
      * in random order, i.e. the list is not sorted.

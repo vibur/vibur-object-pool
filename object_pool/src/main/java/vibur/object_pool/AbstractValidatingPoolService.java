@@ -41,58 +41,49 @@ public abstract class AbstractValidatingPoolService<T> extends AbstractBasePoolS
 
 
     /** {@inheritDoc} */
-    @Override
     public int createdTotal() {
         return nonValidatingPoolService.createdTotal();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int remainingCapacity() {
         return nonValidatingPoolService.remainingCapacity();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int initialSize() {
         return nonValidatingPoolService.initialSize();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int maxSize() {
         return nonValidatingPoolService.maxSize();
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public int reduceCreated(int reduction) {
         return nonValidatingPoolService.reduceCreated(reduction);
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public void terminate() {
         nonValidatingPoolService.terminate();
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isTerminated() {
         return nonValidatingPoolService.isTerminated();
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public boolean isFair() {
         return nonValidatingPoolService.isFair();
     }
 
     /** {@inheritDoc} */
-    @Override
     public long takenCount() {
         return nonValidatingPoolService.takenCount();
     }

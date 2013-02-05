@@ -18,8 +18,8 @@ package vibur.object_pool;
 
 
 /**
- * An interface which needs to be implemented by the wrapper class enclosing the taken
- * from this object pool objects.
+ * A holder interface which needs to be implemented by the thin wrapper class enclosing
+ * the taken from this object pool objects.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects wrapped in this object holder
@@ -27,11 +27,11 @@ package vibur.object_pool;
 public interface Holder<T> {
 
     /**
-     * Returns the underlying object which has been taken from this object pool.
+     * Returns the underlying object hold by this Holder.
      *
      * @return the underlying object
      */
-    T getTarget();
+    T value();
 
     /**
      * Return the stack trace of the call with which this object was taken. Useful
@@ -42,14 +42,4 @@ public interface Holder<T> {
      * @return see above
      */
     public StackTraceElement[] getStackTrace();
-
-    /**
-     * Return the timestamp of the call with which this object was taken. Useful
-     * for testing and debugging purposes.
-     *
-     * <p>This is an optional operation.
-     *
-     * @return see above
-     */
-    public long timestamp();
 }

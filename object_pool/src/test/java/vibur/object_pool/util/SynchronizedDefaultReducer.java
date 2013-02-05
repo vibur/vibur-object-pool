@@ -33,7 +33,6 @@ public class SynchronizedDefaultReducer extends DefaultReducer {
         this.reductionLatch = reductionLatch;
     }
 
-    @Override
     public int reduceBy(BasePoolService poolService) {
         // wait to be enabled by the main unit test thread
         try {

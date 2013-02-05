@@ -48,9 +48,9 @@ public class ConcurrentHolderLinkedPoolTest {
         Holder<Object> hobj3 = chlp.take();
         Holder<Object> hobj4 = chlp.tryTake();
 
-        assertNotNull(hobj1.getTarget());
-        assertNotNull(hobj2.getTarget());
-        assertNotNull(hobj3.getTarget());
+        assertNotNull(hobj1.value());
+        assertNotNull(hobj2.value());
+        assertNotNull(hobj3.value());
         assertNull(hobj4);
 
         assertTrue(chlp.restore(hobj1));
@@ -76,7 +76,7 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // takes one object and test
         Holder<Object> hobj1 = chlp.take();
-        assertNotNull(hobj1.getTarget());
+        assertNotNull(hobj1.value());
         assertEquals(1, chlp.createdTotal());
         assertEquals(0, chlp.remainingCreated());
         assertEquals(9, chlp.remainingCapacity());
@@ -95,7 +95,7 @@ public class ConcurrentHolderLinkedPoolTest {
         Object[] hobjs = new Object[10];
         for (int i = 0; i < 10; i++) {
             hobjs[i] = chlp.take();
-            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+            assertNotNull(((Holder<Object>) hobjs[i]).value());
         }
         hobj1 = chlp.tryTake();
         assertNull(hobj1);
@@ -147,7 +147,7 @@ public class ConcurrentHolderLinkedPoolTest {
         Object[] hobjs = new Object[10];
         for (int i = 0; i < 10; i++) {
             hobjs[i] = chlp.take();
-            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+            assertNotNull(((Holder<Object>) hobjs[i]).value());
         }
         Object obj1 = chlp.tryTake();
         assertNull(obj1);
@@ -187,7 +187,7 @@ public class ConcurrentHolderLinkedPoolTest {
         // now takes again all objects
         for (int i = 0; i < 10; i++) {
             hobjs[i] = chlp.take();
-            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+            assertNotNull(((Holder<Object>) hobjs[i]).value());
         }
         obj1 = chlp.tryTake();
         assertNull(obj1);
@@ -221,7 +221,7 @@ public class ConcurrentHolderLinkedPoolTest {
         // now takes 5 objects and test
         for (int i = 0; i < 5; i++) {
             hobjs[i] = chlp.take();
-            assertNotNull(((Holder<Object>) hobjs[i]).getTarget());
+            assertNotNull(((Holder<Object>) hobjs[i]).value());
         }
         assertEquals(1, chlp.initialSize());
         assertEquals(10, chlp.maxSize());
@@ -241,10 +241,10 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // takes one object and test
         Holder<Object> hobj1 = chlp.take();
-        assertNotNull(hobj1.getTarget());
+        assertNotNull(hobj1.value());
         // takes second object and test
         Holder<Object> hobj2 = chlp.take();
-        assertNotNull(hobj2.getTarget());
+        assertNotNull(hobj2.value());
         // tries to take third object and test
         Holder<Object> hobj3 = chlp.tryTake();
         assertNull(hobj3);
@@ -256,19 +256,12 @@ public class ConcurrentHolderLinkedPoolTest {
         // has been taken before that from this object pool, as well as whether
         // the object is currently in taken state
         assertFalse(chlp.restore(new Holder<Object>() {
-            @Override
-            public Object getTarget() {
+            public Object value() {
                 return null;
             }
 
-            @Override
             public StackTraceElement[] getStackTrace() {
                 return null;
-            }
-
-            @Override
-            public long timestamp() {
-                return 0;
             }
         }));
         assertFalse(chlp.restore(hobj1));
@@ -286,49 +279,44 @@ public class ConcurrentHolderLinkedPoolTest {
 
         // takes one object and test
         Holder<Object> hobj1 = chlp.take();
-        assertNotNull(hobj1.getTarget());
+        assertNotNull(hobj1.value());
         // takes second object and test
         Holder<Object> hobj2 = chlp.take();
-        assertNotNull(hobj2.getTarget());
+        assertNotNull(hobj2.value());
 
         List<Holder<Object>> takenHolders = chlp.takenHolders();
         assertEquals(2, takenHolders.size());
 
         Holder<Object> hobj = takenHolders.get(0);
-        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.value());
         assertNull(hobj.getStackTrace());
-        assertTrue(hobj.timestamp() < 0);
 
         hobj = takenHolders.get(1);
-        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.value());
         assertNull(hobj.getStackTrace());
-        assertTrue(hobj.timestamp() < 0);
     }
 
     @Test
     public void testTakenHolders_AdditionalInfo() throws Exception {
         chlp = new ConcurrentHolderLinkedPool<Object>(
                 new SimpleObjectFactory(), 1, 2, false, true);
-        long currentTime = System.currentTimeMillis();
 
         // takes one object and test
         Holder<Object> hobj1 = chlp.take();
-        assertNotNull(hobj1.getTarget());
+        assertNotNull(hobj1.value());
         // takes second object and test
         Holder<Object> hobj2 = chlp.take();
-        assertNotNull(hobj2.getTarget());
+        assertNotNull(hobj2.value());
 
         List<Holder<Object>> takenHolders = chlp.takenHolders();
         assertEquals(2, takenHolders.size());
 
         Holder<Object> hobj = takenHolders.get(0);
-        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.value());
         assertNotNull(hobj.getStackTrace());
-        assertTrue(hobj.timestamp() >= currentTime);
 
         hobj = takenHolders.get(1);
-        assertNotNull(hobj.getTarget());
+        assertNotNull(hobj.value());
         assertNotNull(hobj.getStackTrace());
-        assertTrue(hobj.timestamp() >= currentTime);
     }
 }

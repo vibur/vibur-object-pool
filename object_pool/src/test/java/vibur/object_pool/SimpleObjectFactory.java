@@ -21,22 +21,18 @@ package vibur.object_pool;
  */
 public class SimpleObjectFactory implements PoolObjectFactory<Object> {
 
-    @Override
     public Object create() {
         return new Object();
     }
 
-    @Override
     public boolean readyToTake(Object obj) {
         return true;
     }
 
-    @Override
     public boolean readyToRestore(Object obj) {
         return true;
     }
 
-    @Override
     public void destroy(Object obj) {
         // do nothing
     }

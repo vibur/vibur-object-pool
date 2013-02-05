@@ -25,31 +25,26 @@ package vibur.object_pool;
 public abstract class AbstractBasePoolService implements BasePoolService {
 
     /** {@inheritDoc} */
-    @Override
     public int taken() {
         return isTerminated() ? maxSize() : maxSize() - remainingCapacity();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int remainingCreated() {
         return isTerminated() ? 0 : createdTotal() - taken(); // faster than calling {@code available.size())
     }
 
     /** {@inheritDoc} */
-    @Override
     public int drainCreated() {
         return reduceCreated(Integer.MAX_VALUE);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void finalize() {
         terminate();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return super.toString() + (isTerminated() ? "[terminated]"
                 : "[remainingCreated = " + remainingCreated() + "]");

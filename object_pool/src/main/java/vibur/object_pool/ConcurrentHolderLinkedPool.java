@@ -25,12 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * An implementation of a <i>validating</i> object pool which is build on (composed) using
  * a non-validating {@link ConcurrentLinkedPool} and is utilising a {@link ConcurrentHashMap}
  * for the validation of the restored objects. The validation checks whether
- * the currently restored object has been taken before that from the object pool, and whether
- * this object is currently in taken state.
+ * the currently restored object holder has been taken before that from the object pool,
+ * and whether it is currently in taken state.
  *
  * <p>The object returned by the {@code take} methods is enclosed in a thin wrapper class which
  * is created by the object pool and which is implementing the {@link Holder} interface. The
- * underlying object is accessible via the interface's {@code getTarget()} method.
+ * underlying object is accessible via the interface's {@code value()} method.
  *
  * <p>This object pool provides support for fairness with regards to the waiting taker's threads in
  * the same way as it is provided by the underlying {@link ConcurrentLinkedPool}.
@@ -52,47 +52,30 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     private final AtomicInteger idGen = new AtomicInteger(0);
     private final boolean additionalInfo;
 
-    private static class TargetHolder<T> implements Holder<T> {
-        private final int targetId;
-        private final T target;
+    private static class ValueHolder<T> implements Holder<T> {
+        private final int valueId;
+        private final T value;
         private final Throwable stack;
-        private final long timestamp;
 
-        private TargetHolder(int targetId, T target,
-                             Throwable stack, long timestamp) {
-            this.targetId = targetId;
-            this.target = target;
+        private ValueHolder(int valueId, T value, Throwable stack) {
+            this.valueId = valueId;
+            this.value = value;
             this.stack = stack;
-            this.timestamp = timestamp;
         }
 
-        @Override
-        public final T getTarget() {
-            return target;
-        }
+        public T value() { return value; }
 
-        @Override
         public StackTraceElement[] getStackTrace() {
             return stack != null ? stack.getStackTrace() : null;
         }
 
-        @Override
-        public long timestamp() {
-            return timestamp;
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            return valueId == ((ValueHolder) obj).valueId;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TargetHolder that = (TargetHolder) o;
-            return targetId == that.targetId;
-        }
-
-        @Override
-        public int hashCode() {
-            return targetId;
-        }
+        public int hashCode() { return valueId; }
     }
 
     /**
@@ -129,8 +112,8 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
      * @param fair              the object pool's fairness setting with regards to waiting threads
-     * @param additionalInfo    determines whether the returned holder to include information for
-     *                          the current stack trace and timestamp
+     * @param additionalInfo    determines whether the returned object holder will include
+     *                          information for the current stack trace
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
      * @throws NullPointerException if {@code poolObjectFactory} is null
@@ -145,71 +128,55 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     }
 
     /** {@inheritDoc} */
-    @Override
     public Holder<T> take() {
-        T target = nonValidatingPoolService.take();
-        if (target == null)
+        T object = nonValidatingPoolService.take();
+        if (object == null)
             return null;
 
-        return newHolder(target);
+        return newHolder(object);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Holder<T> takeUninterruptibly() {
-        T target = nonValidatingPoolService.takeUninterruptibly();
-        return newHolder(target);
+        T object = nonValidatingPoolService.takeUninterruptibly();
+        return newHolder(object);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Holder<T> tryTake(long timeout, TimeUnit unit) {
-        T target = nonValidatingPoolService.tryTake(timeout, unit);
-        if (target == null)
+        T object = nonValidatingPoolService.tryTake(timeout, unit);
+        if (object == null)
             return null;
 
-        return newHolder(target);
+        return newHolder(object);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Holder<T> tryTake() {
-        T target = nonValidatingPoolService.tryTake();
-        if (target == null)
+        T object = nonValidatingPoolService.tryTake();
+        if (object == null)
             return null;
 
-        return newHolder(target);
+        return newHolder(object);
     }
 
-    private Holder<T> newHolder(T target) {
-        Throwable stack;
-        long timestamp;
-        if (additionalInfo) {
-            stack = new Throwable();
-            timestamp = System.currentTimeMillis();
-        } else {
-            stack = null;
-            timestamp = -1;
-        }
-        Holder<T> holder = new TargetHolder<T>(
-                idGen.getAndIncrement(), target, stack, timestamp);
+    private Holder<T> newHolder(T object) {
+        Throwable stack = additionalInfo ? new Throwable() : null;
+        Holder<T> holder = new ValueHolder<T>(idGen.getAndIncrement(), object, stack);
         taken.put(holder, Boolean.TRUE);
         return holder;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean restore(Holder<T> holder) {
-        T target = holder.getTarget();
         if (taken.remove(holder) == null)
             return false;
 
-        nonValidatingPoolService.restore(target);
+        nonValidatingPoolService.restore(holder.value());
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<Holder<T>> takenHolders() {
         return new ArrayList<Holder<T>>(taken.keySet());
     }

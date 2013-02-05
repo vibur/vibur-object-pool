@@ -32,7 +32,7 @@ public interface NonValidatingPoolService<T> extends BasePoolService {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call which
-     * waits indefinetly until an object becomes available. If the calling thread is interrupted
+     * waits indefinitely until an object becomes available. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
@@ -42,7 +42,7 @@ public interface NonValidatingPoolService<T> extends BasePoolService {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call which
-     * waits indefinetly until an object becomes available.
+     * waits indefinitely until an object becomes available.
      *
      * @return an object taken from the object pool
      */

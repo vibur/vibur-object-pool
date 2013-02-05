@@ -32,7 +32,6 @@ public class ConcurrentLinkedPoolTestPerf {
         final NonValidatingPoolService<Object> clp = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), 10, 20, false);
         Runnable r = new Runnable() {
-            @Override
             public void run() {
                 for (int i = 0; i < 10000; i++) {
                     Object obj = clp.tryTake(5000, TimeUnit.MILLISECONDS);

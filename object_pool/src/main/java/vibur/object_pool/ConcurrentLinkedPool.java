@@ -95,91 +95,86 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     }
 
     /** {@inheritDoc} */
-    @Override
     public T take() {
         try {
             takeSemaphore.acquire();
-            return newTarget();
+            return newObject();
         }
         catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         return null;
     }
 
     /** {@inheritDoc} */
-    @Override
     public T takeUninterruptibly() {
         takeSemaphore.acquireUninterruptibly();
-        return newTarget();
+        return newObject();
     }
 
     /** {@inheritDoc} */
-    @Override
     public T tryTake(long timeout, TimeUnit unit) {
         try {
             if (!takeSemaphore.tryAcquire(timeout, unit))
                 return null;
 
-            return newTarget();
+            return newObject();
         }
         catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         return null;
     }
 
     /** {@inheritDoc} */
-    @Override
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
             return null;
 
-        return newTarget();
+        return newObject();
     }
 
-    private T newTarget() {
+    private T newObject() {
         if (isTerminated()) {
             takeSemaphore.release();
             return null;
         }
 
-        T target = available.poll();
-        target = readyToTake(target);
+        T object = available.poll();
+        object = readyToTake(object);
         takenCount.incrementAndGet();
-        return target;
+        return object;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void restore(T target) {
-        if (target == null) throw new NullPointerException();
+    public void restore(T object) {
+        if (object == null) throw new NullPointerException();
         if (isTerminated())
             return;
 
-        target = readyToRestore(target);
-        available.add(target);
+        object = readyToRestore(object);
+        available.add(object);
         takeSemaphore.release();
     }
 
-    private T readyToTake(T target) {
+    private T readyToTake(T object) {
         try {
-            if (target == null) {
+            if (object == null) {
                 createdTotal.incrementAndGet();
-                target = poolObjectFactory.create();
-            } else if (!poolObjectFactory.readyToTake(target)) {
-                poolObjectFactory.destroy(target);
-                target = poolObjectFactory.create();
+                object = poolObjectFactory.create();
+            } else if (!poolObjectFactory.readyToTake(object)) {
+                poolObjectFactory.destroy(object);
+                object = poolObjectFactory.create();
             }
-            return target;
+            return object;
         }
         catch (RuntimeException e) { recoverInnerState(1); throw e; }
         catch (Error e) { recoverInnerState(1); throw e; }
     }
 
-    private T readyToRestore(T target) {
+    private T readyToRestore(T object) {
         try {
-            if (!poolObjectFactory.readyToRestore(target)) {
-                poolObjectFactory.destroy(target);
-                target = poolObjectFactory.create();
+            if (!poolObjectFactory.readyToRestore(object)) {
+                poolObjectFactory.destroy(object);
+                object = poolObjectFactory.create();
             }
-            return target;
+            return object;
         }
         catch (RuntimeException e) { recoverInnerState(1); throw e; }
         catch (Error e) { recoverInnerState(1); throw e; }
@@ -192,32 +187,27 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
 
     /** {@inheritDoc} */
-    @Override
     public int createdTotal() {
         return createdTotal.get();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int remainingCapacity() {
         return isTerminated() ? 0 : takeSemaphore.availablePermits();
     }
 
     /** {@inheritDoc} */
-    @Override
     public int initialSize() {
         return initialSize;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int maxSize() {
         return maxSize.get();
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public int reduceCreated(int reduction) {
         return doReduceCreated(reduction, true);
     }
@@ -241,19 +231,18 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
                 createdTotal.incrementAndGet();
                 break;
             }
-            T target = available.poll();
-            if (target == null) {
+            T object = available.poll();
+            if (object == null) {
                 createdTotal.incrementAndGet();
                 break;
             }
-            poolObjectFactory.destroy(target);
+            poolObjectFactory.destroy(object);
         }
         return cnt;
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public void terminate() {
         if (terminated.getAndSet(true))
             return;
@@ -270,20 +259,17 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isTerminated() {
         return terminated.get();
     }
 
 
     /** {@inheritDoc} */
-    @Override
     public boolean isFair() {
         return takeSemaphore.isFair();
     }
 
     /** {@inheritDoc} */
-    @Override
     public long takenCount() {
         return takenCount.get();
     }

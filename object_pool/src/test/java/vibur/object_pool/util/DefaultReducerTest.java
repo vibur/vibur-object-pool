@@ -30,12 +30,10 @@ public class DefaultReducerTest {
     public void testDefault_ReduceBy() throws Exception {
         DefaultReducer defaultPoolReducer = new DefaultReducer();
         BasePoolService poolService = new PoolServiceTestSkeleton() {
-            @Override
             public long takenCount() {
                 return 10;
             }
 
-            @Override
             public int remainingCreated() {
                 return 90;
             }
@@ -49,12 +47,10 @@ public class DefaultReducerTest {
     public void testArbitrary_ReduceBy() throws Exception {
         DefaultReducer defaultPoolReducer = new DefaultReducer(0.5f, 0.2f);
         BasePoolService poolService = new PoolServiceTestSkeleton() {
-            @Override
             public long takenCount() {
                 return 20;
             }
 
-            @Override
             public int remainingCreated() {
                 return 80;
             }
@@ -66,52 +62,42 @@ public class DefaultReducerTest {
 
 
     private static abstract class PoolServiceTestSkeleton implements BasePoolService {
-        @Override
         public int taken() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public int createdTotal() {
             return 100;
         }
 
-        @Override
         public int remainingCapacity() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public int initialSize() {
             return 1;
         }
 
-        @Override
         public int maxSize() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public int reduceCreated(int reduction) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public int drainCreated() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public void terminate() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public boolean isTerminated() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public boolean isFair() {
             throw new UnsupportedOperationException();
         }
