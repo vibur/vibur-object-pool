@@ -15,15 +15,13 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>vibur</groupId>
     <artifactId>object_pool</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2</version>
     <packaging>jar</packaging>
 
     <name>Vibur Object Pool</name>
@@ -46,9 +44,9 @@
     <!--</parent>-->
 
     <scm>
-        <url>http://code.google.com/p/vibur-object-pool/</url>
-        <connection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</connection>
-        <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</developerConnection>
+        <url>http://code.google.com/p/vibur-object-pool/tags/0.8.2</url>
+        <connection>scm:svn:https://vibur-object-pool.googlecode.com/svn/tags/0.8.2</connection>
+        <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/tags/0.8.2</developerConnection>
     </scm>
 
     <developers>
