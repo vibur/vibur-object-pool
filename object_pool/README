@@ -31,11 +31,12 @@ implement any validation of whether the currently restored object has been taken
 before that from the pool, or whether the object is currently in taken state.
 
 The _non-validating_ object pool provides support for fairness with regards to the waiting
-taker's threads. The creation of new objects and their lifecycle are controlled by the
-provided during the pool's creation time _PoolObjectFactory_.
+taker's threads. The creation of new objects in the pool and their lifecycle are controlled 
+by the provided during the pool's creation time _PoolObjectFactory_.
 
-The _non-validating_ object pool has support for shrinking (reduction) of the number of
-allocated on the pool objects via the _reduceCreated(int)_ pool method and the
+The _non-validating_ object pool does not use _WeakReferences_ however it provides support 
+for shrinking (reduction) of the number of allocated on the pool objects, and the developer 
+has full control over this via the _reduceCreated(int)_ pool method and the
 _PoolReducer_ util class.
 
 ==== _Validating_ object pool: ====
