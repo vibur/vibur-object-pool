@@ -58,7 +58,7 @@ The _validating_ object pool has support for shrinking (reduction) of the number
 allocated on the pool objects. Again, this functionality is build on the one provided
 by the underlying _ConcurrentLinkedPool_.
 
-==== Sample usage pattern: ====
+==== Sample usage patterns: ====
 
 {{{
 HolderValidatingPoolService<Object> chlp = new ConcurrentHolderLinkedPool<Object>(
@@ -74,6 +74,8 @@ try {
         chlp.restore(hobj);
 }
 }}}
+
+More usage examples could be found in the Vibur pool unit tests folder.
 
 ==== Build artifacts: ====
 
