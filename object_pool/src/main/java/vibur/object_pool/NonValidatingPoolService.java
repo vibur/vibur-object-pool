@@ -72,9 +72,20 @@ public interface NonValidatingPoolService<T> extends BasePoolService {
     /**
      * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
      * validation whether the object restored has been taken before from this object pool or whether
-     * it is currently in taken state.
+     * it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
      *
      * @param object an object to be restored (returned) to this object pool
      */
     void restore(T object);
+
+    /**
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
+     * validation whether the object restored has been taken before from this object pool or whether
+     * it is currently in taken state.
+     *
+     * @param object an object to be restored (returned) to this object pool
+     * @param valid  if {@code true} the restored object is presumed to be valid, otherwise it is treated
+     *               as invalid
+     */
+    void restore(T object, boolean valid);
 }

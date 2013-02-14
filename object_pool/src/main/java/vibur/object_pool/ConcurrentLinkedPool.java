@@ -86,12 +86,18 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
         available = new ConcurrentLinkedQueue<T>();
         for (int i = 0; i < initialSize; i++) {
-            available.add(poolObjectFactory.create());
+            available.add(create());
         }
 
         this.initialSize = initialSize;
         this.maxSize = new AtomicInteger(maxSize);
         createdTotal = new AtomicInteger(initialSize);
+    }
+
+    private T create() {
+        T object = poolObjectFactory.create();
+        if (object == null) throw new NullPointerException();
+        return object;
     }
 
     /** {@inheritDoc} */
@@ -144,11 +150,16 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
     /** {@inheritDoc} */
     public void restore(T object) {
+        restore(object, true);
+    }
+
+    /** {@inheritDoc} */
+    public void restore(T object, boolean valid) {
         if (object == null) throw new NullPointerException();
         if (isTerminated())
             return;
 
-        object = readyToRestore(object);
+        object = readyToRestore(object, valid);
         available.add(object);
         takeSemaphore.release();
     }
@@ -157,10 +168,10 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         try {
             if (object == null) {
                 createdTotal.incrementAndGet();
-                object = poolObjectFactory.create();
+                object = create();
             } else if (!poolObjectFactory.readyToTake(object)) {
                 poolObjectFactory.destroy(object);
-                object = poolObjectFactory.create();
+                object = create();
             }
             return object;
         }
@@ -168,11 +179,11 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         catch (Error e) { recoverInnerState(1); throw e; }
     }
 
-    private T readyToRestore(T object) {
+    private T readyToRestore(T object, boolean valid) {
         try {
-            if (!poolObjectFactory.readyToRestore(object)) {
+            if (!valid || !poolObjectFactory.readyToRestore(object)) {
                 poolObjectFactory.destroy(object);
-                object = poolObjectFactory.create();
+                object = create();
             }
             return object;
         }

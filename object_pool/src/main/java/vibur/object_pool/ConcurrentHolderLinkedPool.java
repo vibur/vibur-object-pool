@@ -169,10 +169,15 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
 
     /** {@inheritDoc} */
     public boolean restore(Holder<T> holder) {
+        return restore(holder, true);
+    }
+
+    /** {@inheritDoc} */
+    public boolean restore(Holder<T> holder, boolean valid) {
         if (taken.remove(holder) == null)
             return false;
 
-        nonValidatingPoolService.restore(holder.value());
+        nonValidatingPoolService.restore(holder.value(), valid);
         return true;
     }
 

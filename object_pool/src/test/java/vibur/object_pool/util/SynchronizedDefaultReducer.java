@@ -25,8 +25,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SynchronizedDefaultReducer extends DefaultReducer {
 
-    private CountDownLatch reductionLatch;
-    private CountDownLatch startLatch;
+    private final CountDownLatch reductionLatch;
+    private final CountDownLatch startLatch;
 
     public SynchronizedDefaultReducer(CountDownLatch startLatch, CountDownLatch reductionLatch) {
         this.startLatch = startLatch;

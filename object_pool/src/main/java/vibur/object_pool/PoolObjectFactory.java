@@ -27,7 +27,7 @@ public interface PoolObjectFactory<T> {
 
     /**
      * Creates a new object pool's object, which is presumed to be ready (and valid) for
-     * immediate use.
+     * immediate use. Should <strong>never</strong> return {@code null}.
      *
      * @return new object pool's object.
      */
