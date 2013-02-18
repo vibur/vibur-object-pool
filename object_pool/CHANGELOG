@@ -1,3 +1,7 @@
+Version 0.8.4 (18/02/2013)
+==========================
+* restore(Object, boolean valid) method introduced in the pool interfaces.
+
 Version 0.8.3 (06/02/2013)
 ==========================
 * Minor refactoring, docs update.
