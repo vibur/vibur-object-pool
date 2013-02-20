@@ -66,16 +66,32 @@ public class PoolReducer {
 
                     int reduction = reducer.reduceBy(poolService);
                     if (reduction > 0) {
+                        int reduced = -1;
+                        Throwable thrown = null;
                         try {
-                            poolService.reduceCreated(reduction);
+                            reduced = poolService.reduceCreated(reduction);
+                        } catch (RuntimeException x) {
+                            thrown = x; throw x;
+                        } catch (Error x) {
+                            thrown = x; throw x;
+                        } finally {
+                            afterReduce(reduction, reduced, thrown);
                         }
-                        catch (RuntimeException ignored) { }
-                        catch (Error ignored) { }
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (InterruptedException ignored) {
+                }
             }
         }
     }
+
+    /**
+     * An after reduce pool hook. The default implementation does nothing.
+     *
+     * @param reduction the intended reduction
+     * @param reduced the number of objects removed/destroyed from the pool
+     * @param thrown a thrown exception if any
+     */
+    protected void afterReduce(int reduction, int reduced, Throwable thrown) { }
 
     public boolean isTerminated() {
         return terminated;

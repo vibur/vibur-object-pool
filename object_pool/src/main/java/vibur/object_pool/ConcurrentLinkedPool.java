@@ -105,9 +105,10 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         try {
             takeSemaphore.acquire();
             return newObject();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // ignore and reset
+            return null;
         }
-        catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        return null;
     }
 
     /** {@inheritDoc} */
@@ -121,18 +122,17 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         try {
             if (!takeSemaphore.tryAcquire(timeout, unit))
                 return null;
-
             return newObject();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // ignore and reset
+            return null;
         }
-        catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        return null;
     }
 
     /** {@inheritDoc} */
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
             return null;
-
         return newObject();
     }
 
@@ -174,9 +174,11 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
                 object = create();
             }
             return object;
+        } catch (RuntimeException e) {
+            recoverInnerState(1); throw e;
+        } catch (Error e) {
+            recoverInnerState(1); throw e;
         }
-        catch (RuntimeException e) { recoverInnerState(1); throw e; }
-        catch (Error e) { recoverInnerState(1); throw e; }
     }
 
     private T readyToRestore(T object, boolean valid) {
@@ -186,9 +188,11 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
                 object = create();
             }
             return object;
+        } catch (RuntimeException e) {
+            recoverInnerState(1); throw e;
+        } catch (Error e) {
+            recoverInnerState(1); throw e;
         }
-        catch (RuntimeException e) { recoverInnerState(1); throw e; }
-        catch (Error e) { recoverInnerState(1); throw e; }
     }
 
     private void recoverInnerState(int permits) {
@@ -263,9 +267,9 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         do {
             try {
                 doReduceCreated(Integer.MAX_VALUE, true);
+            } catch (RuntimeException ignored) {
+            } catch (Error ignored) {
             }
-            catch (RuntimeException ignored) { }
-            catch (Error ignored) { }
         } while (!available.isEmpty());
     }
 

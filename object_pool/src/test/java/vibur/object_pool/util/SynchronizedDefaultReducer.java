@@ -37,7 +37,8 @@ public class SynchronizedDefaultReducer extends DefaultReducer {
         // wait to be enabled by the main unit test thread
         try {
             startLatch.await();
-        } catch (InterruptedException ignored) {  }
+        } catch (InterruptedException ignored) {
+        }
 
         int reduction = 0;
         if (reductionLatch.getCount() > 0)
