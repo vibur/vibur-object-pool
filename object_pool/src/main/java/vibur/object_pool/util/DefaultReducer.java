@@ -19,9 +19,10 @@ package vibur.object_pool.util;
 import vibur.object_pool.BasePoolService;
 
 /**
- * The default implementation of the {@link Reducer}. The reduction is based on
- * comparison of the ratio between the number of taken objects from the object pool and the number of
- * available objects in the object pool (for a given period of time) with a given threshold value.
+ * The default implementation of the {@link Reducer} interface. The reduction is based
+ * on comparison of the ratio between the number of taken objects from the pool
+ * (between two consecutive calls to {@link #reduceBy(BasePoolService)} method)
+ * and the number of available objects in the pool with a given threshold value.
  *
  * @author Simeon Malchev
  */
@@ -45,11 +46,12 @@ public class DefaultReducer implements Reducer {
     /**
      * Creates a new {@code DefaultReducer}.
      *
-     * @param takenRatio        the ratio between the taken objects from the object pool and the available
-     *                          objects in the object pool (measured for the given period of time)
-     * @param reduceRatio       the ratio by which the number of available (created) in the object pool
-     *                          objects is to be reduced if the above {@code takenRatio} threshold
-     *                          is hit
+     * @param takenRatio        the ratio between the taken objects from the pool (between two
+     *                          consecutive calls to {@link #reduceBy(BasePoolService)} method)
+     *                          and the available objects in the pool
+     * @param reduceRatio       the ratio by which the number of available (created) in the pool
+     *                          objects is to be reduced if the above {@code takenRatio}
+     *                          threshold is hit
      * @throws IllegalArgumentException if the following holds:<br>
      *         {@code takenRatio < 0.0f || reduceRatio < 0.0f || reduceRatio > 1.0f}
      * @throws NullPointerException if {@code poolService} is null

@@ -23,8 +23,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * An allocated objects reducer util, which is wakening up when an
  * unit/timeout period of time expires, and checks whether the number of available
- * allocated objects in the object pool needs to be reduced. The exact reduction logic
- * is provided via an instance of {@link Reducer}.
+ * allocated objects in the object pool needs to be reduced.
+ *
+ * <p>The exact pool reduction logic is provided via an instance of {@link Reducer}.
+ * This pool reducer creates one daemon service thread which will be started when
+ * the pool's {@link #start()} method is called, and will be alive until the
+ * {@link #terminate()} method is called or until the calling application exits.
 
  * @author Simeon Malchev
  */
@@ -38,6 +42,17 @@ public class PoolReducer {
 
     private volatile boolean terminated = false;
 
+    /**
+     * Creates a new {@link PoolReducer} with the given {@link BasePoolService} and
+     * timeout settings. The created pool reducer is not started and needs to be explicitly
+     * started via call to {@link #start()}.
+     *
+     * @param poolService the pool service which is tobe reduced if necessary
+     * @param reducer provides the calculation logic for how many elements (at most)
+     *                to be removed from the monitored pool service
+     * @param timeout the time periods after which the {@link PoolReducer} will wake up
+     * @param unit the time unit of the {@code timeout} argument
+     */
     public PoolReducer(BasePoolService poolService, Reducer reducer,
                        long timeout, TimeUnit unit) {
         if (poolService == null || reducer == null || timeout <= 0 || unit == null)
@@ -54,6 +69,11 @@ public class PoolReducer {
         reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
     }
 
+    /**
+     * Starts this pool reducer, which starts its underlying daemon thread.
+     *
+     * @exception IllegalThreadStateException if this pool reducer is started more then once
+     */
     public void start() {
         reducerThread.start();
     }
@@ -93,10 +113,21 @@ public class PoolReducer {
      */
     protected void afterReduce(int reduction, int reduced, Throwable thrown) { }
 
-    public boolean isTerminated() {
-        return terminated;
+    /**
+     * Tests if this pool reducer is alive. A pool reducer is alive if it has
+     * been started and has not yet been terminated, more precisely if its
+     * underlying daemon thread has not yet died.
+     *
+     * @return true if terminated, false otherwise
+     */
+    public boolean isAlive() {
+        return reducerThread.isAlive();
     }
 
+    /**
+     * Terminates this pool reducer, which terminates its underlying daemon thread.
+     * Once terminated the pool reducer cannot be more revived.
+     */
     public void terminate() {
         terminated = true;
         reducerThread.interrupt();
