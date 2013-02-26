@@ -55,19 +55,16 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     private static class ObjectHolder<T> implements Holder<T> {
         private final int valueId;
         private final T value;
-        private final Throwable stack;
+        private final StackTraceElement[] stackTrace;
 
-        private ObjectHolder(int valueId, T value, Throwable stack) {
+        private ObjectHolder(int valueId, T value, StackTraceElement[]  stackTrace) {
             this.valueId = valueId;
             this.value = value;
-            this.stack = stack;
+            this.stackTrace = stackTrace;
         }
 
         public T value() { return value; }
-
-        public StackTraceElement[] getStackTrace() {
-            return stack != null ? stack.getStackTrace() : null;
-        }
+        public StackTraceElement[] getStackTrace() { return stackTrace; }
 
         public int hashCode() { return valueId; }
 
@@ -161,8 +158,8 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     }
 
     private Holder<T> newHolder(T object) {
-        Throwable stack = additionalInfo ? new Throwable() : null;
-        Holder<T> holder = new ObjectHolder<T>(idGen.getAndIncrement(), object, stack);
+        StackTraceElement[] stackTrace = additionalInfo ? new Throwable().getStackTrace() : null;
+        Holder<T> holder = new ObjectHolder<T>(idGen.getAndIncrement(), object, stackTrace);
         taken.put(holder, Boolean.TRUE);
         return holder;
     }
