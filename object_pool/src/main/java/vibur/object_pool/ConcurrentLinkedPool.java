@@ -268,7 +268,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
             try {
                 doReduceCreated(Integer.MAX_VALUE, true);
             } catch (RuntimeException ignored) {
-            } catch (Error ignored) {
             }
         } while (!available.isEmpty());
     }
