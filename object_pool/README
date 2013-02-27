@@ -16,7 +16,7 @@
 
 === Quick Introduction ===
 
-Vibur object pool is a _general-use concurrent Java object pool_ which provides
+Vibur Object Pool is a _general-use concurrent Java object pool_ which provides
 both non-validating and validating pool implementations. The pool is built
 entirely using the standard Java concurrent utilities, does not use any
 regular synchronization, and does not have any external dependencies.
