@@ -160,7 +160,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
             return;
 
         object = readyToRestore(object, valid);
-        available.add(object);
+        if (object != null)
+            available.add(object);
         takeSemaphore.release();
     }
 
@@ -185,7 +186,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         try {
             if (!valid || !poolObjectFactory.readyToRestore(object)) {
                 poolObjectFactory.destroy(object);
-                object = create();
+                createdTotal.addAndGet(-1);
+                object = null;
             }
             return object;
         } catch (RuntimeException e) {
