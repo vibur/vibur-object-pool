@@ -1,12 +1,9 @@
-Version 0.8.5 (07/03/2013)
-==========================
-* Minor refactoring, improved javadoc, bug fix,
-  lazily creates new objects if validates on restore fails.
-
 Version 0.8.4 (18/02/2013)
 ==========================
 * restore(Object, boolean valid) method introduced in the pool interfaces.
 * afterReduce(int, int, Throwable) method added in PoolReducer class.
+* Minor refactoring, improved javadoc, bug fix,
+  lazily creates new objects if validates on restore fails.
 
 Version 0.8.3 (06/02/2013)
 ==========================
