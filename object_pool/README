@@ -75,7 +75,7 @@ try {
 }
 }}}
 
-More usage examples could be found in the Vibur pool unit tests folder.
+More usage examples could be found in the project's unit tests folder.
 
 ==== Build artifacts: ====
 
