@@ -21,7 +21,7 @@
 
     <groupId>vibur</groupId>
     <artifactId>vibur_object_pool</artifactId>
-    <version>0.8.5-SNAPSHOT</version>
+    <version>0.8.4</version>
     <packaging>jar</packaging>
 
     <name>Vibur Object Pool</name>
