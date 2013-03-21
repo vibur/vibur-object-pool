@@ -82,16 +82,16 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
             throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
-        takeSemaphore = new Semaphore(maxSize, fair);
+        this.takeSemaphore = new Semaphore(maxSize, fair);
 
-        available = new ConcurrentLinkedQueue<T>();
+        this.available = new ConcurrentLinkedQueue<T>();
         for (int i = 0; i < initialSize; i++) {
-            available.add(create());
+            this.available.add(create());
         }
 
         this.initialSize = initialSize;
         this.maxSize = new AtomicInteger(maxSize);
-        createdTotal = new AtomicInteger(initialSize);
+        this.createdTotal = new AtomicInteger(initialSize);
     }
 
     private T create() {
