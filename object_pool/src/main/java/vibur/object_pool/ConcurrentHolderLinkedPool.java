@@ -120,7 +120,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
                                       boolean fair, boolean additionalInfo) {
         super(new ConcurrentLinkedPool<T>(
                 poolObjectFactory, initialSize, maxSize, fair));
-        taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
+        this.taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
         this.additionalInfo = additionalInfo;
     }
 
