@@ -18,12 +18,14 @@ package vibur.object_pool;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * An implementation of a <i>validating</i> object pool which is build on (composed) using
- * a non-validating {@link ConcurrentLinkedPool} and is utilising a {@link ConcurrentHashMap}
+ * a non-validating {@link ConcurrentLinkedPool} and is utilising a {@link java.util.concurrent.ConcurrentHashMap}
  * for the validation of the restored objects. The validation checks whether
  * the currently restored object holder has been taken before that from the object pool,
  * and whether it is currently in taken state.
@@ -49,15 +51,15 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         implements HolderValidatingPoolService<T> {
 
     private final ConcurrentMap<Holder<T>, Boolean> taken;
-    private final AtomicInteger idGen = new AtomicInteger(0);
+    private static final AtomicLong idGen = new AtomicLong(0);
     private final boolean additionalInfo;
 
     private static class ObjectHolder<T> implements Holder<T> {
-        private final int valueId;
+        private final long valueId;
         private final T value;
         private final StackTraceElement[] stackTrace;
 
-        private ObjectHolder(int valueId, T value, StackTraceElement[]  stackTrace) {
+        private ObjectHolder(long valueId, T value, StackTraceElement[]  stackTrace) {
             this.valueId = valueId;
             this.value = value;
             this.stackTrace = stackTrace;
@@ -66,7 +68,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         public T value() { return value; }
         public StackTraceElement[] getStackTrace() { return stackTrace; }
 
-        public int hashCode() { return valueId; }
+        public int hashCode() { return (int) valueId; }
 
         public boolean equals(Object obj) {
             if (this == obj) return true;

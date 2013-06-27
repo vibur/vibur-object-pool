@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>vibur</groupId>
-    <artifactId>vibur_object_pool</artifactId>
+    <artifactId>vibur-object-pool</artifactId>
     <version>0.8.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 

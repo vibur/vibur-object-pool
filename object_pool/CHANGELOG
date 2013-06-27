@@ -1,3 +1,9 @@
+Version 0.8.5 (28/06/2013)
+==========================
+* Fix in ConcurrentHolderLinkedPool which is to prevent the possibility object taken from
+  one pool to be returned to another.
+* Changed the build artifact name to use "-" instead of "_".
+
 Version 0.8.4 (18/02/2013)
 ==========================
 * restore(Object, boolean valid) method introduced in the pool interfaces.
