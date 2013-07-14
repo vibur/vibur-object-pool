@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An implementation of a <i>validating</i> object pool which is build on (composed) using
- * a non-validating {@link ConcurrentLinkedPool} and is utilising a {@link java.util.concurrent.ConcurrentHashMap}
+ * a non-validating {@link ConcurrentLinkedPool} and is utilising a {@link ConcurrentHashMap}
  * for the validation of the restored objects. The validation checks whether
  * the currently restored object holder has been taken before that from the object pool,
  * and whether it is currently in taken state.
@@ -50,16 +50,16 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService<T>
         implements HolderValidatingPoolService<T> {
 
-    private final ConcurrentMap<Holder<T>, Boolean> taken;
-    private static final AtomicLong idGen = new AtomicLong(0);
+    private final ConcurrentMap<Holder<T>, T> taken;
+    private final AtomicInteger idGen = new AtomicInteger(0);
     private final boolean additionalInfo;
 
     private static class ObjectHolder<T> implements Holder<T> {
-        private final long valueId;
+        private final int valueId;
         private final T value;
         private final StackTraceElement[] stackTrace;
 
-        private ObjectHolder(long valueId, T value, StackTraceElement[]  stackTrace) {
+        private ObjectHolder(int valueId, T value, StackTraceElement[]  stackTrace) {
             this.valueId = valueId;
             this.value = value;
             this.stackTrace = stackTrace;
@@ -68,7 +68,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         public T value() { return value; }
         public StackTraceElement[] getStackTrace() { return stackTrace; }
 
-        public int hashCode() { return (int) valueId; }
+        public int hashCode() { return valueId; }
 
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -122,7 +122,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
                                       boolean fair, boolean additionalInfo) {
         super(new ConcurrentLinkedPool<T>(
                 poolObjectFactory, initialSize, maxSize, fair));
-        this.taken = new ConcurrentHashMap<Holder<T>, Boolean>(maxSize);
+        this.taken = new ConcurrentHashMap<Holder<T>, T>(maxSize);
         this.additionalInfo = additionalInfo;
     }
 
@@ -162,7 +162,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     private Holder<T> newHolder(T object) {
         StackTraceElement[] stackTrace = additionalInfo ? new Throwable().getStackTrace() : null;
         Holder<T> holder = new ObjectHolder<T>(idGen.getAndIncrement(), object, stackTrace);
-        taken.put(holder, Boolean.TRUE);
+        taken.put(holder, object);
         return holder;
     }
 
@@ -173,7 +173,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
 
     /** {@inheritDoc} */
     public boolean restore(Holder<T> holder, boolean valid) {
-        if (taken.remove(holder) == null)
+        if (!taken.remove(holder, holder.value()))
             return false;
 
         nonValidatingPoolService.restore(holder.value(), valid);
