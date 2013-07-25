@@ -5,7 +5,7 @@
 
     <groupId>vibur</groupId>
     <artifactId>vibur-object-pool</artifactId>
-    <version>0.8.6-SNAPSHOT</version>
+    <version>0.8.6</version>
     <packaging>jar</packaging>
 
     <name>Vibur Object Pool</name>
@@ -28,9 +28,9 @@
     <!--</parent>-->
 
     <scm>
-        <url>http://code.google.com/p/vibur-object-pool/</url>
-        <connection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</connection>
-        <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</developerConnection>
+        <url>http://code.google.com/p/vibur-object-pool/tags/0.8.6</url>
+        <connection>scm:svn:https://vibur-object-pool.googlecode.com/svn/tags/0.8.6</connection>
+        <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/tags/0.8.6</developerConnection>
     </scm>
 
     <developers>
