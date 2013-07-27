@@ -1,3 +1,7 @@
+Version 0.8.6 (06/02/2013)
+==========================
+* Minor refactoring, dependencies versions update.
+
 Version 0.8.5 (28/06/2013)
 ==========================
 * Fix in ConcurrentHolderLinkedPool which is to prevent the possibility object taken from
