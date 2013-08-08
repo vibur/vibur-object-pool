@@ -1,0 +1,4 @@
+* Unit testing the pool metrics when the PoolObjectFactory's
+  methods throw a RuntimeException.
+
+* Prepare to upload build artifacts to central maven repo.
