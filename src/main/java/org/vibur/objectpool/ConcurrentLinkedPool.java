@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.objectpool;
+package org.vibur.objectpool;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

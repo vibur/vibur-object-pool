@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package vibur.objectpool.util;
+package org.vibur.objectpool.util;
 
-import vibur.objectpool.BasePoolService;
+import org.vibur.objectpool.BasePoolService;
 
 /**
  * The logic for the automated shrinking (reduction) of a {@link BasePoolService} is provided

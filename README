@@ -23,7 +23,7 @@ regular synchronization, and does not have any external dependencies.
 This pool is an excellent choice for pooling/caching expensive to create objects
 such as database connections, JMS connections/sessions, and similar.
 
-Vibur Object Pool is utilised by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
+Vibur Object Pool is used as a main building block by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
 (a database connection pool).
 
 ==== _Non-validating_ object pool: ====

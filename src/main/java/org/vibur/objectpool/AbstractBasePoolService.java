@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.objectpool;
+package org.vibur.objectpool;
 
 /**
  * Base abstract class which is to be extended and which provides common functionality for

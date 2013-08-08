@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package vibur.objectpool.util;
+package org.vibur.objectpool.util;
 
-import vibur.objectpool.BasePoolService;
+import org.vibur.objectpool.BasePoolService;
 
 /**
  * The default implementation of the {@link Reducer} interface. The reduction is based

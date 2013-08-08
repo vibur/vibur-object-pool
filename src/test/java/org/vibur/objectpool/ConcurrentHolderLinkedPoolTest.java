@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.objectpool;
+package org.vibur.objectpool;
 
 import org.junit.After;
 import org.junit.Test;
