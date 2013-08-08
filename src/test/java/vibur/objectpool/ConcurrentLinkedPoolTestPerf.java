@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.objectpool;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Simeon Malchev
  */
-public class ConcurrentHolderLinkedPoolTestPerf {
+public class ConcurrentLinkedPoolTestPerf {
 
     public static void main(String[] args) {
 
@@ -29,13 +29,13 @@ public class ConcurrentHolderLinkedPoolTestPerf {
         // to take/restore 10000 objects from the pool. Measures the time taken in milliseconds.
 
         long start = System.currentTimeMillis();
-        final HolderValidatingPoolService<Object> chlp = new ConcurrentHolderLinkedPool<Object>(
+        final NonValidatingPoolService<Object> clp = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), 10, 20, false);
         Runnable r = new Runnable() {
             public void run() {
                 for (int i = 0; i < 10000; i++) {
-                    Holder<Object> obj = chlp.tryTake(5000, TimeUnit.MILLISECONDS);
-                    chlp.restore(obj);
+                    Object obj = clp.tryTake(5000, TimeUnit.MILLISECONDS);
+                    clp.restore(obj);
                 }
             }
         };

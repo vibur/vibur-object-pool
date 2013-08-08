@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.objectpool;
 
 /**
  * Defines an interface which is to be implemented by a factory which will be used by

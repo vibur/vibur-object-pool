@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package vibur.object_pool.util;
-
-import vibur.object_pool.BasePoolService;
+package vibur.objectpool;
 
 /**
- * The logic for the automated shrinking (reduction) of a {@link BasePoolService} is provided
- * via this interface. Mainly used by the {@link PoolReducer} util.
- *
  * @author Simeon Malchev
  */
-public interface Reducer {
+public class SimpleObjectFactory implements PoolObjectFactory<Object> {
 
-    /**
-     * Returns the number of elements by which this object pool needs to be reduced (shrinked).
-     *
-     * @param poolService       the object pool service which is to be reduced by this reducer
-     * @return see above
-     */
-    int reduceBy(BasePoolService poolService);
+    public Object create() {
+        return new Object();
+    }
+
+    public boolean readyToTake(Object obj) {
+        return true;
+    }
+
+    public boolean readyToRestore(Object obj) {
+        return true;
+    }
+
+    public void destroy(Object obj) {
+        // do nothing
+    }
 }

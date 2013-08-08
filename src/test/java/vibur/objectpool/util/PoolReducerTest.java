@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package vibur.object_pool.util;
+package vibur.objectpool.util;
 
 import org.junit.After;
 import org.junit.Test;
-import vibur.object_pool.ConcurrentLinkedPool;
-import vibur.object_pool.NonValidatingPoolService;
-import vibur.object_pool.SimpleObjectFactory;
+import vibur.objectpool.ConcurrentLinkedPool;
+import vibur.objectpool.NonValidatingPoolService;
+import vibur.objectpool.SimpleObjectFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

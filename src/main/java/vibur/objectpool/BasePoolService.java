@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.objectpool;
 
 /**
  * Defines base objects object pool's functionality which is to be implemented by the validating

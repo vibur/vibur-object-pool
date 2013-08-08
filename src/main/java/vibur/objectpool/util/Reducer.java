@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.objectpool.util;
 
+import vibur.objectpool.BasePoolService;
 
 /**
- * A holder interface which needs to be implemented by the thin wrapper class enclosing
- * the taken from this object pool objects.
+ * The logic for the automated shrinking (reduction) of a {@link BasePoolService} is provided
+ * via this interface. Mainly used by the {@link PoolReducer} util.
  *
  * @author Simeon Malchev
- * @param <T> the type of objects wrapped in this object holder
  */
-public interface Holder<T> {
+public interface Reducer {
 
     /**
-     * Returns the underlying object hold by this Holder.
+     * Returns the number of elements by which this object pool needs to be reduced (shrinked).
      *
-     * @return the underlying object
-     */
-    T value();
-
-    /**
-     * Return the stack trace of the call with which this object was taken. Useful
-     * for testing and debugging purposes.
-     *
-     * <p>This is an optional operation.
-     *
+     * @param poolService       the object pool service which is to be reduced by this reducer
      * @return see above
      */
-    public StackTraceElement[] getStackTrace();
+    int reduceBy(BasePoolService poolService);
 }

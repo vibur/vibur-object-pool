@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vibur.object_pool;
+package vibur.objectpool;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

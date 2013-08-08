@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package vibur.object_pool.util;
+package vibur.objectpool.util;
 
 import org.junit.Test;
-import vibur.object_pool.BasePoolService;
+import vibur.objectpool.BasePoolService;
 
 import static junit.framework.Assert.assertEquals;
 
