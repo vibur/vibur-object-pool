@@ -1,0 +1,35 @@
+Version 0.8.6 (06/02/2013)
+==========================
+* Minor refactoring, dependencies versions update.
+
+Version 0.8.5 (28/06/2013)
+==========================
+* Fix in ConcurrentHolderLinkedPool which is to prevent the possibility object taken from
+  one pool to be returned to another.
+* Changed the build artifact name to use "-" instead of "_".
+
+Version 0.8.4 (18/02/2013)
+==========================
+* restore(Object, boolean valid) method introduced in the pool interfaces.
+* afterReduce(int, int, Throwable) method added in PoolReducer class.
+* Minor refactoring, improved javadoc, bug fix,
+  lazily creates new objects if validates on restore fails.
+
+Version 0.8.3 (06/02/2013)
+==========================
+* Minor refactoring, docs update.
+
+Version 0.8.2 (05/02/2013)
+==========================
+* Major refactoring, have changed interface methods names,
+  have added more information in the README file.
+
+Version 0.8.1 (31/01/2013)
+==========================
+* Changed the reduceCreated(int) and drainCreated() contracts to allows the
+  createdTotal() to become less than the initialSize(). I.e. a call to
+  reduceCreated(int) may bring the number of created objects in the pool to zero.
+
+Version 0.8.0 (30/01/2013)
+==========================
+* First tagged release.
