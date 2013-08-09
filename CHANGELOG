@@ -1,4 +1,8 @@
-Version 0.8.6 (06/02/2013)
+Version 0.8.7 (10/08/2013)
+==========================
+* Packages structure refactoring.
+
+Version 0.8.6 (26/07/2013)
 ==========================
 * Minor refactoring, dependencies versions update.
 
