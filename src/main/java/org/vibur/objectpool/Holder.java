@@ -41,5 +41,5 @@ public interface Holder<T> {
      *
      * @return see above
      */
-    public StackTraceElement[] getStackTrace();
+    StackTraceElement[] getStackTrace();
 }

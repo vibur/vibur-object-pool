@@ -159,7 +159,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         return newHolder(object);
     }
 
-    private Holder<T> newHolder(T object) {
+    protected Holder<T> newHolder(T object) {
         StackTraceElement[] stackTrace = additionalInfo ? new Throwable().getStackTrace() : null;
         Holder<T> holder = new ObjectHolder<T>(idGen.getAndIncrement(), object, stackTrace);
         taken.put(holder, object);

@@ -136,7 +136,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         return newObject();
     }
 
-    private T newObject() {
+    protected T newObject() {
         if (isTerminated()) {
             takeSemaphore.release();
             return null;

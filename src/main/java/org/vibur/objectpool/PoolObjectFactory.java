@@ -36,11 +36,11 @@ public interface PoolObjectFactory<T> {
     /**
      * A validation/initialization hook which will be called when an object from
      * the object pool is taken in order to be given to the calling application.
-     * This is not an always required operation and the implementation
-     * of this method may simply always return {@code true}.
+     * This is an optional operation and the concrete implementation of this method
+     * may always simply return {@code true}.
      *
      * <p>If there is a particular initialization/activation which needs to be done
-     * for this object, it must be done here.
+     * for this object, it can be done here.
      *
      * @see #readyToRestore(Object)
      *
@@ -53,11 +53,11 @@ public interface PoolObjectFactory<T> {
     /**
      * A validation/passivation hook which will be called when an object which has been taken
      * before that from the object pool is about to be restored (returned) back to the object pool.
-     * This is a recommended operation and its exact implementation will depend on the
-     * concrete object pool object's type and semantics.
+     * This is an optional operation and the concrete implementation of this method
+     * may always simply return {@code true}.
      *
      * <p>If there is a particular passivation which needs to be done for this
-     * object, it must be done here.
+     * object, it can be done here.
      *
      * @see #readyToTake
      *
