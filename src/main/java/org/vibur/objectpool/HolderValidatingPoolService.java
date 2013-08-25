@@ -92,13 +92,15 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
     boolean restore(Holder<T> holder);
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
-     * validation whether the object restored has been taken before from this object pool or whether
-     * it is currently in taken state.
+     * Restores (returns) an object to the object pool. The object pool <strong>validates</strong>
+     * whether the object restored has been taken before from this object pool and whether it is
+     * currently in taken state. If the validation fails, this method will return {@code false}
+     * otherwise will return {@code true}. This validation should not be mistaken with the valid
+     * status of the object state which is provided by the {@code valid} parameter as shown below.
      *
      * @param holder a thin wrapper enclosing the object that is to be restored to the object pool
-     * @param valid  if {@code true} the restored object is presumed to be valid, otherwise it is treated
-     *               as invalid
+     * @param valid  if {@code true} the restored object is presumed to be valid in valid (healthy) state,
+     *               otherwise it is treated as invalid
      * @return {@code true} if the underlying object from the given {@code holder} was taken
      * before that from this object pool and if it is currently in taken state,
      * {@code false} otherwise
