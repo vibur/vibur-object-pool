@@ -99,7 +99,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
      * status of the object state which is provided by the {@code valid} parameter as shown below.
      *
      * @param holder a thin wrapper enclosing the object that is to be restored to the object pool
-     * @param valid  if {@code true} the restored object is presumed to be valid in valid (healthy) state,
+     * @param valid  if {@code true} the restored object is presumed to be in valid (healthy) state,
      *               otherwise it is treated as invalid
      * @return {@code true} if the underlying object from the given {@code holder} was taken
      * before that from this object pool and if it is currently in taken state,

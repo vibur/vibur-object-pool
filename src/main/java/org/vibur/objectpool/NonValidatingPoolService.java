@@ -84,7 +84,7 @@ public interface NonValidatingPoolService<T> extends BasePoolService {
      * it is currently in taken state.
      *
      * @param object an object to be restored (returned) to this object pool
-     * @param valid  if {@code true} the restored object is presumed to be valid in valid (healthy) state,
+     * @param valid  if {@code true} the restored object is presumed to be in valid (healthy) state,
      *               otherwise it is treated as invalid
      */
     void restore(T object, boolean valid);
