@@ -14,16 +14,15 @@
   limitations under the License.
 </wiki:comment>
 
-=== Quick Introduction ===
+== Quick Introduction ==
 
 Vibur Object Pool is a _general-use concurrent Java object pool_ which provides
 both non-validating and validating pool implementations. The pool is built
-entirely using the standard Java concurrent utilities, does not use any
-regular synchronization, and does not have any external dependencies.
-This pool is an excellent choice for pooling/caching expensive to create objects
+entirely using the standard Java concurrent utilities, does not use any diret synchronization, and does not have any external dependencies.
+This pool is an excellent choice for pooling/caching of expensive to create objects
 such as database connections, JMS connections/sessions, and similar.
 
-Vibur Object Pool is used as a main building block by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
+Vibur Object Pool is utilised by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
 (a database connection pool).
 
 ==== _Non-validating_ object pool: ====
@@ -34,11 +33,11 @@ implement any validation of whether the currently restored object has been taken
 before that from the pool, or whether the object is currently in taken state.
 
 The _non-validating_ object pool provides support for fairness with regards to the waiting
-taker's threads. The creation of new objects in the pool and their lifecycle are controlled 
+taker's threads. The creation of new objects in the pool and their lifecycle are controlled
 by the provided during the pool's creation time _PoolObjectFactory_.
 
-The _non-validating_ object pool does not use _WeakReferences_ however it provides support 
-for shrinking (reduction) of the number of allocated on the pool objects, and the developer 
+The _non-validating_ object pool does not use _WeakReferences_ however it provides support
+for shrinking (reduction) of the number of allocated on the pool objects, and the developer
 has full control over this via the _reduceCreated(int)_ pool method and the
 _PoolReducer_ util class.
 
@@ -61,7 +60,11 @@ The _validating_ object pool has support for shrinking (reduction) of the number
 allocated on the pool objects. Again, this functionality is build on the one provided
 by the underlying _ConcurrentLinkedPool_.
 
-==== Sample usage patterns: ====
+== Usage Examples ==
+
+*Maven dependency:*
+
+  * coming soon...
 
 {{{
 HolderValidatingPoolService<Object> chlp = new ConcurrentHolderLinkedPool<Object>(
@@ -78,8 +81,4 @@ try {
 }
 }}}
 
-More usage examples could be found in the project's unit tests folder.
-
-==== Build artifacts: ====
-
-Currently, the build artifacts can be obtained from the Downloads page.
+More usage examples can be found in the project's unit tests folder.
