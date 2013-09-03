@@ -16,14 +16,14 @@
 
 == Quick Introduction ==
 
-Vibur Object Pool is a _general-use concurrent Java object pool_ which provides
+Vibur Object Pool is a general-use concurrent Java object pool which provides
 both non-validating and validating pool implementations. The pool is built
-entirely using the standard Java concurrent utilities, does not use any diret synchronization, and does not have any external dependencies.
-This pool is an excellent choice for pooling/caching of expensive to create objects
-such as database connections, JMS connections/sessions, and similar.
+entirely using the standard Java concurrent utilities, does not use any direct synchronization,
+and does not have any external dependencies. This pool is an excellent choice for pooling/caching
+of expensive to create Java objects such as database connections, JMS connections/sessions and similar.
 
 Vibur Object Pool is utilised by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
-(a database connection pool).
+(a JDBC connection pool).
 
 ==== _Non-validating_ object pool: ====
 
@@ -36,15 +36,14 @@ The _non-validating_ object pool provides support for fairness with regards to t
 taker's threads. The creation of new objects in the pool and their lifecycle are controlled
 by the provided during the pool's creation time _PoolObjectFactory_.
 
-The _non-validating_ object pool does not use _WeakReferences_ however it provides support
-for shrinking (reduction) of the number of allocated on the pool objects, and the developer
-has full control over this via the _reduceCreated(int)_ pool method and the
-_PoolReducer_ util class.
+The _non-validating_ object pool provides support for shrinking (reduction) of the number
+of allocated on the pool objects, and the developer has full control over it via the
+_reduceCreated(int)_ pool method and the _PoolReducer_ util class.
 
 ==== _Validating_ object pool: ====
 
 The implementation of the _validating_ object pool (_ConcurrentHolderLinkedPool_)
-is build on (composed) using a _non-validating ConcurrentLinkedPool_ and is utilising
+is built (composed) using a _non-validating ConcurrentLinkedPool_ and is utilising
 a _ConcurrentHashMap_ for the validation of the restored objects. The validation checks
 whether the currently restored object holder has been taken before that from the pool,
 and whether it is currently in taken state.
@@ -56,13 +55,13 @@ accessible via the interface's _value()_ method.
 The _validating_ object pool provides support for fairness with regards to the waiting
 taker's threads in the same way as it is provided by the underlying _ConcurrentLinkedPool_.
 
-The _validating_ object pool has support for shrinking (reduction) of the number of
-allocated on the pool objects. Again, this functionality is build on the one provided
+The _validating_ object pool has support for automated shrinking (reduction) of the number of
+allocated on the pool objects. Again, this functionality is built on top of the one provided
 by the underlying _ConcurrentLinkedPool_.
 
 == Usage Examples ==
 
-*Maven dependency:*
+====Maven dependency:====
 
   * coming soon...
 
