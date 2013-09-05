@@ -25,39 +25,39 @@ of expensive to create Java objects such as database connections, JMS connection
 Vibur Object Pool is utilised by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP]
 (a JDBC connection pool).
 
-==== _Non-validating_ object pool: ====
+==== Non-validating object pool: ====
 
-The implementation of the _non-validating_ object pool (_ConcurrentLinkedPool_)
-is based on a _ConcurrentLinkedQueue_ and a _Semaphore_. This pool does *not*
+The implementation of the non-validating object pool (`ConcurrentLinkedPool`)
+is based on a `ConcurrentLinkedQueue` and a `Semaphore`. This pool does *not*
 implement any validation of whether the currently restored object has been taken
 before that from the pool, or whether the object is currently in taken state.
 
-The _non-validating_ object pool provides support for fairness with regards to the waiting
+The non-validating object pool provides support for fairness with regards to the waiting
 taker's threads. The creation of new objects in the pool and their lifecycle are controlled
-by the provided during the pool's creation time _PoolObjectFactory_.
+by the provided during the pool's creation time `PoolObjectFactory`.
 
-The _non-validating_ object pool provides support for shrinking (reduction) of the number
-of allocated on the pool objects, and the developer has full control over it via the
-_reduceCreated(int)_ pool method and the _PoolReducer_ util class.
+The non-validating object pool provides support for manual or automated shrinking (reduction)
+of the number of allocated on the pool objects, and the developer has full control over it
+via the `reduceCreated(int)` pool method and the `PoolReducer` util class.
 
-==== _Validating_ object pool: ====
+==== Validating object pool: ====
 
-The implementation of the _validating_ object pool (_ConcurrentHolderLinkedPool_)
-is built (composed) using a _non-validating ConcurrentLinkedPool_ and is utilising
-a _ConcurrentHashMap_ for the validation of the restored objects. The validation checks
+The implementation of the validating object pool (`ConcurrentHolderLinkedPool`)
+is built (composed) using a non-validating `ConcurrentLinkedPool` and is utilising
+a `ConcurrentHashMap` for the validation of the restored objects. The validation checks
 whether the currently restored object holder has been taken before that from the pool,
 and whether it is currently in taken state.
 
-The _validating_ object pool _take_ methods are returning the pool's objects enclosed
-in a thin wrapper class implementing the _Holder_ interface. The underlying object is
-accessible via the interface's _value()_ method.
+The validating object pool `take` methods are returning the pool's objects enclosed
+in a thin wrapper class implementing the `Holder` interface. The underlying object is
+accessible via the interface's `value()` method.
 
-The _validating_ object pool provides support for fairness with regards to the waiting
-taker's threads in the same way as it is provided by the underlying _ConcurrentLinkedPool_.
+The validating object pool provides support for fairness with regards to the waiting
+taker's threads in the same way as it is provided by the underlying `ConcurrentLinkedPool`.
 
-The _validating_ object pool has support for automated shrinking (reduction) of the number of
-allocated on the pool objects. Again, this functionality is built on top of the one provided
-by the underlying _ConcurrentLinkedPool_.
+The validating object pool has support for for manual or automated shrinking (reduction)
+of the number of allocated on the pool objects. Again, this functionality is built on
+top of the same provided by the underlying `ConcurrentLinkedPool`.
 
 == Usage Examples ==
 
