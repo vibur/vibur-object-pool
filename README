@@ -14,7 +14,13 @@
   limitations under the License.
 </wiki:comment>
 
-== Quick Introduction ==
+=== Table of Contents ===
+  # [#Quick_Introduction Quick Introduction]
+  # [#Usage_Examples Usage Examples]
+  # [#How_To_Build How To Build]
+
+<br/>
+=== Quick Introduction ===
 
 Vibur Object Pool is a general-use concurrent Java object pool which provides
 both non-validating and validating pool implementations. The pool is built
@@ -59,7 +65,7 @@ The validating object pool has support for for manual or automated shrinking (re
 of the number of allocated on the pool objects. Again, this functionality is built on
 top of the same provided by the underlying `ConcurrentLinkedPool`.
 
-== Usage Examples ==
+=== Usage Examples ===
 
 ====Maven dependency:====
 
@@ -81,3 +87,7 @@ try {
 }}}
 
 More usage examples can be found in the project's unit tests folder.
+
+=== How To Build ===
+
+`mvn clean install`
