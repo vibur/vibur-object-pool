@@ -263,6 +263,10 @@ public class ConcurrentHolderLinkedPoolTest {
             public StackTraceElement[] getStackTrace() {
                 return null;
             }
+
+            public long getTime() {
+                return -1L;
+            }
         }));
         assertFalse(chlp.restore(hobj1));
         assertFalse(chlp.restore(hobj2));
@@ -290,10 +294,12 @@ public class ConcurrentHolderLinkedPoolTest {
         Holder<Object> hobj = takenHolders.get(0);
         assertNotNull(hobj.value());
         assertNull(hobj.getStackTrace());
+        assertEquals(-1L, hobj.getTime());
 
         hobj = takenHolders.get(1);
         assertNotNull(hobj.value());
         assertNull(hobj.getStackTrace());
+        assertEquals(-1L, hobj.getTime());
     }
 
     @Test

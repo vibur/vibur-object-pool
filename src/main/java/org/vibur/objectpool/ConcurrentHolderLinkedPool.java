@@ -58,15 +58,22 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
         private final int valueId;
         private final T value;
         private final StackTraceElement[] stackTrace;
+        private long time;
 
-        private ObjectHolder(int valueId, T value, StackTraceElement[]  stackTrace) {
+        private ObjectHolder(int valueId, T value) {
+            this(valueId, value, null, -1L);
+        }
+
+        private ObjectHolder(int valueId, T value, StackTraceElement[]  stackTrace, long time) {
             this.valueId = valueId;
             this.value = value;
             this.stackTrace = stackTrace;
+            this.time = time;
         }
 
         public T value() { return value; }
         public StackTraceElement[] getStackTrace() { return stackTrace; }
+        public long getTime() { return time; }
 
         public int hashCode() { return valueId; }
 
@@ -160,8 +167,13 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
     }
 
     protected Holder<T> newHolder(T object) {
-        StackTraceElement[] stackTrace = additionalInfo ? new Throwable().getStackTrace() : null;
-        Holder<T> holder = new ObjectHolder<T>(idGen.getAndIncrement(), object, stackTrace);
+        Holder<T> holder;
+        if (!additionalInfo) {
+            holder = new ObjectHolder<T>(idGen.getAndIncrement(), object);
+        } else {
+            holder = new ObjectHolder<T>(idGen.getAndIncrement(), object,
+                new Throwable().getStackTrace(), System.currentTimeMillis());
+        }
         taken.put(holder, object);
         return holder;
     }

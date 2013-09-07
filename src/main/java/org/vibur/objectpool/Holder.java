@@ -37,9 +37,19 @@ public interface Holder<T> {
      * Return the stack trace of the call with which this object was taken. Useful
      * for testing and debugging purposes.
      *
-     * <p>This is an optional operation.
+     * <p>This is an optional operation. If not implemented will just return {@code null}.
      *
      * @return see above
      */
     StackTraceElement[] getStackTrace();
+
+    /**
+     * Return the time in milliseconds since epoch when the {@link #getStackTrace()} was taken. Useful
+     * for testing and debugging purposes.
+     *
+     * <p>This is an optional operation. If not implemented will just return {@code -1}.
+     *
+     * @return see above
+     */
+    long getTime();
 }
