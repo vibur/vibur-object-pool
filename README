@@ -90,4 +90,4 @@ More usage examples can be found in the project's unit tests folder.
 
 === How To Build ===
 
-`mvn clean install`
+  `mvn clean install`
