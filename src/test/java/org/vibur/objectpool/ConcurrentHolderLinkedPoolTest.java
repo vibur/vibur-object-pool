@@ -320,9 +320,11 @@ public class ConcurrentHolderLinkedPoolTest {
         Holder<Object> hobj = takenHolders.get(0);
         assertNotNull(hobj.value());
         assertNotNull(hobj.getStackTrace());
+        assertTrue(hobj.getTime() > 0);
 
         hobj = takenHolders.get(1);
         assertNotNull(hobj.value());
         assertNotNull(hobj.getStackTrace());
+        assertTrue(hobj.getTime() > 0);
     }
 }
