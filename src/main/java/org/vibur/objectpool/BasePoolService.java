@@ -123,15 +123,4 @@ public interface BasePoolService {
      * @return {@code true} if the object pool is fair to waiting taker threads
      */
     boolean isFair();
-
-    /**
-     * Returns the <i>total</i> number of objects taken from this object pool since the
-     * creation of the object pool.This count starts from {@code 0} and never decreases.
-     * It will stop increasing once the object pool is terminated.
-     *
-     * <p>Intended for statistical and testing/debugging purposes.
-     *
-     * @return as described above
-     */
-    long takenCount();
 }

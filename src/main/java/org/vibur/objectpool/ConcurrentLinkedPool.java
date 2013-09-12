@@ -22,7 +22,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * An implementation of a <i>non-validating</i> object pool based on a {@link ConcurrentLinkedQueue}
@@ -54,8 +53,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     private final int initialSize;
     private final AtomicInteger maxSize;
     private final AtomicInteger createdTotal;
-
-    private final AtomicLong takenCount = new AtomicLong(0);
 
     private final AtomicBoolean terminated = new AtomicBoolean(false);
 
@@ -144,7 +141,6 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
         T object = available.poll();
         object = readyToTake(object);
-        takenCount.incrementAndGet();
         return object;
     }
 
@@ -186,7 +182,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         try {
             if (!valid || !poolObjectFactory.readyToRestore(object)) {
                 poolObjectFactory.destroy(object);
-                createdTotal.addAndGet(-1);
+                createdTotal.decrementAndGet();
                 object = null;
             }
             return object;
@@ -241,8 +237,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
         if (reduction < 0)
             throw new IllegalArgumentException();
 
-        int cnt = 0;
-        for (; cnt < reduction; cnt++) {
+        int cnt;
+        for (cnt = 0; cnt < reduction; cnt++) {
             int newTotal = createdTotal.decrementAndGet();
             if (!ignoreInitialSize && newTotal < initialSize) {
                 createdTotal.incrementAndGet();
@@ -266,12 +262,8 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
         // best effort to unblock any waiting on the takeSemaphore threads
         takeSemaphore.release(takeSemaphore.getQueueLength() + 4096);
-        do {
-            try {
-                doReduceCreated(Integer.MAX_VALUE, true);
-            } catch (RuntimeException ignored) {
-            }
-        } while (!available.isEmpty());
+
+        drainCreated();
     }
 
     /** {@inheritDoc} */
@@ -283,10 +275,5 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     /** {@inheritDoc} */
     public boolean isFair() {
         return takeSemaphore.isFair();
-    }
-
-    /** {@inheritDoc} */
-    public long takenCount() {
-        return takenCount.get();
     }
 }

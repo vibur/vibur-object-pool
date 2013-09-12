@@ -82,9 +82,4 @@ public abstract class AbstractValidatingPoolService<T> extends AbstractBasePoolS
     public boolean isFair() {
         return nonValidatingPoolService.isFair();
     }
-
-    /** {@inheritDoc} */
-    public long takenCount() {
-        return nonValidatingPoolService.takenCount();
-    }
 }

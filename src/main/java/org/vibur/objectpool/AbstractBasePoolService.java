@@ -26,22 +26,21 @@ public abstract class AbstractBasePoolService implements BasePoolService {
 
     /** {@inheritDoc} */
     public int taken() {
-        return isTerminated() ? maxSize() : maxSize() - remainingCapacity();
+        return isTerminated() ? maxSize() : doTaken();
+    }
+
+    private int doTaken() {
+        return maxSize() - remainingCapacity();
     }
 
     /** {@inheritDoc} */
-    public int remainingCreated() {
-        return isTerminated() ? 0 : createdTotal() - taken(); // faster than calling {@code available.size())
+    public int remainingCreated() { // faster implementation than calling {@code available.size())
+        return isTerminated() ? 0 : createdTotal() - doTaken();
     }
 
     /** {@inheritDoc} */
     public int drainCreated() {
         return reduceCreated(Integer.MAX_VALUE);
-    }
-
-    /** {@inheritDoc} */
-    protected void finalize() {
-        terminate();
     }
 
     /** {@inheritDoc} */

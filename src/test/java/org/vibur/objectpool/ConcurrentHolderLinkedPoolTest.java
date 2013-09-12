@@ -22,7 +22,6 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Simeon Malchev
@@ -72,7 +71,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(1, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(0, chlp.takenCount());
 
         // takes one object and test
         Holder<Object> hobj1 = chlp.take();
@@ -81,7 +79,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(9, chlp.remainingCapacity());
         assertEquals(1, chlp.taken());
-        assertEquals(1, chlp.takenCount());
 
         // restores one object and test
         assertTrue(chlp.restore(hobj1));
@@ -89,7 +86,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(1, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(1, chlp.takenCount());
 
         // takes all objects and test
         Object[] hobjs = new Object[10];
@@ -103,7 +99,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(0, chlp.remainingCapacity());
         assertEquals(10, chlp.taken());
-        assertEquals(11, chlp.takenCount());
 
         // restores the first 6 objects and test
         for (int i = 0; i < 6; i++) {
@@ -113,7 +108,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(6, chlp.remainingCreated());
         assertEquals(6, chlp.remainingCapacity());
         assertEquals(4, chlp.taken());
-        assertEquals(11, chlp.takenCount());
 
         // restores the remaining 4 objects and test
         for (int i = 6; i < 10; i++) {
@@ -123,7 +117,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(10, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(11, chlp.takenCount());
 
         // terminates the pool and test
         chlp.terminate();
@@ -134,7 +127,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(0, chlp.remainingCapacity());
         assertEquals(10, chlp.taken());
-        assertEquals(11, chlp.takenCount());
     }
 
     @Test
@@ -159,7 +151,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(0, chlp.remainingCapacity());
         assertEquals(10, chlp.taken());
-        assertEquals(10, chlp.takenCount());
 
         // restores all objects and test
         for (int i = 0; i < 10; i++) {
@@ -169,7 +160,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(10, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(10, chlp.takenCount());
 
         // reduce the number of created objects in the pool by 5 and test
         int reduction = chlp.reduceCreated(5);
@@ -182,7 +172,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(5, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(10, chlp.takenCount());
 
         // now takes again all objects
         for (int i = 0; i < 10; i++) {
@@ -203,7 +192,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(10, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(20, chlp.takenCount());
 
         // drain all created objects from the pool and test
         int drained = chlp.drainCreated();
@@ -216,7 +204,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(10, chlp.remainingCapacity());
         assertEquals(0, chlp.taken());
-        assertEquals(20, chlp.takenCount());
 
         // now takes 5 objects and test
         for (int i = 0; i < 5; i++) {
@@ -230,7 +217,6 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.remainingCreated());
         assertEquals(5, chlp.remainingCapacity());
         assertEquals(5, chlp.taken());
-        assertEquals(25, chlp.takenCount());
     }
 
     @Test

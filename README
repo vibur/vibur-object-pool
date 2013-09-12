@@ -44,7 +44,7 @@ by the provided during the pool's creation time `PoolObjectFactory`.
 
 The non-validating object pool provides support for manual or automated shrinking (reduction) 
 of the number of allocated on the pool objects, and the developer has full control over it 
-via the `reduceCreated(int)` pool method and the `PoolReducer` util class.
+via the `reduceCreated(int)` pool method and the `SamplingPoolReducer` util class.
 
 ==== Validating object pool: ====
 

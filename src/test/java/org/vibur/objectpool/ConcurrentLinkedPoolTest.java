@@ -68,7 +68,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(1, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(0, clp.takenCount());
 
         // takes one object and test
         Object obj1 = clp.take();
@@ -77,7 +76,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(9, clp.remainingCapacity());
         assertEquals(1, clp.taken());
-        assertEquals(1, clp.takenCount());
 
         // restores one object and test
         clp.restore(obj1);
@@ -85,7 +83,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(1, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(1, clp.takenCount());
 
         // takes all objects and test
         Object[] objs = new Object[10];
@@ -99,7 +96,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(0, clp.remainingCapacity());
         assertEquals(10, clp.taken());
-        assertEquals(11, clp.takenCount());
 
         // restores the first 6 objects and test
         for (int i = 0; i < 6; i++) {
@@ -109,7 +105,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(6, clp.remainingCreated());
         assertEquals(6, clp.remainingCapacity());
         assertEquals(4, clp.taken());
-        assertEquals(11, clp.takenCount());
 
         // restores the remaining 4 objects and test
         for (int i = 6; i < 10; i++) {
@@ -119,7 +114,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(10, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(11, clp.takenCount());
 
         // terminates the pool and test
         clp.terminate();
@@ -130,7 +124,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(0, clp.remainingCapacity());
         assertEquals(10, clp.taken());
-        assertEquals(11, clp.takenCount());
     }
 
     @Test
@@ -154,7 +147,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(0, clp.remainingCapacity());
         assertEquals(10, clp.taken());
-        assertEquals(10, clp.takenCount());
 
         // restores all objects and test
         for (int i = 0; i < 10; i++) {
@@ -164,7 +156,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(10, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(10, clp.takenCount());
 
         // reduce the number of created objects in the pool by 5 and test
         int reduction = clp.reduceCreated(5);
@@ -177,7 +168,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(5, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(10, clp.takenCount());
 
         // now takes again all objects
         for (int i = 0; i < 10; i++) {
@@ -198,7 +188,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(10, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(20, clp.takenCount());
 
         // drain all created objects from the pool and test
         int drained = clp.drainCreated();
@@ -211,7 +200,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
-        assertEquals(20, clp.takenCount());
 
         // now takes 5 objects and test
         for (int i = 0; i < 5; i++) {
@@ -225,7 +213,6 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.remainingCreated());
         assertEquals(5, clp.remainingCapacity());
         assertEquals(5, clp.taken());
-        assertEquals(25, clp.takenCount());
     }
 
     @Test
