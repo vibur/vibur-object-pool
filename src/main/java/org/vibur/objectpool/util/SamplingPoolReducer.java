@@ -26,12 +26,18 @@ import java.util.concurrent.TimeUnit;
  * allocated objects in the object pool needs to be reduced.
  *
  * <p>This pool reducer creates one daemon service thread which will be started when
- * the pool's {@link #start()} method is called, and will be alive until the
+ * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
-
+ *
+ * <p><strong>Important</strong> specific to be mentioned, is that if an exception is thrown
+ * during the pool reduction, which could be in this case a {@code RuntimeException} or an
+ * {@code Error}, the default implementation of the overridable
+ * {@link #afterReduce(int, int, Throwable)} method will simply rethrow the exception, which
+ * will in turn terminate the reducer's background daemon thread.
+ *
  * @author Simeon Malchev
  */
-public class SamplingPoolReducer implements PoolReducer {
+public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     private final BasePoolService poolService;
     private final long timeInterval;
@@ -109,7 +115,7 @@ public class SamplingPoolReducer implements PoolReducer {
                 int reduced = -1;
                 Throwable thrown = null;
                 try {
-                    reduced = poolService.reduceCreated(reduction);
+                    reduced = poolService.reduceCreated(reduction, false);
                 } catch (RuntimeException x) {
                     thrown = x;
                 } catch (Error x) {
@@ -125,14 +131,18 @@ public class SamplingPoolReducer implements PoolReducer {
         }
 
         private int calculateReduction() {
-            int maxReduction = (int) (poolService.createdTotal() * MAX_REDUCTION_FRACTION);
-            return Math.min(minRemainingCreated, maxReduction);
+            int createdTotal = poolService.createdTotal();
+            int maxReduction = (int) (createdTotal * MAX_REDUCTION_FRACTION);
+            int bottomReduction = createdTotal - poolService.initialSize();
+            int reduction = Math.min(minRemainingCreated, maxReduction);
+            reduction = Math.min(reduction, bottomReduction);
+            return Math.max(reduction, 0);
         }
     }
 
     /**
      * An after reduce pool hook. The default implementation will just rethrow the throwable
-     * if any, which will in turn terminate the SamplingPoolReducer.
+     * if any, and this will in turn terminate the SamplingPoolReducer.
      *
      * @param reduction the intended reduction
      * @param reduced the number of objects removed/destroyed from the pool
@@ -144,8 +154,8 @@ public class SamplingPoolReducer implements PoolReducer {
     }
 
     /** {@inheritDoc} */
-    public boolean isAlive() {
-        return reducerThread.isAlive();
+    public Thread.State getState() {
+        return reducerThread.getState();
     }
 
     /** {@inheritDoc} */

@@ -221,19 +221,7 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
 
     /** {@inheritDoc} */
-    public int reduceCreated(int reduction) {
-        return doReduceCreated(reduction, true);
-    }
-
-    /**
-     * Implements the {@link #reduceCreated(int)} logic.
-     *
-     * @param reduction         the desired amount of objects to be removed
-     * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
-     *                          reduced to less than {@link #initialSize()}
-     * @return the actual amount of objects removed
-     */
-    private int doReduceCreated(int reduction, boolean ignoreInitialSize) {
+    public int reduceCreated(int reduction, boolean ignoreInitialSize) {
         if (reduction < 0)
             throw new IllegalArgumentException();
 

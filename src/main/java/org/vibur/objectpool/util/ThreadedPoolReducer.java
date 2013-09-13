@@ -17,9 +17,14 @@
 package org.vibur.objectpool.util;
 
 /**
+ * The pool reducers implementing this interface will create one daemon service thread
+ * which will be started when the reducer's {@link #start()} method is called, and will
+ * be alive until the {@link #terminate()} method is called or until the calling application
+ * exits.
+ *
  * @author Simeon Malchev
  */
-public interface PoolReducer {
+public interface ThreadedPoolReducer {
 
     /**
      * Starts this pool reducer, which starts its underlying daemon thread.
@@ -29,13 +34,11 @@ public interface PoolReducer {
     void start();
 
     /**
-     * Tests if this pool reducer is alive. A pool reducer is alive if it has
-     * been started and has not yet been terminated, more precisely if its
-     * underlying daemon thread has not yet died.
+     * Returns the state of the underlying thread.
      *
-     * @return true if terminated, false otherwise
+     * @return see above
      */
-    boolean isAlive();
+    Thread.State getState();
 
     /**
      * Terminates this pool reducer, which terminates its underlying daemon thread.

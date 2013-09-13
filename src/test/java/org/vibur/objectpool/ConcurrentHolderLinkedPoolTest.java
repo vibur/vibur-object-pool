@@ -162,7 +162,7 @@ public class ConcurrentHolderLinkedPoolTest {
         assertEquals(0, chlp.taken());
 
         // reduce the number of created objects in the pool by 5 and test
-        int reduction = chlp.reduceCreated(5);
+        int reduction = chlp.reduceCreated(5, false);
         assertEquals(5, reduction);
 
         assertEquals(1, chlp.initialSize());

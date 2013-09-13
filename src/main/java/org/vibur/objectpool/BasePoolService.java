@@ -88,10 +88,12 @@ public interface BasePoolService {
      * Tries to remove (and destroy) up to {@code reduction} objects from the object pool.
      * May bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
      *
-     * @param reduction the desired amount of objects to be removed
+     * @param reduction         the desired amount of objects to be removed
+     * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
+     *                          reduced to less than {@link #initialSize()}
      * @return the actual amount of objects removed
      */
-    int reduceCreated(int reduction);
+    int reduceCreated(int reduction, boolean ignoreInitialSize);
 
     /**
      * Tries to remove (and destroy) as many created objects from this object pool as possible.

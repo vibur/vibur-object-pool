@@ -40,7 +40,7 @@ public abstract class AbstractBasePoolService implements BasePoolService {
 
     /** {@inheritDoc} */
     public int drainCreated() {
-        return reduceCreated(Integer.MAX_VALUE);
+        return reduceCreated(Integer.MAX_VALUE, true);
     }
 
     /** {@inheritDoc} */

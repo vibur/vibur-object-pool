@@ -62,8 +62,8 @@ public abstract class AbstractValidatingPoolService<T> extends AbstractBasePoolS
 
 
     /** {@inheritDoc} */
-    public int reduceCreated(int reduction) {
-        return nonValidatingPoolService.reduceCreated(reduction);
+    public int reduceCreated(int reduction, boolean ignoreInitialSize) {
+        return nonValidatingPoolService.reduceCreated(reduction, ignoreInitialSize);
     }
 
 
