@@ -17,7 +17,7 @@
 === Table of Contents ===
   # [#Quick_Introduction Quick Introduction]
   # [#Usage_Examples Usage Examples]
-  # [#How_To_Build How To Build]
+  # [#Latest_Version_&_How_To_Build Latest Version & How To Build]
 
 <br/>
 === Quick Introduction ===
@@ -67,10 +67,6 @@ top of the same provided by the underlying `ConcurrentLinkedPool`.
 
 === Usage Examples ===
 
-==== Maven dependency: ====
-
-  * coming soon...
-
 {{{
 HolderValidatingPoolService<Object> chlp = new ConcurrentHolderLinkedPool<Object>(
         new SimpleObjectFactory(), 10, 60, false);
@@ -88,11 +84,15 @@ try {
 
 More usage examples can be found in the project's unit tests folder.
 
-=== How To Build ===
+=== Latest Version & How To Build ===
 
 Vibur Object Pool latest version is 0.8.8 and a read-only copy of it can be checked out via:
 
   `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/0.8.8 vibur-object-pool-0.8.8`
+
+==== Maven dependency: ====
+
+  * coming soon...
 
 A read-only copy of the development trunk can be checked out via:
 
