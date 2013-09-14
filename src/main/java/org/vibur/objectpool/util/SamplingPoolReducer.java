@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
  *
- * <p><strong>Important</strong> specific to be mentioned, is that if an exception is thrown
+ * <p><strong>Important</strong> specific to be mentioned is that if an exception is thrown
  * during the pool reduction, which could be in this case a {@code RuntimeException} or an
  * {@code Error}, the default implementation of the overridable
  * {@link #afterReduce(int, int, Throwable)} method will simply rethrow the exception, which
