@@ -90,7 +90,7 @@ More usage examples can be found in the project's unit tests folder.
 
 === Latest Version & How To Build ===
 
-Vibur Object Pool latest version is 0.8.8. Maven dependency example for it is shown [#Maven_dependency: here].
+Vibur Object Pool latest version is 0.8.8. Maven dependency example for it is shown [#Maven_dependency: above].
 A read-only copy of the source code can be checked out via:
 
   `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/0.8.8 vibur-object-pool-0.8.8`
