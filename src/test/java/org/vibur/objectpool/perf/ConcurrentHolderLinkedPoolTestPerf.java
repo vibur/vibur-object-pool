@@ -31,17 +31,17 @@ public class ConcurrentHolderLinkedPoolTestPerf {
 
     private static final int INITIAL_SIZE = 10;
     private static final int MAX_SIZE = 100;
-    private static final int ITERATIONS = 10000;
+    private static final int ITERATIONS = 50000;
     private static final int TIMEOUT = 5000;
-    private static final int THREADS_COUNT = 200;
+    private static final int THREADS_COUNT = 100;
     private static final boolean FAIR = true;
 
     public static void main(String[] args) {
 
         // Creates a pool with INITIAL_SIZE and MAX_SIZE, and starts THREADS_COUNT threads where each thread
         // executes ITERATIONS times take and then immediately restore operation on an object from the pool.
-        // Each take has TIMEOUT in ms and the number of unsuccessful takes is recorded.
-        // Measures and reports the total time taken in ms.
+        // Each take call has TIMEOUT in ms and the number of unsuccessful calls is recorded.
+        // Measures and reports the total time taken by the test in ms.
 
         final HolderValidatingPoolService<Object> pool = new ConcurrentHolderLinkedPool<Object>(
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
