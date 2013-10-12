@@ -30,18 +30,20 @@ public class ConcurrentLinkedPoolTestPerf {
 
     private static final int INITIAL_SIZE = 10;
     private static final int MAX_SIZE = 100;
-    private static final int ITERATIONS = 50000;
+    private static final int ITERATIONS = 10000;
     private static final int TIMEOUT = 5000;
     private static final int THREADS_COUNT = 200;
+    private static final boolean FAIR = true;
 
     public static void main(String[] args) {
 
-        // Creates a pool with initialSize 10 and maxSize 100, and starts 200 threads where each thread executes 50000
-        // times take and then immediately restore operation on an object from the pool. Each take has timeout of
-        // 5000ms and the number of unsuccessful takes is recorded. Measures and reports the total time taken in ms.
+        // Creates a pool with INITIAL_SIZE and MAX_SIZE, and starts THREADS_COUNT threads where each thread
+        // executes ITERATIONS times take and then immediately restore operation on an object from the pool.
+        // Each take has TIMEOUT in ms and the number of unsuccessful takes is recorded.
+        // Measures and reports the total time taken in ms.
 
         final NonValidatingPoolService<Object> pool = new ConcurrentLinkedPool<Object>(
-                new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, false);
+                new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
 
         long start = System.currentTimeMillis();
         final AtomicInteger unsuccessful = new AtomicInteger(0);
@@ -70,7 +72,7 @@ public class ConcurrentLinkedPoolTestPerf {
                 e.printStackTrace();
             }
         }
-        System.out.println(String.format("Total execution time %dms, unsuccessful takes %d",
+        System.out.println(String.format("Total execution time %dms, unsuccessful takes %d.",
             (System.currentTimeMillis() - start), unsuccessful.get()));
 
         pool.terminate();
