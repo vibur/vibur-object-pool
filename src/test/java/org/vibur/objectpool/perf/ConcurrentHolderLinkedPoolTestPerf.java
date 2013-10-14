@@ -29,12 +29,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ConcurrentHolderLinkedPoolTestPerf {
 
+    // pool metrics:
     private static final int INITIAL_SIZE = 10;
     private static final int MAX_SIZE = 100;
-    private static final int ITERATIONS = 50000;
-    private static final int TIMEOUT = 5000;
-    private static final int THREADS_COUNT = 100;
+    private static final long TIMEOUT_MS = 5000;
     private static final boolean FAIR = true;
+
+    private static final int ITERATIONS = 100;
+    private static final int THREADS_COUNT = 500;
+    private static final long DO_WORK_FOR_MS = 10;
 
     public static void main(String[] args) {
 
@@ -51,10 +54,11 @@ public class ConcurrentHolderLinkedPoolTestPerf {
         Runnable r = new Runnable() {
             public void run() {
                 for (int i = 0; i < ITERATIONS; i++) {
-                    Holder<Object> hObj = pool.tryTake(TIMEOUT, TimeUnit.MILLISECONDS);
-                    if (hObj != null)
+                    Holder<Object> hObj = pool.tryTake(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    if (hObj != null) {
+                        doWork(DO_WORK_FOR_MS);
                         pool.restore(hObj);
-                    else
+                    } else
                         unsuccessful.incrementAndGet();
                 }
             }
@@ -77,5 +81,15 @@ public class ConcurrentHolderLinkedPoolTestPerf {
             (System.currentTimeMillis() - start), unsuccessful.get()));
 
         pool.terminate();
+    }
+
+    private static void doWork(long millis) {
+        if (millis <= 0)
+            return;
+
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+        }
     }
 }
