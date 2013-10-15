@@ -122,6 +122,6 @@ Building it is simply a matter of executing:
 
 ===Development Team===
 
-Vibur DBCP is designed, developed and provided to you by Simeon Malchev (firstname.lastname at gmail.com).
+Vibur Object Pool is designed, developed and provided to you by Simeon Malchev (firstname.lastname at gmail.com).
 If you need to report any bugs or issues, or if you just wish to provide some general feedback, please use the
-project's issues tracking [https://code.google.com/p/vibur-dbcp/issues/list system] or the author's email.
+project's issues tracking [https://code.google.com/p/vibur-object-pool/issues/list system] or the author's email.
