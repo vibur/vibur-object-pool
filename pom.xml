@@ -45,7 +45,7 @@
     <scm>
         <connection>scm:svn:http://vibur-object-pool.googlecode.com/svn/trunk/</connection>
         <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</developerConnection>
-        <url>http://code.google.com/p/vibur-object-pool/</url>
+        <url>http://vibur-object-pool.googlecode.com/svn/trunk/</url>
     </scm>
 
     <developers>
