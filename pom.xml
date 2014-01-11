@@ -20,11 +20,11 @@
 
     <groupId>org.vibur</groupId>
     <artifactId>vibur-object-pool</artifactId>
-    <version>0.8.10-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Vibur Object Pool</name>
-    <description>Vibur Object Pool is a general-use concurrent Java object pool.</description>
+    <description>A concurrent Java object pool.</description>
     <url>https://code.google.com/p/vibur-object-pool</url>
     <inceptionYear>2013</inceptionYear>
 

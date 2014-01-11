@@ -64,6 +64,8 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      * @param samples how many times the {@link SamplingPoolReducer} will wake up during the given
      *                {@code timeInterval} period in order to sample various information from
      *                the given {@code poolService}
+     * @throws IllegalArgumentException if one of the following holds:<br>
+     *         {@code poolService == null || timeInterval <= 0 || unit == null || samples <= 0}
      */
     public SamplingPoolReducer(BasePoolService poolService, long timeInterval, TimeUnit unit, int samples) {
         if (poolService == null || timeInterval <= 0 || unit == null || samples <= 0)
