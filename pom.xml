@@ -83,6 +83,7 @@
         <maven.release.plugin.version>2.2</maven.release.plugin.version>
         <maven.javadoc.plugin.version>2.8</maven.javadoc.plugin.version>
         <maven.surefire.plugin.version>2.10</maven.surefire.plugin.version>
+        <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
         <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
     </properties>
 
@@ -139,6 +140,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

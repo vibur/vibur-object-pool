@@ -1,3 +1,7 @@
+Version 1.0.0 (02/02/2014)
+==========================
+* Making all vibur-dbcp dependencies having equal release version.
+
 Version 0.8.9 (15/10/2013)
 ==========================
 * Bug fix and refactoring.
