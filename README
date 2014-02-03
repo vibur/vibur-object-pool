@@ -14,20 +14,21 @@
   limitations under the License.
 </wiki:comment>
 
-=== Vibur Object Pool ===
+<font size="3" color="#660099"><b>Vibur Object Pool</b></font> <g:plusone size="small"></g:plusone>
 
-Vibur Object Pool is a highly concurrent Java object pool which provides
+Latest version from maven central is [#Maven_dependency_and_how_to_build: 1.0.0]. Link to [https://code.google.com/p/vibur-object-pool/source/browse/trunk/CHANGELOG changelog].
+
+Vibur Object Pool is a concurrent Java object pool which provides
 both validating and non-validating pool implementations. The pool is built
 entirely using the standard Java concurrency utilities, does not use any synchronized blocks/methods,
 and does not have any external dependencies. This pool is an excellent choice for pooling/caching
-of expensive to create Java objects such as database connections (or other socket connections to remote hosts)
+of expensive to create Java objects such as database connections (or any other socket connections to remote hosts) 
 and similar. The pool is utilized by [https://code.google.com/p/vibur-dbcp/ Vibur DBCP], a JDBC connection pool.
 
   # [#Quick_Introduction Quick Introduction]
   # [#Usage_Examples Usage Examples]
-    * [#Maven_dependency: Maven Dependency]
+    * [#Maven_dependency_and_how_to_build: Maven Dependency and How to Build]
     * [#Programming_example: Programming Example]
-  # [#Latest_Version_&_How_to_Build Latest Version & How to Build]
   # [#Development_Team Development Team]
 
 
@@ -38,9 +39,9 @@ and similar. The pool is utilized by [https://code.google.com/p/vibur-dbcp/ Vibu
 In the terms of standard Java concurrency utilities, the non-validating object pool `take` and `restore`
 operations performance is bound by the same of a `ConcurrentLinkedQueue's` `poll` and `add` operations, where the
 CLQ is additionally guarded by a `Semaphore`, which fairness parameter is set to `true` or `false` depending on the
-pool's such. The validating pool is composed using a non-validating pool, and its performance incurs an additional
-`put` and a `remove` operation from a `ConcurrentHashMap`. While both pools employ some little additional logic
-for various house-keeping purposes, their overall performance remains a function of the aforementioned standard
+pool's such. The validating pool is composed using a non-validating pool, and its performance incurs an additional 
+`put` and a `remove` operation from a `ConcurrentHashMap`. While both pools employ some little additional logic 
+for various house-keeping purposes, their overall performance remains a function of the mentioned above standard 
 concurrency utilities.
 
 ==== Non-validating object pool: ====
@@ -80,9 +81,23 @@ top of the same provided by the underlying `ConcurrentLinkedPool`.
 <br/>
 === Usage Examples ===
 
-==== Maven dependency: ====
+==== Maven dependency and how to build: ====
 
-  * coming soon...
+{{{
+<dependency>
+  <groupId>org.vibur</groupId>
+  <artifactId>vibur-object-pool</artifactId>
+  <version>1.0.0</version>
+</dependency>
+}}}
+
+A read-only copy of the source code can be checked out via:
+
+  `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/1.0.0 vibur-object-pool-1.0.0`
+
+Building the sources is simply a matter of executing:
+
+  `mvn clean install`
 
 ==== Programming example: ====
 
@@ -109,18 +124,7 @@ try {
 More usage examples can be found in the project's unit tests folder.
 
 
-=== Latest Version & How to Build ===
-
-Vibur Object Pool latest version is 0.8.9. Maven dependency example for it is shown [#Maven_dependency: above].
-A read-only copy of the source code can be checked out via:
-
-  `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/0.8.9 vibur-object-pool-0.8.9`
-
-Building it is simply a matter of executing:
-
-  `mvn clean install`
-
-
+<br/>
 ===Development Team===
 
 Vibur Object Pool is designed, developed and provided to you by Simeon Malchev (firstname.lastname at gmail.com).
