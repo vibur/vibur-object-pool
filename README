@@ -16,7 +16,7 @@
 
 <font size="3" color="#660099"><b>Vibur Object Pool</b></font> <g:plusone size="small"></g:plusone>
 
-Latest version from maven central is [#Maven_dependency: 1.0.0]. Link to [https://code.google.com/p/vibur-object-pool/source/browse/trunk/CHANGELOG changelog].
+Latest version from maven central is [#Maven_dependency_and_how_to_build: 1.0.0]. Link to [https://code.google.com/p/vibur-object-pool/source/browse/trunk/CHANGELOG changelog].
 
 Vibur Object Pool is a concurrent Java object pool which provides
 both validating and non-validating pool implementations. The pool is built
@@ -27,9 +27,8 @@ and similar. The pool is utilized by [https://code.google.com/p/vibur-dbcp/ Vibu
 
   # [#Quick_Introduction Quick Introduction]
   # [#Usage_Examples Usage Examples]
-    * [#Maven_dependency: Maven Dependency]
+    * [#Maven_dependency_and_how_to_build: Maven Dependency and How to Build]
     * [#Programming_example: Programming Example]
-  # [#Latest_Version_and_How_to_Build Latest Version and How to Build]
   # [#Development_Team Development Team]
 
 
@@ -82,7 +81,7 @@ top of the same provided by the underlying `ConcurrentLinkedPool`.
 <br/>
 === Usage Examples ===
 
-==== Maven dependency: ====
+==== Maven dependency and how to build: ====
 
 {{{
 <dependency>
@@ -91,6 +90,14 @@ top of the same provided by the underlying `ConcurrentLinkedPool`.
   <version>1.0.0</version>
 </dependency>
 }}}
+
+A read-only copy of the source code can be checked out via:
+
+  `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/1.0.0 vibur-object-pool-1.0.0`
+
+Building the sources is simply a matter of executing:
+
+  `mvn clean install`
 
 ==== Programming example: ====
 
@@ -117,18 +124,7 @@ try {
 More usage examples can be found in the project's unit tests folder.
 
 
-=== Latest Version and How to Build ===
-
-Vibur Object Pool latest version is 1.0.0. Maven dependency example for it is shown [#Maven_dependency: above].
-A read-only copy of the source code can be checked out via:
-
-  `svn checkout http://vibur-object-pool.googlecode.com/svn/tags/1.0.0 vibur-object-pool-1.0.0`
-
-Building the sources is simply a matter of executing:
-
-  `mvn clean install`
-
-
+<br/>
 ===Development Team===
 
 Vibur Object Pool is designed, developed and provided to you by Simeon Malchev (firstname.lastname at gmail.com).
