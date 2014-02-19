@@ -43,9 +43,9 @@
     <!--</parent>-->
 
     <scm>
-        <connection>scm:svn:http://vibur-object-pool.googlecode.com/svn/trunk/</connection>
-        <developerConnection>scm:svn:https://vibur-object-pool.googlecode.com/svn/trunk/</developerConnection>
-        <url>http://vibur-object-pool.googlecode.com/svn/trunk/</url>
+        <connection>scm:git:https://code.google.com/p/vibur-object-pool/</connection>
+        <developerConnection>scm:git:https://code.google.com/p/vibur-object-pool/</developerConnection>
+        <url>http://code.google.com/p/vibur-object-pool/source/browse</url>
     </scm>
 
     <developers>
