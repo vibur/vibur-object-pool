@@ -29,11 +29,9 @@ import java.util.concurrent.TimeUnit;
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
  *
- * <p><strong>Important</strong> specific to be mentioned is that if an exception is thrown
- * during the pool reduction, which could be in this case a {@code RuntimeException} or an
- * {@code Error}, the default implementation of the overridable
- * {@link #afterReduce(int, int, Throwable)} method will simply rethrow the exception, which
- * will in turn terminate the reducer's background daemon thread.
+ * <p><strong>It is important</strong> to be noted that if a RuntimeException or an Error is thrown
+ * during the overridable {@link #afterReduce(int, int, Throwable)} method hook execution, it
+ * will terminate this SamplingPoolReducer, including the reducer's background daemon thread.
  *
  * @author Simeon Malchev
  */
@@ -144,11 +142,11 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     /**
      * An after reduce pool hook. The default implementation does nothing. Note that if this
-     * method throws an Exception, it will terminate this SamplingPoolReducer.
+     * method throws a RuntimeException or an Error, it will terminate this SamplingPoolReducer.
      *
      * @param reduction the intended reduction
      * @param reduced the number of objects removed/destroyed from the pool
-     * @param thrown a thrown exception if any (a RuntimeException or an Error)
+     * @param thrown a thrown during the pool reduction exception if any (a RuntimeException or an Error)
      */
     protected void afterReduce(int reduction, int reduced, Throwable thrown) { }
 
