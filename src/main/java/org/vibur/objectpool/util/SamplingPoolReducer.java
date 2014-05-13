@@ -122,11 +122,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
             } catch (Error e) {
                 thrown = e;
             } finally {
-                try {
-                    afterReduce(reduction, reduced, thrown);
-                } catch (Throwable t) {
-                    terminate();
-                }
+                afterReduce(reduction, reduced, thrown);
             }
         }
     }
@@ -141,14 +137,18 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     }
 
     /**
-     * An after reduce pool hook. The default implementation does nothing. Note that if this
-     * method throws a RuntimeException or an Error, it will terminate this SamplingPoolReducer.
+     * An after reduce pool hook. The default implementation will {@code terminate()} this pool reducer
+     * if {@code thrown != null}. Note that if this method throws a RuntimeException or an Error, this
+     * will also cause termination of the pool reducer.
      *
      * @param reduction the intended reduction
      * @param reduced the number of objects removed/destroyed from the pool
-     * @param thrown a thrown during the pool reduction exception if any (a RuntimeException or an Error)
+     * @param thrown a thrown during the pool reduction exception if any
      */
-    protected void afterReduce(int reduction, int reduced, Throwable thrown) { }
+    protected void afterReduce(int reduction, int reduced, Throwable thrown) {
+        if (thrown != null)
+            terminate();
+    }
 
     /** {@inheritDoc} */
     public Thread.State getState() {

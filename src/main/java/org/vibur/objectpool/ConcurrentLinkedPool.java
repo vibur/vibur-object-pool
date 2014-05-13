@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * <p>This object pool provides support for fairness with regards to the waiting taker's threads.
  * The creation of new objects and their lifecycle are controlled by a supplied during the
- * object pool's creation time {@link PoolObjectFactory}.
+ * object pool creation time {@link PoolObjectFactory}.
  *
  * <p>This object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects. Note that the shrinking may reduce the
@@ -66,9 +66,9 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      *                          allocated in the object pool objects
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
+     * @param fair              the object pool fairness setting with regards to waiting threads
      * @throws IllegalArgumentException if one of the following holds:<br>
-     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
+     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
      * @throws NullPointerException if {@code poolObjectFactory} is null
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,

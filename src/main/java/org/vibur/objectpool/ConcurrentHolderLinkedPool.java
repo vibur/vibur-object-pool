@@ -95,7 +95,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
      *                          allocated in the object pool objects
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
+     * @param fair              the object pool fairness setting with regards to waiting threads
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}<br>
      * @throws NullPointerException if {@code poolObjectFactory} is null
@@ -117,7 +117,7 @@ public class ConcurrentHolderLinkedPool<T> extends AbstractValidatingPoolService
      *                          allocated in the object pool objects
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
-     * @param fair              the object pool's fairness setting with regards to waiting threads
+     * @param fair              the object pool fairness setting with regards to waiting threads
      * @param additionalInfo    determines whether the returned object holder will include
      *                          information for the current stack trace
      * @throws IllegalArgumentException if one of the following holds:<br>

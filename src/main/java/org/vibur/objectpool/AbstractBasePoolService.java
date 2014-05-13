@@ -18,7 +18,7 @@ package org.vibur.objectpool;
 
 /**
  * Base abstract class which is to be extended and which provides common functionality for
- * both validating and non-validating object pool's implementations.
+ * both validating and non-validating object pool implementations.
  *
  * @author Simeon Malchev
  */

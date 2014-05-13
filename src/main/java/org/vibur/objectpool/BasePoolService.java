@@ -17,7 +17,7 @@
 package org.vibur.objectpool;
 
 /**
- * Defines base objects object pool's functionality which is to be implemented by the validating
+ * Defines base objects object pool functionality which has to be implemented by the validating
  * and non-validating pools. These validating and non-validating pools will provide
  * appropriate object's take and restore functionality (methods).
  *
@@ -32,7 +32,7 @@ public interface BasePoolService {
 
     /**
      * Returns the number of objects taken from this object pool.
-     * This number is less than or equal to the object pool's {@link #createdTotal()}.
+     * This number is less than or equal to the object pool {@link #createdTotal()}.
      * Typically used for testing an debugging purposes.
      *
      * @return the number of objects taken from this object pool
@@ -41,7 +41,7 @@ public interface BasePoolService {
 
     /**
      * Returns the number of remaining created objects which currently exist in this object pool.
-     * This number is less than or equal to the object pool's {@link #remainingCapacity()}.
+     * This number is less than or equal to the object pool {@link #remainingCapacity()}.
      * Typically used for testing an debugging purposes.
      *
      * @return the number of remaining created objects in this object pool
@@ -64,7 +64,7 @@ public interface BasePoolService {
      * might be created on demand upon take requests. Also see {@link #remainingCreated()}.
      * Typically used for testing an debugging purposes.
      *
-     * @return the object pool's remaining capacity
+     * @return the object pool remaining capacity
      */
     int remainingCapacity();
 
@@ -72,21 +72,21 @@ public interface BasePoolService {
      * Returns the {@code initialSize} of this object pool at construction time.
      * This parameter never changes.
      *
-     * @return the object pool's {@code initialSize}
+     * @return the object pool {@code initialSize}
      */
     int initialSize();
 
     /**
      * Returns the {@code maxSize} of this object pool. This parameter never changes.
      *
-     * @return the object pool's {@code maxSize}
+     * @return the object pool {@code maxSize}
      */
     int maxSize();
 
 
     /**
      * Tries to remove (and destroy) up to {@code reduction} objects from the object pool.
-     * May bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
+     * May bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
      *
      * @param reduction         the desired amount of objects to be removed
      * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
@@ -97,7 +97,7 @@ public interface BasePoolService {
 
     /**
      * Tries to remove (and destroy) as many created objects from this object pool as possible.
-     * May bring the object pool's {@link #createdTotal()} to less then its {@link #initialSize()}.
+     * May bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
      *
      * @return the actual amount of objects removed (and destroyed)
      */

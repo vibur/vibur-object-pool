@@ -18,7 +18,7 @@ package org.vibur.objectpool;
 
 /**
  * Defines an interface which is to be implemented by a factory which will be used by
- * the pools defined in this package to control the lifecycle of the object pool's objects.
+ * the pools defined in this package to control the lifecycle of the object pool objects.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this object pool
@@ -26,10 +26,10 @@ package org.vibur.objectpool;
 public interface PoolObjectFactory<T> {
 
     /**
-     * Creates a new object pool's object, which is presumed to be ready (and valid) for
+     * Creates a new object for this object pool. This object is presumed to be ready (and valid) for
      * immediate use. Should <strong>never</strong> return {@code null}.
      *
-     * @return new object pool's object.
+     * @return a new object for this object pool
      */
     T create();
 

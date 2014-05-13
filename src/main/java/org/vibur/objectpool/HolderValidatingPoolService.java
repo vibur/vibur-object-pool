@@ -41,7 +41,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
-     * @return an object taken from the object pool and enclosed into a thin wrapper class implementing
+     * @return an object taken from the object pool. The object is enclosed into a thin wrapper class implementing
      * the {@link Holder} interface or {@code null} if was interrupted while waiting
      */
     Holder<T> take();
@@ -50,7 +50,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
      * Takes an object from the object pool if there is such available. This is a blocking call which
      * waits indefinitely until an object becomes available.
      *
-     * @return an object taken from the object pool and enclosed into a thin wrapper class implementing
+     * @return an object taken from the object pool. The object is enclosed into a thin wrapper class implementing
      * the {@link Holder} interface
      */
     Holder<T> takeUninterruptibly();
@@ -63,7 +63,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
      *
      * @param timeout the maximum time to wait for an object to become available in the object pool
      * @param unit the time unit of the {@code timeout} argument
-     * @return an object taken from the object pool and enclosed into a thin wrapper class implementing
+     * @return an object taken from the object pool. The object is enclosed into a thin wrapper class implementing
      * the {@link Holder} interface or {@code null} if the specified timeout expires
      * or if was interrupted while waiting
      */
@@ -73,7 +73,7 @@ public interface HolderValidatingPoolService<T> extends BasePoolService {
      * Tries to take an object from the object pool if there is one which is immediately available. Returns
      * {@code null} if no object is available at the moment of the call.
      *
-     * @return an object taken from the object pool and enclosed into a thin wrapper class implementing
+     * @return an object taken from the object pool. The object is enclosed into a thin wrapper class implementing
      * the {@link Holder} interface or {@code null} if there is no object available in the object pool
      */
     Holder<T> tryTake();
