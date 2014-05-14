@@ -21,7 +21,7 @@ import org.vibur.objectpool.BasePoolService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A sampling pool reducer util, which is wakening up a given number of times during
+ * A sampling pool reducer util, which is waken up a given number of times during
  * a predefined period of time, and checks whether the number of available
  * allocated objects in the object pool needs to be reduced.
  *
@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
  *
- * <p><strong>It is important</strong> to be noted that if a RuntimeException or an Error is thrown
- * during the overridable {@link #afterReduce(int, int, Throwable)} method hook execution, it
+ * <p><strong>It should be noted</strong> that if a RuntimeException or an Error is
+ * thrown by the overridable {@link #afterReduce(int, int, Throwable)} method hook, it
  * will terminate this SamplingPoolReducer, including the reducer's background daemon thread.
  *
  * @author Simeon Malchev
@@ -52,11 +52,11 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     /**
      * Creates a new {@link SamplingPoolReducer} with the given {@link BasePoolService} and
      * {@code timeInterval} settings. The created pool reducer is not started and needs to be
-     * explicitly started via call to {@link #start()}.
+     * explicitly started via calling the {@link #start()} method.
      *
      * @param poolService the pool service which is to be reduced if necessary
      * @param timeInterval the time period after which the {@link SamplingPoolReducer} will try to
-     *                     possibly reduce the number of created but unused elements in the
+     *                     possibly reduce the number of created but unused objects in the
      *                     given {@code poolService}
      * @param unit the time unit of the {@code timeInterval} argument
      * @param samples how many times the {@link SamplingPoolReducer} will wake up during the given
@@ -139,11 +139,12 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     /**
      * An after reduce pool hook. The default implementation will {@code terminate()} this pool reducer
      * if {@code thrown != null}. Note that if this method throws a RuntimeException or an Error, this
-     * will also cause termination of the pool reducer.
+     * will terminate the pool reducer, too.
      *
-     * @param reduction the intended reduction
-     * @param reduced the number of objects removed/destroyed from the pool
-     * @param thrown a thrown during the pool reduction exception if any
+     * @param reduction the intended reduction number
+     * @param reduced the number of objects which were successfully removed/destroyed from the pool
+     * @param thrown a thrown during the pool reduction exception if any, in this case it will be
+     *               a RuntimeException or an Error
      */
     protected void afterReduce(int reduction, int reduced, Throwable thrown) {
         if (thrown != null)

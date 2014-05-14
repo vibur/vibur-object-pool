@@ -1,2 +1,0 @@
-* Unit testing the pool metrics when the PoolObjectFactory's
-  methods throw a RuntimeException.

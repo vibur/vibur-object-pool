@@ -17,65 +17,73 @@
 package org.vibur.objectpool;
 
 /**
- * Defines an interface which is to be implemented by a factory which will be used by
- * the pools defined in this package to control the lifecycle of the object pool objects.
+ * Defines an interface which is to be implemented by the factory that will be used by the object
+ * pools defined in this package, in order to control the lifecycle of the objects in the pools.
  *
  * @author Simeon Malchev
- * @param <T> the type of objects held in this object pool
+ * @param <T> the type of objects held in the concrete object pool
  */
 public interface PoolObjectFactory<T> {
 
     /**
-     * Creates a new object for this object pool. This object is presumed to be ready (and valid) for
-     * immediate use. Should <strong>never</strong> return {@code null}.
+     * Creates a new object for the calling object pool. This object is presumed to be ready (and valid)
+     * for immediate use. Should <strong>never</strong> return {@code null}.
+     *
+     * <p>This method will be called by the constructors of {@link ConcurrentLinkedPool} or
+     * {@link ConcurrentHolderLinkedPool}, and by any of the {@code take...} methods of the before
+     * mentioned two classes, if the {@code take...} methods were able to obtain a permit from the
+     * counting {@code Semaphore} guarding the pool, but there was not an available and valid object
+     * in the pool. I.e. this is the case when a new object is created (lazily) in the pool on request.
      *
      * @return a new object for this object pool
      */
     T create();
 
     /**
-     * A validation/initialization hook which will be called when an object from
-     * the object pool is taken in order to be given to the calling application.
-     * This is an optional operation and the concrete implementation of this method
-     * may always simply return {@code true}.
+     * A validation/activation hook which will be called by the {@code take...} methods of
+     * {@link ConcurrentLinkedPool} or {@link ConcurrentHolderLinkedPool} when an object from
+     * the object pool is requested by the application. This is an optional operation
+     * which concrete implementation may simply always return {@code true}.
      *
-     * <p>If there is a particular initialization/activation which needs to be done
-     * for this object, it can be done here.
+     * <p>If there is a particular activation or validation which needs to be done
+     * for the taken from the pool object, this is the ideal place where it can be done.
      *
-     * @see #readyToRestore(Object)
+     * @see #readyToRestore
      *
      * @param obj an object which is taken from the object pool and which is to be given
      *            to the calling application
-     * @return {@code true} if the validation/initialization is successful, {@code false} otherwise
+     * @return {@code true} if the validation/activation is successful, {@code false} otherwise
      */
     boolean readyToTake(T obj);
 
     /**
-     * A validation/passivation hook which will be called when an object which has been taken
-     * before that from the object pool is about to be restored (returned) back to the object pool.
-     * This is an optional operation and the concrete implementation of this method
-     * may always simply return {@code true}.
+     * A validation/passivation hook which will be called by the {@code restore} methods of
+     * {@link ConcurrentLinkedPool} or {@link ConcurrentHolderLinkedPool} when an object taken
+     * before that from the object pool is about to be restored (returned back) to the pool.
+     * This is an optional operation which concrete implementation may simply always return
+     * {@code true}.
      *
-     * <p>If there is a particular passivation which needs to be done for this
-     * object, it can be done here.
+     * <p>If there is a particular passivation or validation which needs to be done
+     * for the restored to the pool object, this is the ideal place where it can be done.
      *
      * @see #readyToTake
      *
      * @param obj an object which has been taken before that from this object pool and which is now
-     *            to be restored to the object pool
+     *            to be restored to the pool
      * @return {@code true} if the validation/passivation is successful, {@code false} otherwise
      */
     boolean readyToRestore(T obj);
 
     /**
      * A method which will be called when an object from the object pool needs to be destroyed,
-     * which may happen after a validation/initialization/passivation error or when the object
-     * pool is shrinking its size or terminating. The simplest implementation of this method may
-     * do nothing, however if there are any allocated resources associated with this object,
-     * like network connections or similar, this will be the best place where these resources
-     * could be released.
+     * which is when the {@link #readyToTake} or {@link #readyToRestore} methods have returned
+     * {@code false}, or when the pool is shrinking its size (via calling {@code reduceCreated}),
+     * or when the pool is terminating. The simplest implementation of this method may simply
+     * do nothing, however if there are any allocated resources associated with the to-be-destroyed
+     * object, like network connections or similar, this is the ideal place where they can be
+     * de-allocated.
      *
-     * @param obj the object which is to be destroyed
+     * @param obj an object from the pool which needs to be destroyed
      */
     void destroy(T obj);
 }
