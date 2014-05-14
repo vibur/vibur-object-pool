@@ -27,7 +27,7 @@ package org.vibur.objectpool;
 public interface Holder<T> {
 
     /**
-     * Returns the underlying object hold by this Holder.
+     * Returns the underlying object held by this Holder.
      *
      * @return the underlying object
      */
@@ -37,7 +37,7 @@ public interface Holder<T> {
      * Return the stack trace of the call with which this object was taken. Useful
      * for testing and debugging purposes.
      *
-     * <p>This is an optional operation. If not implemented will just return {@code null}.
+     * <p>This is an optional operation. If not implemented should simply return {@code null}.
      *
      * @return see above
      */
@@ -47,7 +47,7 @@ public interface Holder<T> {
      * Return the time in milliseconds since epoch when the {@link #getStackTrace()} was taken. Useful
      * for testing and debugging purposes.
      *
-     * <p>This is an optional operation. If not implemented will just return {@code -1}.
+     * <p>This is an optional operation. If not implemented should simply return {@code -1}.
      *
      * @return see above
      */

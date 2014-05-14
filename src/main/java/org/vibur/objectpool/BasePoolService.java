@@ -24,7 +24,7 @@ package org.vibur.objectpool;
  * <p>This object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects.
  *
- * <p>The object pool may support optional fairness with regards to waiting taker threads.
+ * <p>The object pool may support optional fairness parameter with regards to the waiting takers threads.
  *
  * @author Simeon Malchev
  */
@@ -33,7 +33,7 @@ public interface BasePoolService {
     /**
      * Returns the number of objects taken from this object pool.
      * This number is less than or equal to the object pool {@link #createdTotal()}.
-     * Typically used for testing an debugging purposes.
+     * Typically used for testing and debugging purposes.
      *
      * @return the number of objects taken from this object pool
      */
@@ -42,7 +42,7 @@ public interface BasePoolService {
     /**
      * Returns the number of remaining created objects which currently exist in this object pool.
      * This number is less than or equal to the object pool {@link #remainingCapacity()}.
-     * Typically used for testing an debugging purposes.
+     * Typically used for testing and debugging purposes.
      *
      * @return the number of remaining created objects in this object pool
      */
@@ -51,7 +51,7 @@ public interface BasePoolService {
     /**
      * Returns the total number of created objects which currently exist for this object pool.
      * This number is equal to {@link #taken()} + {@link #remainingCreated()}.
-     * Typically used for testing an debugging purposes.
+     * Typically used for testing and debugging purposes.
      *
      * @return the total number of created objects for this object pool
      */
@@ -62,7 +62,7 @@ public interface BasePoolService {
      * taken from this object pool without blocking. It is not guaranteed that all these objects
      * exist at the time of the call (i.e. are already created) in the object pool - some of them
      * might be created on demand upon take requests. Also see {@link #remainingCreated()}.
-     * Typically used for testing an debugging purposes.
+     * Typically used for testing and debugging purposes.
      *
      * @return the object pool remaining capacity
      */
