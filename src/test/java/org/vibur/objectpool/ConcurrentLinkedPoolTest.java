@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
  */
 public class ConcurrentLinkedPoolTest {
 
-    private NonValidatingPoolService<Object> clp = null;
+    private PoolService<Object> clp = null;
 
     @After
     public void tearDown() throws Exception {

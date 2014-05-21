@@ -16,10 +16,16 @@
 
 package org.vibur.objectpool;
 
+import org.vibur.objectpool.validator.Validator;
+
+import java.util.concurrent.TimeUnit;
+
 /**
- * Defines base objects object pool functionality which has to be implemented by the validating
- * and non-validating pools. These validating and non-validating pools will provide
- * appropriate object's take and restore functionality (methods).
+ * Extends the functionality defined by {@link PoolService} with simple
+ * take and restore methods which don't provide any means for validation of whether the
+ * restored (returned) object is one which has been taken before that from this object pool,
+ * neither whether the object is currently in taken state. The correctness of
+ * the restore operation remains responsibility of the calling application.
  *
  * <p>This object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects.
@@ -27,8 +33,77 @@ package org.vibur.objectpool;
  * <p>The object pool may support optional fairness parameter with regards to the waiting takers threads.
  *
  * @author Simeon Malchev
+ * @param <T> the type of objects held in this object pool
  */
-public interface BasePoolService {
+public interface PoolService<T> {
+
+    /**
+     * Takes an object from the object pool if there is such available. This is a blocking call which
+     * waits indefinitely until an object becomes available. If the calling thread is interrupted
+     * while waiting this call will return {@code null} and the thread's interrupted status will
+     * be set to {@code true}.
+     *
+     * @return an object taken from the object pool or {@code null} if was interrupted while waiting
+     */
+    T take();
+
+    /**
+     * Takes an object from the object pool if there is such available. This is a blocking call which
+     * waits indefinitely until an object becomes available.
+     *
+     * @return an object taken from the object pool
+     */
+    T takeUninterruptibly();
+
+    /**
+     * Takes an object from the object pool if there is such available. This is a blocking call which
+     * waits up to the specified {@code timeout}  for an object to become available. If the calling
+     * thread is interrupted while waiting this call will return {@code null} and the thread's
+     * interrupted status will be set to {@code true}.
+     *
+     * @param timeout the maximum time to wait for an object to become available in the object pool
+     * @param unit the time unit of the {@code timeout} argument
+     * @return an object taken from the object pool or {@code null} if the specified timeout expires
+     * or if it was interrupted while waiting
+     */
+    T tryTake(long timeout, TimeUnit unit);
+
+    /**
+     * Tries to take an object from the object pool if there is one which is immediately available. Returns
+     * {@code null} if no object is available at the moment of the call.
+     *
+     * @return an object from the object pool or {@code null} if there is no object available in the object pool
+     */
+    T tryTake();
+
+    /**
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
+     * validation whether the object restored has been taken before from this object pool or whether
+     * it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
+     *
+     * @param object an object to be restored (returned) to this object pool
+     * @return todo...
+     */
+    boolean restore(T object);
+
+    /**
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
+     * validation whether the object restored has been taken before from this object pool or whether
+     * it is currently in taken state.
+     *
+     * @param object an object to be restored (returned) to this object pool
+     * @param valid  if {@code true} the restored object is presumed to be in valid (healthy) state,
+     *               otherwise it is treated as invalid
+     * @return todo...
+     */
+    boolean restore(T object, boolean valid);
+
+
+    /**
+     * todo...
+     * @return
+     */
+    Validator validator();
 
     /**
      * Returns the number of objects taken from this object pool.

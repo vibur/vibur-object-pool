@@ -16,6 +16,8 @@
 
 package org.vibur.objectpool;
 
+import org.vibur.objectpool.validator.Validator;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -37,15 +39,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * allocated on the pool objects. Note that the shrinking may reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
- * @see ConcurrentHolderLinkedPool
- *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this object pool
  */
-public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
-        implements NonValidatingPoolService<T> {
+public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     private final PoolObjectFactory<T> poolObjectFactory;
+    private final Validator<T> validator;
 
     private final Semaphore takeSemaphore;
     private final Queue<T> available;
@@ -73,12 +73,34 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair) {
+        this(poolObjectFactory, initialSize, maxSize, fair, null);
+    }
+
+    /**
+     * Creates a new {@code ConcurrentLinkedPool} with the given
+     * {@link PoolObjectFactory}, initial and max sizes, fairness setting.
+     *
+     * @param poolObjectFactory the factory which will be used to create new objects
+     *                          in this object pool as well as to control their lifecycle
+     * @param initialSize       the object pool initial size, i.e. the initial number of
+     *                          allocated in the object pool objects
+     * @param maxSize           the object pool max size, i.e. the max number of allocated
+     *                          in the object pool objects
+     * @param fair              the object pool fairness setting with regards to waiting threads
+     * @param validator         todo
+     * @throws IllegalArgumentException if one of the following holds:<br>
+     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
+     * @throws NullPointerException if {@code poolObjectFactory} or {@code validator} is null
+     */
+    public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
+                                int initialSize, int maxSize, boolean fair, Validator validator) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
         if (poolObjectFactory == null)
             throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
+        this.validator = validator;
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.available = new ConcurrentLinkedQueue<T>();
@@ -141,24 +163,29 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
 
         T object = available.poll();
         object = readyToTake(object);
+        if (validator != null)
+            validator.add(object); // todo...
         return object;
     }
 
     /** {@inheritDoc} */
-    public void restore(T object) {
-        restore(object, true);
+    public boolean restore(T object) {
+        return restore(object, true);
     }
 
     /** {@inheritDoc} */
-    public void restore(T object, boolean valid) {
+    public boolean restore(T object, boolean valid) {
         if (object == null) throw new NullPointerException();
         if (isTerminated())
-            return;
+            return false;
+        if (validator != null && !validator.remove(object))
+            return false;
 
         object = readyToRestore(object, valid);
         if (object != null)
             available.add(object);
         takeSemaphore.release();
+        return true;
     }
 
     private T readyToTake(T object) {
@@ -196,6 +223,37 @@ public class ConcurrentLinkedPool<T> extends AbstractBasePoolService
     private void recoverInnerState(int permits) {
         createdTotal.addAndGet(-permits);
         takeSemaphore.release(permits);
+    }
+
+
+    /** {@inheritDoc} */
+    public Validator validator() {
+        return validator;
+    }
+
+    /** {@inheritDoc} */
+    public int taken() {
+        return isTerminated() ? maxSize() : calculateTaken();
+    }
+
+    private int calculateTaken() {
+        return maxSize() - remainingCapacity();
+    }
+
+    /** {@inheritDoc} */
+    public int remainingCreated() { // faster implementation than calling {@code available.size())
+        return isTerminated() ? 0 : createdTotal() - calculateTaken();
+    }
+
+    /** {@inheritDoc} */
+    public int drainCreated() {
+        return reduceCreated(Integer.MAX_VALUE, true);
+    }
+
+    /** {@inheritDoc} */
+    public String toString() {
+        return super.toString() + (isTerminated() ? "[terminated]"
+            : "[remainingCreated = " + remainingCreated() + "]");
     }
 
 

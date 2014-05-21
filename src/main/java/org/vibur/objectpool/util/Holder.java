@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Simeon Malchev
+ * Copyright 2014 Simeon Malchev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool;
+package org.vibur.objectpool.util;
 
 
 /**
  * A holder interface which needs to be implemented by the thin wrapper class enclosing
- * the taken from this object pool objects.
+ * the taken from the object pool objects. // todo...
  *
  * @author Simeon Malchev
  * @param <T> the type of objects wrapped in this object holder
@@ -32,24 +32,4 @@ public interface Holder<T> {
      * @return the underlying object
      */
     T value();
-
-    /**
-     * Return the stack trace of the call with which this object was taken. Useful
-     * for testing and debugging purposes.
-     *
-     * <p>This is an optional operation. If not implemented should simply return {@code null}.
-     *
-     * @return see above
-     */
-    StackTraceElement[] getStackTrace();
-
-    /**
-     * Return the time in milliseconds since epoch when the {@link #getStackTrace()} was taken. Useful
-     * for testing and debugging purposes.
-     *
-     * <p>This is an optional operation. If not implemented should simply return {@code -1}.
-     *
-     * @return see above
-     */
-    long getTime();
 }

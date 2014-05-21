@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.util;
+package org.vibur.objectpool.reducer;
 
-import org.vibur.objectpool.BasePoolService;
+import org.vibur.objectpool.PoolService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +40,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     private static final double MAX_REDUCTION_FRACTION = 0.2;
     private int minRemainingCreated;
 
-    private final BasePoolService poolService;
+    private final PoolService poolService;
     private final long timeInterval;
     private final long sleepTimeout;
     private final TimeUnit unit;
@@ -50,7 +50,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     private volatile boolean terminated = false;
 
     /**
-     * Creates a new {@link SamplingPoolReducer} with the given {@link BasePoolService} and
+     * Creates a new {@link SamplingPoolReducer} with the given {@link PoolService} and
      * {@code timeInterval} settings. The created pool reducer is not started and needs to be
      * explicitly started via calling the {@link #start()} method.
      *
@@ -65,7 +65,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code poolService == null || timeInterval <= 0 || unit == null || samples <= 0}
      */
-    public SamplingPoolReducer(BasePoolService poolService, long timeInterval, TimeUnit unit, int samples) {
+    public SamplingPoolReducer(PoolService poolService, long timeInterval, TimeUnit unit, int samples) {
         if (poolService == null || timeInterval <= 0 || unit == null || samples <= 0)
             throw new IllegalArgumentException();
 

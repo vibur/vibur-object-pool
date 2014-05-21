@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.util;
+package org.vibur.objectpool.reducer;
 
 import org.junit.After;
 import org.junit.Test;
 import org.vibur.objectpool.ConcurrentLinkedPool;
-import org.vibur.objectpool.NonValidatingPoolService;
+import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
 
 import java.util.concurrent.CountDownLatch;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class SamplingPoolReducerTest {
 
-    private NonValidatingPoolService<Object> clp = null;
+    private PoolService<Object> clp = null;
 
     @After
     public void tearDown() throws Exception {

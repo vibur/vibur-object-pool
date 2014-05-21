@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.util;
+package org.vibur.objectpool.reducer;
 
 /**
  * The pool reducers implementing this interface will create one daemon service thread

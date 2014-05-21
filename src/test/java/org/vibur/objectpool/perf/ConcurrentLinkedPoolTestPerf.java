@@ -17,7 +17,7 @@
 package org.vibur.objectpool.perf;
 
 import org.vibur.objectpool.ConcurrentLinkedPool;
-import org.vibur.objectpool.NonValidatingPoolService;
+import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -45,7 +45,7 @@ public class ConcurrentLinkedPoolTestPerf {
         // Each take call has TIMEOUT in ms and the number of unsuccessful calls is recorded.
         // Measures and reports the total time taken by the test in ms.
 
-        final NonValidatingPoolService<Object> pool = new ConcurrentLinkedPool<Object>(
+        final PoolService<Object> pool = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
 
         long start = System.currentTimeMillis();
