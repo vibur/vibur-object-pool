@@ -119,7 +119,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.vibur.objectpool,
-                            org.vibur.objectpool.reducer  <!-- todo... -->
+                            org.vibur.objectpool.reducer,
+                            org.vibur.objectpool.util,
+                            org.vibur.objectpool.validator
                         </Export-Package>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                     </instructions>

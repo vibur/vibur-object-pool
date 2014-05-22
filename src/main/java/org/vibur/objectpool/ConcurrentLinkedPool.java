@@ -164,7 +164,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         T object = available.poll();
         object = readyToTake(object);
         if (validator != null)
-            validator.add(object); // todo...
+            validator.add(object);
         return object;
     }
 

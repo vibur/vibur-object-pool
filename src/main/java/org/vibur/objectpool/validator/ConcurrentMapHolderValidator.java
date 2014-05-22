@@ -19,7 +19,6 @@ package org.vibur.objectpool.validator;
 import org.vibur.objectpool.util.Holder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -29,25 +28,25 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ConcurrentMapHolderValidator<T> implements Validator<Holder<T>> {
 
-    private final ConcurrentMap<Holder<T>, T> taken;
+    private final ConcurrentMap<Holder<T>, T> map;
 
     public ConcurrentMapHolderValidator() {
-        taken = new ConcurrentHashMap<Holder<T>, T>();
+        map = new ConcurrentHashMap<Holder<T>, T>();
     }
 
     public ConcurrentMapHolderValidator(int initialCapacity) {
-        taken = new ConcurrentHashMap<Holder<T>, T>(initialCapacity);
+        map = new ConcurrentHashMap<Holder<T>, T>(initialCapacity);
     }
 
     public void add(Holder<T> object) {
-        taken.put(object, object.value());
+        map.put(object, object.value());
     }
 
     public boolean remove(Holder<T> object) {
-        return taken.remove(object, object.value());
+        return map.remove(object, object.value());
     }
 
     public List<Holder<T>> getAll() {
-        return new ArrayList<Holder<T>>(taken.keySet());
+        return new ArrayList<Holder<T>>(map.keySet());
     }
 }
