@@ -16,7 +16,7 @@
 
 package org.vibur.objectpool;
 
-import org.vibur.objectpool.validator.Validator;
+import org.vibur.objectpool.listener.Listener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -103,7 +103,7 @@ public interface PoolService<T> {
      * todo...
      * @return
      */
-    Validator validator();
+    Listener<T> listener();
 
     /**
      * Returns the number of objects taken from this object pool.

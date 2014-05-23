@@ -16,7 +16,7 @@
 
 package org.vibur.objectpool;
 
-import org.vibur.objectpool.validator.Validator;
+import org.vibur.objectpool.listener.Listener;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     private final PoolObjectFactory<T> poolObjectFactory;
-    private final Validator<T> validator;
+    private final Listener<T> listener;
 
     private final Semaphore takeSemaphore;
     private final Queue<T> available;
@@ -87,20 +87,20 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
      * @param fair              the object pool fairness setting with regards to waiting threads
-     * @param validator         todo
+     * @param listener         todo
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
-     * @throws NullPointerException if {@code poolObjectFactory} or {@code validator} is null
+     * @throws NullPointerException if {@code poolObjectFactory} is null
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
-                                int initialSize, int maxSize, boolean fair, Validator validator) {
+                                int initialSize, int maxSize, boolean fair, Listener<T> listener) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
         if (poolObjectFactory == null)
             throw new NullPointerException();
 
         this.poolObjectFactory = poolObjectFactory;
-        this.validator = validator;
+        this.listener = listener;
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.available = new ConcurrentLinkedQueue<T>();
@@ -162,9 +162,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         }
 
         T object = available.poll();
-        object = readyToTake(object);
-        if (validator != null)
-            validator.add(object);
+        object = prepareToTake(object);
+        if (listener != null)
+            listener.onTake(object);
         return object;
     }
 
@@ -178,17 +178,17 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         if (object == null) throw new NullPointerException();
         if (isTerminated())
             return false;
-        if (validator != null && !validator.remove(object))
-            return false;
 
-        object = readyToRestore(object, valid);
+        if (listener != null)
+            listener.onRestore(object);
+        object = prepareToRestore(object, valid);
         if (object != null)
             available.add(object);
         takeSemaphore.release();
         return true;
     }
 
-    private T readyToTake(T object) {
+    private T prepareToTake(T object) {
         try {
             if (object == null) {
                 createdTotal.incrementAndGet();
@@ -205,7 +205,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         }
     }
 
-    private T readyToRestore(T object, boolean valid) {
+    private T prepareToRestore(T object, boolean valid) {
         try {
             if (!valid || !poolObjectFactory.readyToRestore(object)) {
                 poolObjectFactory.destroy(object);
@@ -227,8 +227,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
 
     /** {@inheritDoc} */
-    public Validator validator() {
-        return validator;
+    public Listener<T> listener() {
+        return listener;
     }
 
     /** {@inheritDoc} */

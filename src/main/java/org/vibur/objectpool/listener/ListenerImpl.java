@@ -14,39 +14,38 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.validator;
-
-import org.vibur.objectpool.util.Holder;
+package org.vibur.objectpool.listener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Simeon Malchev
  */
-public class ConcurrentMapHolderValidator<T> implements Validator<Holder<T>> {
+public class ListenerImpl<T> implements Listener<T> {
 
-    private final ConcurrentMap<Holder<T>, T> map;
+    private final Set<T> taken;
 
-    public ConcurrentMapHolderValidator() {
-        map = new ConcurrentHashMap<Holder<T>, T>();
+    public ListenerImpl() {
+        taken = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
     }
 
-    public ConcurrentMapHolderValidator(int initialCapacity) {
-        map = new ConcurrentHashMap<Holder<T>, T>(initialCapacity);
+    public ListenerImpl(int initialCapacity) {
+        taken = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>(initialCapacity));
     }
 
-    public void add(Holder<T> object) {
-        map.put(object, object.value());
+    public void onTake(T object) {
+        taken.add(object);
     }
 
-    public boolean remove(Holder<T> object) {
-        return map.remove(object, object.value());
+    public void onRestore(T object) {
+        taken.remove(object);
     }
 
-    public List<Holder<T>> getAll() {
-        return new ArrayList<Holder<T>>(map.keySet());
+    public List<T> getTaken() {
+        return new ArrayList<T>(taken);
     }
 }

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.validator;
+package org.vibur.objectpool.listener;
 
 import java.util.List;
 
 /**
  * @author Simeon Malchev
  */
-public interface Validator<T> {
+public interface Listener<T> {
 
-    void add(T object);
+    void onTake(T object);
 
-    boolean remove(T object);
+    void onRestore(T object);
 
-    List<T> getAll();
+    List<T> getTaken();
 }
