@@ -21,16 +21,18 @@ import org.vibur.objectpool.listener.Listener;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Extends the functionality defined by {@link PoolService} with simple
- * take and restore methods which don't provide any means for validation of whether the
- * restored (returned) object is one which has been taken before that from this object pool,
- * neither whether the object is currently in taken state. The correctness of
+ * Defines the object pool operations. These operations include {@code take} and
+ * {@code restore} methods which don't provide any means for validation of whether the
+ * restored (returned) object is one which has been taken before that from the object pool,
+ * neither whether this object is currently in taken state. The correctness of
  * the restore operation remains responsibility of the calling application.
  *
- * <p>This object pool has support for shrinking (reduction) of the number of
+ * <p>The object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects.
  *
- * <p>The object pool may support optional fairness parameter with regards to the waiting takers threads.
+ * <p>The object pool may support an optional fairness parameter with regards to the waiting
+ * takers threads, as well as an optional {@code Listener} interface which methods will be
+ * called when a {@code take} or {@code restore} pool method executes.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this object pool
@@ -77,31 +79,30 @@ public interface PoolService<T> {
     T tryTake();
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
-     * validation whether the object restored has been taken before from this object pool or whether
-     * it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong>
+     * validate whether the currently restored object has been taken before that from this object pool
+     * or whether it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
      *
      * @param object an object to be restored (returned) to this object pool
-     * @return todo...
      */
-    boolean restore(T object);
+    void restore(T object);
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong> do any
-     * validation whether the object restored has been taken before from this object pool or whether
-     * it is currently in taken state.
+     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong>
+     * validate whether the currently restored object has been taken before that from this object pool
+     * or whether it is currently in taken state.
      *
      * @param object an object to be restored (returned) to this object pool
      * @param valid  if {@code true} the restored object is presumed to be in valid (healthy) state,
      *               otherwise it is treated as invalid
-     * @return todo...
      */
-    boolean restore(T object, boolean valid);
+    void restore(T object, boolean valid);
 
 
     /**
-     * todo...
-     * @return
+     * Returns the {@link Listener} interface instance associated with this object pool.
+     *
+     * @return  see above. {@code null} means no {@code Listener} is associated with this object pool.
      */
     Listener<T> listener();
 

@@ -26,14 +26,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An implementation of a <i>non-validating</i> object pool based on a {@link ConcurrentLinkedQueue}
- * and a {@link Semaphore}. This object pool does <b>not</b> implement any validation of whether the
- * currently restored object has been taken before that from the object pool, or whether this object
- * is currently in taken state.
+ * An object pool based on a {@link ConcurrentLinkedQueue} guarded by a {@link Semaphore}. This
+ * object pool does <b>not</b> implement any validation of whether the currently restored object
+ * has been taken before that from the object pool, or whether this object is currently in taken state.
  *
- * <p>This object pool provides support for fairness with regards to the waiting taker's threads.
+ * <p>This object pool provides support for fairness with regards to the waiting takers threads.
  * The creation of new objects and their lifecycle are controlled by a supplied during the
- * object pool creation time {@link PoolObjectFactory}.
+ * object pool creation time {@link PoolObjectFactory}. If a {@code Listener} instance has been
+ * supplied when instantiating the pool, its methods will be when the pool executes {@code take}
+ * or {@code restore} operations.
  *
  * <p>This object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects. Note that the shrinking may reduce the
@@ -87,7 +88,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects
      * @param fair              the object pool fairness setting with regards to waiting threads
-     * @param listener         todo
+     * @param listener          if not {@code null}, this listener instance methods will be called
+     *                          when the pool executes {@code take} or {@code restore} operations
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
      * @throws NullPointerException if {@code poolObjectFactory} is null
@@ -169,15 +171,15 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     }
 
     /** {@inheritDoc} */
-    public boolean restore(T object) {
-        return restore(object, true);
+    public void restore(T object) {
+        restore(object, true);
     }
 
     /** {@inheritDoc} */
-    public boolean restore(T object, boolean valid) {
+    public void restore(T object, boolean valid) {
         if (object == null) throw new NullPointerException();
         if (isTerminated())
-            return false;
+            return;
 
         if (listener != null)
             listener.onRestore(object);
@@ -185,7 +187,6 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         if (object != null)
             available.add(object);
         takeSemaphore.release();
-        return true;
     }
 
     private T prepareToTake(T object) {
