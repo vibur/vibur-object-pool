@@ -4,6 +4,7 @@ Version 2.0.0 (XX/05/2014)
   them with a single object pool which does not provide any special validation means, but provides
   support for a Listener interface which methods will be called upon calling the pool take and
   restore operations.
+* Vibur Object Pool is now built and distributed as a valid R4 OSGi bundle.
 
 Version 1.0.0 (02/02/2014)
 ==========================
