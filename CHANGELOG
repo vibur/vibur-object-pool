@@ -1,4 +1,4 @@
-Version 2.0.0 (XX/05/2014)
+Version 2.0.0 (##/06/2014)
 ==========================
 * Overhauled the existing in version 1.0 validating and non-validating object pools and replaced
   them with a single object pool which does not provide any special validation means, but provides
