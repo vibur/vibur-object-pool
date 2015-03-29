@@ -25,7 +25,7 @@
 
     <name>Vibur Object Pool</name>
     <description>A concurrent Java object pool.</description>
-    <url>https://code.google.com/p/vibur-object-pool</url>
+    <url>http://www.vibur.org/vibur-object-pool/</url>
     <inceptionYear>2013</inceptionYear>
 
     <licenses>
@@ -43,9 +43,9 @@
     <!--</parent>-->
 
     <scm>
-        <connection>scm:git:https://code.google.com/p/vibur-object-pool/</connection>
-        <developerConnection>scm:git:https://code.google.com/p/vibur-object-pool/</developerConnection>
-        <url>http://code.google.com/p/vibur-object-pool/source/browse</url>
+        <connection>scm:git:https://github.com/vibur/vibur-object-pool.git</connection>
+        <developerConnection>scm:git:https://github.com/vibur/vibur-object-pool.git</developerConnection>
+        <url>https://github.com/vibur/vibur-object-pool/tree/master/</url>
       <tag>HEAD</tag>
   </scm>
 
@@ -69,8 +69,8 @@
     </organization>
 
     <issueManagement>
-        <system>code.google.com</system>
-        <url>http://code.google.com/p/vibur-object-pool/issues</url>
+        <system>https://github.com</system>
+        <url>https://github.com/vibur/vibur-object-pool/issues</url>
     </issueManagement>
 
     <properties>

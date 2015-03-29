@@ -21,11 +21,11 @@ import org.vibur.objectpool.listener.Listener;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Defines the object pool operations. These operations include {@code take} and
- * {@code restore} methods which don't provide any means for validation of whether the
- * restored (returned) object is one which has been taken before that from the object pool,
- * neither whether this object is currently in taken state. The correctness of
- * the restore operation remains responsibility of the calling application.
+ * Defines the object pool operations. These operations include the {@code take} and
+ * {@code restore} methods. The {@code restore} method do not provide any validation whether
+ * the currently restored object has been taken before from the pool or whether the object is
+ * currently in taken state. Correct usage of these operations is established by programming
+ * convention in the application.
  *
  * <p>The object pool has support for shrinking (reduction) of the number of
  * allocated on the pool objects.

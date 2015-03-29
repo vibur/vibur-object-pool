@@ -27,8 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An object pool based on a {@link ConcurrentLinkedQueue} guarded by a {@link Semaphore}. This
- * object pool does <b>not</b> implement any validation of whether the currently restored object
- * has been taken before that from the object pool, or whether this object is currently in taken state.
+ * object pool does not provide any validation whether the currently restored object
+ * has been taken before that from the object pool or whether this object is currently in taken state.
+ * Correct usage of the pool is established by programming convention in the application.
  *
  * <p>This object pool provides support for fairness with regards to the waiting takers threads.
  * The creation of new objects and their lifecycle are controlled by a supplied during the
@@ -284,21 +285,20 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         if (reduction < 0)
             throw new IllegalArgumentException();
 
-        int cnt;
-        for (cnt = 0; cnt < reduction; cnt++) {
+        for (int cnt = 0; cnt < reduction; cnt++) {
             int newTotal = createdTotal.decrementAndGet();
             if (!ignoreInitialSize && newTotal < initialSize) {
                 createdTotal.incrementAndGet();
-                break;
+                return cnt;
             }
             T object = available.poll();
             if (object == null) {
                 createdTotal.incrementAndGet();
-                break;
+                return cnt;
             }
             poolObjectFactory.destroy(object);
         }
-        return cnt;
+        return reduction;
     }
 
 

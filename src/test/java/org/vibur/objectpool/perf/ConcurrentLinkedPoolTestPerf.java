@@ -40,9 +40,14 @@ public class ConcurrentLinkedPoolTestPerf {
 
     public static void main(String[] args) {
 
-        // Creates a pool with INITIAL_SIZE and MAX_SIZE, and starts THREADS_COUNT threads where each thread
-        // executes ITERATIONS times take and then immediately restore operation on an object from the pool.
-        // Each take call has TIMEOUT in ms and the number of unsuccessful calls is recorded.
+        // Creates a DataSource with an INITIAL_SIZE and a MAX_SIZE, and starts a THREADS_COUNT threads
+        // where each thread executes ITERATIONS times the following code:
+        //
+        //     Object obj = pool.tryTake(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        //     doWork(DO_WORK_FOR_MS);
+        //     pool.restore(obj);
+        //
+        // Each tryTake() call has a TIMEOUT_MS and the number of unsuccessful takes is recorded.
         // Measures and reports the total time taken by the test in ms.
 
         final PoolService<Object> pool = new ConcurrentLinkedPool<Object>(

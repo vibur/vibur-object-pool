@@ -29,19 +29,18 @@ import java.util.concurrent.TimeUnit;
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
  *
- * <p><strong>It should be noted</strong> that if a RuntimeException or an Error is
- * thrown by the overridable {@link #afterReduce(int, int, Throwable)} method hook, it
- * will terminate this SamplingPoolReducer, including the reducer's background daemon thread.
+ * <p>Note that if a RuntimeException or an Error is thrown by the overridable
+ * {@link #afterReduce(int, int, Throwable)} method hook, it will terminate the
+ * SamplingPoolReducer, including the reducer's background daemon thread.
  *
  * @author Simeon Malchev
  */
 public class SamplingPoolReducer implements ThreadedPoolReducer {
 
-    private static final double MAX_REDUCTION_FRACTION = 0.2;
-    private int minRemainingCreated;
+    protected static final double MAX_REDUCTION_FRACTION = 0.2;
+    protected int minRemainingCreated;
 
     private final PoolService poolService;
-    private final long timeInterval;
     private final long sleepTimeout;
     private final TimeUnit unit;
     private final int samples;
@@ -70,7 +69,6 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
             throw new IllegalArgumentException();
 
         this.poolService = poolService;
-        this.timeInterval = timeInterval;
         this.unit = unit;
         this.samples = samples;
         this.sleepTimeout = timeInterval / this.samples;
@@ -110,26 +108,25 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         minRemainingCreated = Math.min(minRemainingCreated, remainingCreated);
     }
 
-    private void reducePool() {
+    protected void reducePool() {
         int reduction = calculateReduction();
-        if (reduction > 0) {
-            int reduced = -1;
-            Throwable thrown = null;
-            try {
-                reduced = poolService.reduceCreated(reduction, false);
-            } catch (RuntimeException e) {
-                thrown = e;
-            } catch (Error e) {
-                thrown = e;
-            } finally {
-                afterReduce(reduction, reduced, thrown);
-            }
+
+        int reduced = -1;
+        Throwable thrown = null;
+        try {
+            reduced = poolService.reduceCreated(reduction, false);
+        } catch (RuntimeException e) {
+            thrown = e;
+        } catch (Error e) {
+            thrown = e;
+        } finally {
+            afterReduce(reduction, reduced, thrown);
         }
     }
 
     protected int calculateReduction() {
         int createdTotal = poolService.createdTotal();
-        int maxReduction = (int) (createdTotal * MAX_REDUCTION_FRACTION);
+        int maxReduction = (int) Math.ceil(createdTotal * MAX_REDUCTION_FRACTION);
         int reduction = Math.min(minRemainingCreated, maxReduction);
         int bottomThreshold = createdTotal - poolService.initialSize();
         reduction = Math.min(reduction, bottomThreshold);
