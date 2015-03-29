@@ -24,7 +24,10 @@
     <packaging>bundle</packaging>
 
     <name>Vibur Object Pool</name>
-    <description>A concurrent Java object pool.</description>
+    <description>
+        General-purpose concurrent Java object pool that is built entirely using standard Java concurrency utilities,
+        does not use any synchronized blocks or methods, and does not have any external dependencies.
+    </description>
     <url>http://www.vibur.org/vibur-object-pool/</url>
     <inceptionYear>2013</inceptionYear>
 
