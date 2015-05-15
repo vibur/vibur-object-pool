@@ -16,3 +16,5 @@ The project maven coordinates are:
   <version>2.0.0</version>
 </dependency>   
 ```
+
+[Originally released](https://raw.githubusercontent.com/vibur/vibur-object-pool/master/CHANGELOG) in January 2013 on code.google.com, the project was migrated to GitHub in March 2015.
