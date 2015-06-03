@@ -5,7 +5,8 @@ external dependencies.
 The project [home page](http://www.vibur.org/vibur-object-pool/) contains details of its inner workings,
 usage examples, and more.
 
-This project is a main building block of [Vibur DBCP](https://github.com/vibur/vibur-dbcp) - a concurrent and dynamic JDBC connection pool. 
+This project is a main building block of [Vibur DBCP](https://github.com/vibur/vibur-dbcp) - a concurrent 
+and dynamic JDBC connection pool. 
 
 The project maven coordinates are:
 
@@ -17,4 +18,5 @@ The project maven coordinates are:
 </dependency>   
 ```
 
-[Originally released](https://raw.githubusercontent.com/vibur/vibur-object-pool/master/CHANGELOG) in January 2013 on code.google.com, the project was migrated to GitHub in March 2015.
+[Originally released](https://raw.githubusercontent.com/vibur/vibur-object-pool/master/CHANGELOG) in January 2013 
+on code.google.com, the project was migrated to GitHub in March 2015.

@@ -1,7 +1,15 @@
+Version 3.0 (03/06/2015)
+==========================
+* Modified the SamplingPoolReducer pool shrinking algorithm to allow the number of allocated on the
+  pool objects to reach zero.
+* Modified the SamplingPoolReducer logic to allow the afterReduce() method to be called even if the
+  intended pool reduction is zero - useful for reporting/logging purposes.
+* Migrated the project to single digit version numbers, similarly to Vibur DBCP project.
+
 Version 2.0.0 (02/06/2014)
 ==========================
 * Overhauled the existing in version 1.0 validating and non-validating object pools and replaced
-  them with a single object pool which does not provide any special validation means, but provides
+  them with a single object pool that does not provide any special validation means, but provides
   support for a Listener interface which methods will be called upon calling the pool take and
   restore operations.
 * Vibur Object Pool is now built and distributed as a valid R4 OSGi bundle.
@@ -29,8 +37,8 @@ Version 0.8.6 (26/07/2013)
 
 Version 0.8.5 (28/06/2013)
 ==========================
-* Fix in ConcurrentHolderLinkedPool which is to prevent the possibility object taken from
-  one pool to be returned to another.
+* Fix in ConcurrentHolderLinkedPool, aiming to prevent the possibility that an object taken from
+  one pool can be returned to another.
 * Changed the build artifact name to use "-" instead of "_".
 
 Version 0.8.4 (18/02/2013)
