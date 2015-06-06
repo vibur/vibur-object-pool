@@ -72,10 +72,12 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
         if (poolService == null || timeInterval <= 0 || unit == null || samples <= 0)
             throw new IllegalArgumentException();
 
+        this.sleepTimeout = timeInterval / samples;
+        if (this.sleepTimeout == 0)
+            throw new IllegalArgumentException();
         this.poolService = poolService;
         this.unit = unit;
         this.samples = samples;
-        this.sleepTimeout = timeInterval / this.samples;
 
         this.reducerThread = new Thread(new PoolReducerRunnable());
         this.reducerThread.setName(toString());
