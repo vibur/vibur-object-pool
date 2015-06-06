@@ -37,13 +37,14 @@ import java.util.concurrent.TimeUnit;
  * SamplingPoolReducer, including the reducer's background daemon thread.
  *
  * @author Simeon Malchev
+ * @param <T> the type of objects held in the observable object pool
  */
-public class SamplingPoolReducer implements ThreadedPoolReducer {
+public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
 
     protected static final double MAX_REDUCTION_FRACTION = 0.2;
     protected int minRemainingCreated;
 
-    private final PoolService poolService;
+    private final PoolService<T> poolService;
     private final long sleepTimeout;
     private final TimeUnit unit;
     private final int samples;
@@ -67,7 +68,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code poolService == null || timeInterval <= 0 || unit == null || samples <= 0}
      */
-    public SamplingPoolReducer(PoolService poolService, long timeInterval, TimeUnit unit, int samples) {
+    public SamplingPoolReducer(PoolService<T> poolService, long timeInterval, TimeUnit unit, int samples) {
         if (poolService == null || timeInterval <= 0 || unit == null || samples <= 0)
             throw new IllegalArgumentException();
 

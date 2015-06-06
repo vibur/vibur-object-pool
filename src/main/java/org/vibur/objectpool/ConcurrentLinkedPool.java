@@ -106,14 +106,14 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         this.listener = listener;
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
+        this.initialSize = initialSize;
+        this.maxSize = new AtomicInteger(maxSize);
+        this.createdTotal = new AtomicInteger(initialSize);
+
         this.available = new ConcurrentLinkedQueue<T>();
         for (int i = 0; i < initialSize; i++) {
             this.available.add(create());
         }
-
-        this.initialSize = initialSize;
-        this.maxSize = new AtomicInteger(maxSize);
-        this.createdTotal = new AtomicInteger(initialSize);
     }
 
     private T create() {
