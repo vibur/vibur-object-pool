@@ -80,13 +80,13 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
         this.samples = samples;
 
         this.reducerThread = new Thread(new PoolReducerRunnable());
-        this.reducerThread.setName(toString());
-        this.reducerThread.setDaemon(true);
-        this.reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
     }
 
     /** {@inheritDoc} */
     public void start() {
+        reducerThread.setName(toString());
+        reducerThread.setDaemon(true);
+        reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
         reducerThread.start();
     }
 
