@@ -25,6 +25,9 @@ import java.util.concurrent.TimeUnit;
  * a predefined period of time, and checks whether the number of available
  * allocated objects in the object pool needs to be reduced.
  *
+ * <p>This pool reducer will <b>not</b> bring the number of allocated on the pool
+ * objects to less than the pool {@code initial} size.
+ *
  * <p>This pool reducer creates one daemon service thread which will be started when
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
@@ -124,6 +127,14 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         }
     }
 
+    /**
+     * Calculates the number of currently allocated on the pool elements that needs to be destroyed/deallocated,
+     * as a result of the stats collected during the just finished observational time period.
+     * The number of remaining allocated on the pool objects will <b>not</b> fall below the pool {@code initial}
+     * size as a result of this reduction.
+     *
+     * @return the calculated reduction number
+     */
     protected int calculateReduction() {
         int createdTotal = poolService.createdTotal();
         int maxReduction = (int) Math.ceil(createdTotal * MAX_REDUCTION_FRACTION);
