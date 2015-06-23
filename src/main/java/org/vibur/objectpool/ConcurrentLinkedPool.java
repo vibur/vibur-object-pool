@@ -53,7 +53,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     private final Queue<T> available;
 
     private final int initialSize;
-    private final AtomicInteger maxSize;
+    private final int maxSize;
     private final AtomicInteger createdTotal;
 
     private final AtomicBoolean terminated = new AtomicBoolean(false);
@@ -104,15 +104,16 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
         this.poolObjectFactory = poolObjectFactory;
         this.listener = listener;
-        this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.initialSize = initialSize;
-        this.maxSize = new AtomicInteger(maxSize);
-        this.createdTotal = new AtomicInteger(initialSize);
+        this.maxSize = maxSize;
+        this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.available = new ConcurrentLinkedQueue<T>();
+        this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
-            this.available.add(create());
+            available.add(create());
+            createdTotal.incrementAndGet();
         }
     }
 
@@ -276,7 +277,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     /** {@inheritDoc} */
     public int maxSize() {
-        return maxSize.get();
+        return maxSize;
     }
 
 
