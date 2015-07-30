@@ -65,9 +65,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
-     *                          allocated in the object pool objects
+     *                          allocated in the object pool objects; this parameter never changes
      * @param maxSize           the object pool max size, i.e. the max number of allocated
-     *                          in the object pool objects
+     *                          in the object pool objects; this parameter never changes
      * @param fair              the object pool fairness setting with regards to waiting threads
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
@@ -85,9 +85,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
-     *                          allocated in the object pool objects
+     *                          allocated in the object pool objects; this parameter never changes
      * @param maxSize           the object pool max size, i.e. the max number of allocated
-     *                          in the object pool objects
+     *                          in the object pool objects; this parameter never changes
      * @param fair              the object pool fairness setting with regards to waiting threads
      * @param listener          if not {@code null}, this listener instance methods will be called
      *                          when the pool executes {@code take} or {@code restore} operations
