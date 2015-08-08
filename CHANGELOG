@@ -1,3 +1,8 @@
+Version 4.0 (08/08/2015)
+==========================
+* Catching-up with Vibur DBCP version 4.0.
+* Various other refactoring and javadoc updates.
+
 Version 3.0 (03/06/2015)
 ==========================
 * Modified the SamplingPoolReducer pool shrinking algorithm to allow the number of allocated on the
