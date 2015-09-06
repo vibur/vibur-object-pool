@@ -77,7 +77,7 @@ public class SamplingPoolReducerTest {
 
         // creates, starts and then terminates the pool reducer
         final CountDownLatch finishLatch = new CountDownLatch(2);
-        ThreadedPoolReducer poolReducer = new SamplingPoolReducer(clp, 400, TimeUnit.MILLISECONDS, 3) {
+        ThreadedPoolReducer poolReducer = new SamplingPoolReducer<Object>(clp, 400, TimeUnit.MILLISECONDS, 3) {
             protected void afterReduce(int reduction, int reduced, Throwable thrown) {
                 super.afterReduce(reduction, reduced, thrown);
                 finishLatch.countDown();
@@ -90,7 +90,7 @@ public class SamplingPoolReducerTest {
         // Tests the pool metrics after the reducer was called 2 times.
         // Maximum allowed reduction of 20% of 90 will apply on the first call,
         // and on the second call the reduction will be 12, as this is the number
-        // of remaining created elements in the pool (smaller than 20% of 72 which is 14),
+        // of remaining created elements in the pool (smaller than 20% of 72 which is 14.4),
         // i.e. 90 - 18 - 12 = 60 elements created total.
         assertEquals(60, clp.createdTotal());
         assertEquals(0, clp.remainingCreated());
