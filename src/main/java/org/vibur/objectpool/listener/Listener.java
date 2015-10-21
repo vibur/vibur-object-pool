@@ -19,6 +19,9 @@ package org.vibur.objectpool.listener;
 import java.util.List;
 
 /**
+ * An instance of this interface can be supplied to the pool at its creation time, and its methods will be called
+ * upon calling the pool take and restore operations.
+ *
  * @author Simeon Malchev
  */
 public interface Listener<T> {
@@ -26,6 +29,5 @@ public interface Listener<T> {
     void onTake(T object);
 
     void onRestore(T object);
-
-    List<T> getTaken();
 }
+

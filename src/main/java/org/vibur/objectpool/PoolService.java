@@ -100,7 +100,7 @@ public interface PoolService<T> {
 
 
     /**
-     * Returns the {@link Listener} interface instance associated with this object pool.
+     * Returns the {@link Listener} interface instance associated with this object pool, if any.
      *
      * @return  see above. {@code null} means no {@code Listener} is associated with this object pool.
      */

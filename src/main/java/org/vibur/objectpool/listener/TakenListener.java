@@ -23,6 +23,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * An instance of this class can be supplied to the pool at its creation time, and its methods will be called
+ * upon calling the pool take and restore operations. This listener can provide a list of all currently taken
+ * objects from the pool, which can be useful for testing and debugging purposes.
+ *
  * @author Simeon Malchev
  */
 public class TakenListener<T> implements Listener<T> {
