@@ -20,6 +20,7 @@ import org.vibur.objectpool.ConcurrentLinkedPool;
 import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,18 +30,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConcurrentLinkedPoolTestPerf {
 
     // pool metrics:
-    private static final int INITIAL_SIZE = 10;
-    private static final int MAX_SIZE = 100;
-    private static final long TIMEOUT_MS = 5000;
+    private static final int INITIAL_SIZE = 50;
+    private static final int MAX_SIZE = 200;
+    private static final long TIMEOUT_MS = 2000;
     private static final boolean FAIR = true;
 
+    // threads metrics:
     private static final int ITERATIONS = 100;
     private static final int THREADS_COUNT = 500;
-    private static final long DO_WORK_FOR_MS = 10;
+    private static final long DO_WORK_FOR_MS = 2;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
-        // Creates a DataSource with an INITIAL_SIZE and a MAX_SIZE, and starts a THREADS_COUNT threads
+        // Creates a ConcurrentLinkedPool with an INITIAL_SIZE and a MAX_SIZE, and starts a THREADS_COUNT threads
         // where each thread executes ITERATIONS times the following code:
         //
         //     Object obj = pool.tryTake(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -50,41 +52,73 @@ public class ConcurrentLinkedPoolTestPerf {
         // Each tryTake() call has a TIMEOUT_MS and the number of unsuccessful takes is recorded.
         // Measures and reports the total time taken by the test in ms.
 
-        final PoolService<Object> pool = new ConcurrentLinkedPool<Object>(
+        PoolService<Object> pool = new ConcurrentLinkedPool<Object>(
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
 
-        long start = System.currentTimeMillis();
-        final AtomicInteger unsuccessful = new AtomicInteger(0);
-        Runnable r = new Runnable() {
-            public void run() {
-                for (int i = 0; i < ITERATIONS; i++) {
-                    Object obj = pool.tryTake(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                    if (obj != null) {
-                        doWork(DO_WORK_FOR_MS);
-                        pool.restore(obj);
-                    } else
-                        unsuccessful.incrementAndGet();
-                }
-            }
-        };
+        AtomicInteger errors = new AtomicInteger(0);
 
-        int threadsCount = THREADS_COUNT;
-        Thread[] threads = new Thread[threadsCount];
-        for (int i = 0; i < threadsCount; i++) {
-            threads[i] = new Thread(r);
-            threads[i].start();
+        CountDownLatch startSignal = new CountDownLatch(1);
+        CountDownLatch readySignal = new CountDownLatch(THREADS_COUNT);
+        CountDownLatch doneSignal = new CountDownLatch(THREADS_COUNT);
+
+        Worker w = new Worker(pool, errors, DO_WORK_FOR_MS, TIMEOUT_MS, readySignal, startSignal, doneSignal);
+
+        for (int i = 0; i < THREADS_COUNT; i++) {
+            Thread thread = new Thread(w);
+            thread.start();
         }
-        for (int i = 0; i < threadsCount; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println(String.format("Total execution time %dms, unsuccessful takes %d.",
-            (System.currentTimeMillis() - start), unsuccessful.get()));
+
+        readySignal.await();
+        long start = System.currentTimeMillis();
+        startSignal.countDown();
+        doneSignal.await();
+
+        System.out.println(String.format("Total execution time %d ms, unsuccessful takes %d.",
+                (System.currentTimeMillis() - start), errors.get()));
 
         pool.terminate();
+    }
+
+    private static class Worker implements Runnable {
+        private final PoolService<Object> pool;
+        private final AtomicInteger errors;
+        private final long millis;
+        private final long timeout;
+
+        private final CountDownLatch readySignal;
+        private final CountDownLatch startSignal;
+        private final CountDownLatch doneSignal;
+
+        private Worker(PoolService<Object> pool, AtomicInteger errors, long millis, long timeout,
+                       CountDownLatch readySignal, CountDownLatch startSignal, CountDownLatch doneSignal) {
+            this.pool = pool;
+            this.errors = errors;
+            this.millis = millis;
+            this.timeout = timeout;
+            this.startSignal = startSignal;
+            this.readySignal = readySignal;
+            this.doneSignal = doneSignal;
+        }
+
+        public void run() {
+            try {
+                readySignal.countDown();
+                startSignal.await();
+
+                for (int i = 0; i < ITERATIONS; i++) {
+                    Object obj = pool.tryTake(timeout, TimeUnit.MILLISECONDS);
+                    if (obj != null) {
+                        doWork(millis);
+                        pool.restore(obj);
+                    } else
+                        errors.incrementAndGet();
+                }
+            } catch (InterruptedException e) {
+                errors.incrementAndGet();
+            } finally {
+                doneSignal.countDown();
+            }
+        }
     }
 
     private static void doWork(long millis) {
