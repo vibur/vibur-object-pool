@@ -196,9 +196,16 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
             if (object == null) {
                 createdTotal.incrementAndGet();
                 object = create();
-            } else if (!poolObjectFactory.readyToTake(object)) {
-                poolObjectFactory.destroy(object);
-                object = create();
+            } else {
+                boolean ready = false;
+                try {
+                    ready = poolObjectFactory.readyToTake(object);
+                } finally {
+                    if (!ready)
+                        poolObjectFactory.destroy(object);
+                }
+                if (!ready)
+                    object = create();
             }
             return object;
         } catch (RuntimeException e) {
@@ -210,8 +217,14 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     private T prepareToRestore(T object, boolean valid) {
         try {
-            if (!valid || !poolObjectFactory.readyToRestore(object)) {
-                poolObjectFactory.destroy(object);
+            boolean ready = false;
+            try {
+                ready = valid && poolObjectFactory.readyToRestore(object);
+            } finally {
+                if (!ready)
+                    poolObjectFactory.destroy(object);
+            }
+            if (!ready) {
                 createdTotal.decrementAndGet();
                 object = null;
             }
