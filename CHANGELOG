@@ -1,3 +1,7 @@
+Version 6.1 (05/01/2016)
+========================
+* Catching-up with Vibur DBCP version 6.1.
+
 Version 6.0 (19/12/2015)
 ==========================
 * The call to PoolObjectFactory.destroy() is now included in a try-finally block after calling
