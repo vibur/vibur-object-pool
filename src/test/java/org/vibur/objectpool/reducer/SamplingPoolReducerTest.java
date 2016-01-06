@@ -78,6 +78,7 @@ public class SamplingPoolReducerTest {
         // creates, starts and then terminates the pool reducer
         final CountDownLatch finishLatch = new CountDownLatch(2);
         ThreadedPoolReducer poolReducer = new SamplingPoolReducer<Object>(clp, 400, TimeUnit.MILLISECONDS, 3) {
+            @Override
             protected void afterReduce(int reduction, int reduced, Throwable thrown) {
                 super.afterReduce(reduction, reduced, thrown);
                 finishLatch.countDown();
