@@ -123,7 +123,6 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         return object;
     }
 
-    /** {@inheritDoc} */
     @Override
     public T take() {
         try {
@@ -135,14 +134,12 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public T takeUninterruptibly() {
         takeSemaphore.acquireUninterruptibly();
         return newObject();
     }
 
-    /** {@inheritDoc} */
     @Override
     public T tryTake(long timeout, TimeUnit unit) {
         try {
@@ -155,7 +152,6 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
@@ -176,13 +172,11 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         return object;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void restore(T object) {
         restore(object, true);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void restore(T object, boolean valid) {
         if (object == null) throw new NullPointerException();
@@ -248,13 +242,11 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public Listener<T> listener() {
         return listener;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int taken() {
         return isTerminated() ? maxSize() : calculateTaken();
@@ -264,19 +256,16 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         return maxSize() - remainingCapacity();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int remainingCreated() { // faster implementation than calling {@code available.size())
         return isTerminated() ? 0 : createdTotal() - calculateTaken();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int drainCreated() {
         return reduceCreated(Integer.MAX_VALUE, true);
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         return super.toString() + (isTerminated() ? "[terminated]"
@@ -284,32 +273,27 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int createdTotal() {
         return createdTotal.get();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int remainingCapacity() {
         return isTerminated() ? 0 : takeSemaphore.availablePermits();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int initialSize() {
         return initialSize;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int maxSize() {
         return maxSize;
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int reduceCreated(int reduction, boolean ignoreInitialSize) {
         if (reduction < 0)
@@ -332,7 +316,6 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public void terminate() {
         if (terminated.getAndSet(true))
@@ -344,14 +327,12 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         drainCreated();
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isTerminated() {
         return terminated.get();
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public boolean isFair() {
         return takeSemaphore.isFair();

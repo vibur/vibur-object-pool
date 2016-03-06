@@ -82,7 +82,6 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
         this.reducerThread = new Thread(new PoolReducerRunnable());
     }
 
-    /** {@inheritDoc} */
     @Override
     public void start() {
         reducerThread.setName(toString());
@@ -164,13 +163,11 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
             terminate();
     }
 
-    /** {@inheritDoc} */
     @Override
     public Thread.State getState() {
         return reducerThread.getState();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void terminate() {
         terminated = true;
