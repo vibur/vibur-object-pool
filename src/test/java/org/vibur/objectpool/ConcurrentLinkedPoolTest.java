@@ -53,6 +53,11 @@ public class ConcurrentLinkedPoolTest {
         clp.restore(obj1);
         clp.restore(obj2);
         clp.restore(obj3);
+        try {
+            clp.restore(null);
+            fail();
+        } catch (NullPointerException ignored) {
+        }
     }
 
     @Test
@@ -61,6 +66,7 @@ public class ConcurrentLinkedPoolTest {
                 new SimpleObjectFactory(), 1, 10, false);
 
         // tests the initial pool state
+        assertFalse(clp.isTerminated());
         assertEquals(1, clp.initialSize());
         assertEquals(10, clp.maxSize());
 
@@ -117,13 +123,14 @@ public class ConcurrentLinkedPoolTest {
 
         // terminates the pool and test
         clp.terminate();
+        assertTrue(clp.isTerminated());
         assertEquals(1, clp.initialSize());
         assertEquals(10, clp.maxSize());
 
         assertEquals(0, clp.createdTotal());
         assertEquals(0, clp.remainingCreated());
         assertEquals(0, clp.remainingCapacity());
-        assertEquals(10, clp.taken());
+        assertEquals(0, clp.taken());
     }
 
     @Test

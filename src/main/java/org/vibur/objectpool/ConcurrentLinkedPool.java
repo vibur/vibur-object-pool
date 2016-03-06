@@ -180,8 +180,11 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     @Override
     public void restore(T object, boolean valid) {
         if (object == null) throw new NullPointerException();
-        if (isTerminated())
+        if (isTerminated()) {
+            createdTotal.decrementAndGet();
+            poolObjectFactory.destroy(object);
             return;
+        }
 
         if (listener != null)
             listener.onRestore(object);
@@ -249,7 +252,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     @Override
     public int taken() {
-        return isTerminated() ? maxSize() : calculateTaken();
+        return isTerminated() ? createdTotal() : calculateTaken();
     }
 
     private int calculateTaken() {
