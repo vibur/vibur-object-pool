@@ -52,7 +52,7 @@ public class ConcurrentLinkedPoolTestPerf {
         // Each tryTake() call has a TIMEOUT_MS and the number of unsuccessful takes is recorded.
         // Measures and reports the total time taken by the test in ms.
 
-        PoolService<Object> pool = new ConcurrentLinkedPool<Object>(
+        PoolService<Object> pool = new ConcurrentLinkedPool<>(
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
 
         AtomicInteger errors = new AtomicInteger(0);

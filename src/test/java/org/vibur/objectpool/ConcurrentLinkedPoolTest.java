@@ -37,7 +37,7 @@ public class ConcurrentLinkedPoolTest {
 
     @Test
     public void testSimpleTakes() throws Exception {
-        clp = new ConcurrentLinkedPool<Object>(
+        clp = new ConcurrentLinkedPool<>(
                 new SimpleObjectFactory(), 1, 3, false);
 
         Object obj1 = clp.take();
@@ -62,7 +62,7 @@ public class ConcurrentLinkedPoolTest {
 
     @Test
     public void testSimpleMetrics() throws Exception {
-        clp = new ConcurrentLinkedPool<Object>(
+        clp = new ConcurrentLinkedPool<>(
                 new SimpleObjectFactory(), 1, 10, false);
 
         // tests the initial pool state
@@ -135,7 +135,7 @@ public class ConcurrentLinkedPoolTest {
 
     @Test
     public void testPoolReductions() throws Exception {
-        clp = new ConcurrentLinkedPool<Object>(
+        clp = new ConcurrentLinkedPool<>(
                 new SimpleObjectFactory(), 1, 10, false);
 
         // takes all objects and test
@@ -224,7 +224,7 @@ public class ConcurrentLinkedPoolTest {
 
     @Test
     public void testNoValidations() throws Exception {
-        clp = new ConcurrentLinkedPool<Object>(
+        clp = new ConcurrentLinkedPool<>(
                 new SimpleObjectFactory(), 1, 2, false);
 
         // takes one object and test

@@ -122,9 +122,7 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
         Throwable thrown = null;
         try {
             reduced = poolService.reduceCreated(reduction, false);
-        } catch (RuntimeException e) {
-            thrown = e;
-        } catch (Error e) {
+        } catch (RuntimeException | Error e) {
             thrown = e;
         } finally {
             afterReduce(reduction, reduced, thrown);

@@ -109,7 +109,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         this.maxSize = maxSize;
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
-        this.available = new ConcurrentLinkedQueue<T>();
+        this.available = new ConcurrentLinkedQueue<>();
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
             available.add(create());
@@ -211,10 +211,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
                     object = create();
             }
             return object;
-        } catch (RuntimeException e) {
-            recoverInnerState(1); throw e;
-        } catch (Error e) {
-            recoverInnerState(1); throw e;
+        } catch (RuntimeException | Error e) {
+            recoverInnerState(1);
+            throw e;
         }
     }
 
@@ -232,10 +231,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
                 object = null;
             }
             return object;
-        } catch (RuntimeException e) {
-            recoverInnerState(1); throw e;
-        } catch (Error e) {
-            recoverInnerState(1); throw e;
+        } catch (RuntimeException | Error e) {
+            recoverInnerState(1);
+            throw e;
         }
     }
 

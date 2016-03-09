@@ -44,7 +44,7 @@ public class SamplingPoolReducerTest {
 
     @Test
     public void testPoolShrinking() throws Exception {
-        clp = new ConcurrentLinkedPool<Object>(new SimpleObjectFactory(), 10, 100, false);
+        clp = new ConcurrentLinkedPool<>(new SimpleObjectFactory(), 10, 100, false);
 
         // tests the initial pool state
         assertEquals(10, clp.initialSize());

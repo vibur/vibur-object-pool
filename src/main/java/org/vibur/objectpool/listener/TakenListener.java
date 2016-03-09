@@ -52,6 +52,6 @@ public class TakenListener<T> implements Listener<T> {
     }
 
     public List<T> getTaken() {
-        return new ArrayList<T>(taken);
+        return new ArrayList<>(taken);
     }
 }
