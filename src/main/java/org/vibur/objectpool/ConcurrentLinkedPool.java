@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * An object pool based on a {@link ConcurrentLinkedQueue} guarded by a {@link Semaphore}. This
  * object pool does not provide any validation whether the currently restored object
@@ -99,10 +101,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
                                 int initialSize, int maxSize, boolean fair, Listener<T> listener) {
         if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
             throw new IllegalArgumentException();
-        if (poolObjectFactory == null)
-            throw new NullPointerException();
 
-        this.poolObjectFactory = poolObjectFactory;
+        this.poolObjectFactory = requireNonNull(poolObjectFactory);
         this.listener = listener;
 
         this.initialSize = initialSize;
@@ -118,9 +118,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     }
 
     private T create() {
-        T object = poolObjectFactory.create();
-        if (object == null) throw new NullPointerException();
-        return object;
+        return requireNonNull(poolObjectFactory.create());
     }
 
     @Override
@@ -179,7 +177,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     @Override
     public void restore(T object, boolean valid) {
-        if (object == null) throw new NullPointerException();
+        requireNonNull(object);
         if (isTerminated()) {
             createdTotal.decrementAndGet();
             poolObjectFactory.destroy(object);
