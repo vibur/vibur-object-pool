@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * @author Simeon Malchev
  * @param <T> the type of objects held in this object pool
  */
-public interface PoolService<T> {
+public interface PoolService<T> extends AutoCloseable {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call which

@@ -326,6 +326,16 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         drainCreated();
     }
 
+    /**
+     * A synonym for {@link #terminate()}.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() {
+        terminate();
+    }
+
     @Override
     public boolean isTerminated() {
         return terminated.get();
