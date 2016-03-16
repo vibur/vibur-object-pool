@@ -111,7 +111,8 @@ public class ConcurrentLinkedPoolTestPerf {
                     if (obj != null) {
                         doWork(millis);
                         pool.restore(obj);
-                    } else
+                    }
+                    else
                         errors.incrementAndGet();
                 }
             } catch (InterruptedException e) {

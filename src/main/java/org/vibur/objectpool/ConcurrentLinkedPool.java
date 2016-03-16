@@ -197,7 +197,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
             if (object == null) {
                 createdTotal.incrementAndGet();
                 object = create();
-            } else {
+            }
+            else {
                 boolean ready = false;
                 try {
                     ready = poolObjectFactory.readyToTake(object);
