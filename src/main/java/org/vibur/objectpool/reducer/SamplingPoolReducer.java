@@ -20,6 +20,9 @@ import org.vibur.objectpool.PoolService;
 
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Objects.requireNonNull;
+import static org.vibur.objectpool.util.ArgumentUtils.forbidIllegalArgument;
+
 /**
  * A sampling pool reducer util, which is waken up a given number of times during
  * a predefined period of time, and checks whether the number of available
@@ -66,17 +69,18 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
      *                {@code timeInterval} period in order to sample various information from
      *                the given {@code poolService}
      * @throws IllegalArgumentException if one of the following holds:<br>
-     *         {@code poolService == null || timeInterval <= 0 || unit == null || samples <= 0}
+     *         {@code timeInterval <= 0 || samples <= 0}
+     * @throws NullPointerException if one of the following holds:<br>
+     *         {@code poolService == null || unit == null}
      */
     public SamplingPoolReducer(PoolService<T> poolService, long timeInterval, TimeUnit unit, int samples) {
-        if (poolService == null || timeInterval <= 0 || unit == null || samples <= 0)
-            throw new IllegalArgumentException();
+        forbidIllegalArgument(timeInterval <= 0);
+        forbidIllegalArgument(samples <= 0);
 
         this.sleepTimeout = timeInterval / samples;
-        if (this.sleepTimeout == 0)
-            throw new IllegalArgumentException();
-        this.poolService = poolService;
-        this.unit = unit;
+        forbidIllegalArgument(sleepTimeout == 0);
+        this.poolService = requireNonNull(poolService);
+        this.unit = requireNonNull(unit);
         this.samples = samples;
 
         this.reducerThread = new Thread(new PoolReducerRunnable());

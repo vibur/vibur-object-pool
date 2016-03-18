@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.requireNonNull;
+import static org.vibur.objectpool.util.ArgumentUtils.forbidIllegalArgument;
 
 /**
  * An object pool based on a {@link ConcurrentLinkedQueue} guarded by a {@link Semaphore}. This
@@ -99,8 +100,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair, Listener<T> listener) {
-        if (initialSize < 0 || maxSize < 1 || maxSize < initialSize)
-            throw new IllegalArgumentException();
+        forbidIllegalArgument(initialSize < 0);
+        forbidIllegalArgument(maxSize < 1);
+        forbidIllegalArgument(maxSize < initialSize);
 
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
         this.listener = listener;
