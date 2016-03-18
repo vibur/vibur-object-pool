@@ -1,3 +1,10 @@
+Version 9.0 (21/03/2016) - recommended
+======================================
+* Migrated the source code base to Java 1.7 and implemented AutoCloseable for ConcurrentLinkedPool - issue #1.
+* Fixed issue #2 - call destroy() on returned objects after pool termination; the implication of this fix is
+  that now when closing a proxy connection after pool termination in the JDBC connection pool, the underlying
+  physical connection will be closed, too.
+
 Version 8.0 (02/02/2016)
 ========================
 * Catching-up with Vibur DBCP version 8.0.
