@@ -19,7 +19,7 @@ package org.vibur.objectpool.util;
 /**
  * @author Simeon Malchev
  */
-public class ArgumentUtils {
+public final class ArgumentUtils {
 
     private ArgumentUtils() { }
 
