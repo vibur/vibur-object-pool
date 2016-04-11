@@ -30,9 +30,8 @@ public interface PoolObjectFactory<T> {
      * for immediate use. Should <strong>never</strong> return {@code null}.
      *
      * <p>This method will be called by the constructors of {@link ConcurrentLinkedPool},
-     * and by any of the {@code take...} methods of the before
-     * mentioned two classes, if the {@code take...} methods were able to obtain a permit from the
-     * counting {@code Semaphore} guarding the pool, but there was not an available and valid object
+     * and by any of its {@code take...} methods, if the {@code take...} methods were able to obtain a permit
+     * from the counting {@code Semaphore} guarding the pool, but there was not an available and valid object
      * in the pool. I.e. this is the case when a new object is created (lazily) in the pool on request.
      *
      * @return a new object for this object pool
