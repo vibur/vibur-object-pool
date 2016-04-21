@@ -34,6 +34,7 @@ public class ConcurrentLinkedPoolTestPerf {
     private static final int MAX_SIZE = 200;
     private static final long TIMEOUT_MS = 2000;
     private static final boolean FAIR = true;
+    private static final boolean FIFO = false;
 
     // threads metrics:
     private static final int ITERATIONS = 100;
@@ -53,7 +54,7 @@ public class ConcurrentLinkedPoolTestPerf {
         // Measures and reports the total time taken by the test in ms.
 
         PoolService<Object> pool = new ConcurrentLinkedPool<>(
-                new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR);
+                new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR, null, FIFO);
 
         AtomicInteger errors = new AtomicInteger(0);
 
