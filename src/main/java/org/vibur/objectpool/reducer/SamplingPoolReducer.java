@@ -16,6 +16,7 @@
 
 package org.vibur.objectpool.reducer;
 
+import org.vibur.objectpool.BasePool;
 import org.vibur.objectpool.PoolService;
 
 import java.util.concurrent.TimeUnit;
@@ -40,14 +41,13 @@ import static org.vibur.objectpool.util.ArgumentUtils.forbidIllegalArgument;
  * SamplingPoolReducer, including the reducer's background daemon thread.
  *
  * @author Simeon Malchev
- * @param <T> the type of objects held in the observable object pool
  */
-public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
+public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     protected static final double MAX_REDUCTION_FRACTION = 0.2;
     protected int minRemainingCreated;
 
-    private final PoolService<T> poolService;
+    private final BasePool pool;
     private final long sleepTimeout;
     private final TimeUnit unit;
     private final int samples;
@@ -60,7 +60,7 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
      * {@code timeInterval} settings. The created pool reducer is not started and needs to be
      * explicitly started via calling the {@link #start()} method.
      *
-     * @param poolService the pool service which is to be reduced if necessary
+     * @param pool the pool that is to be reduced if necessary
      * @param timeInterval the time period after which the {@link SamplingPoolReducer} will try to
      *                     possibly reduce the number of created but unused objects in the
      *                     given {@code poolService}
@@ -73,13 +73,14 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
      * @throws NullPointerException if one of the following holds:<br>
      *         {@code poolService == null || unit == null}
      */
-    public SamplingPoolReducer(PoolService<T> poolService, long timeInterval, TimeUnit unit, int samples) {
+    public SamplingPoolReducer(BasePool pool, long timeInterval, TimeUnit unit, int samples) {
         forbidIllegalArgument(timeInterval <= 0);
         forbidIllegalArgument(samples <= 0);
 
         this.sleepTimeout = timeInterval / samples;
         forbidIllegalArgument(sleepTimeout == 0);
-        this.poolService = requireNonNull(poolService);
+
+        this.pool = requireNonNull(pool);
         this.unit = requireNonNull(unit);
         this.samples = samples;
 
@@ -115,7 +116,7 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
     }
 
     protected void samplePool() {
-        int remainingCreated = poolService.remainingCreated();
+        int remainingCreated = pool.remainingCreated();
         minRemainingCreated = Math.min(minRemainingCreated, remainingCreated);
     }
 
@@ -125,7 +126,7 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
         int reduced = -1;
         Throwable thrown = null;
         try {
-            reduced = poolService.reduceCreated(reduction, false);
+            reduced = pool.reduceCreated(reduction, false);
         } catch (RuntimeException | Error e) {
             thrown = e;
         } finally {
@@ -142,10 +143,10 @@ public class SamplingPoolReducer<T> implements ThreadedPoolReducer {
      * @return the calculated reduction number
      */
     protected int calculateReduction() {
-        int createdTotal = poolService.createdTotal();
+        int createdTotal = pool.createdTotal();
         int maxReduction = (int) Math.ceil(createdTotal * MAX_REDUCTION_FRACTION);
         int reduction = Math.min(minRemainingCreated, maxReduction);
-        int bottomThreshold = createdTotal - poolService.initialSize();
+        int bottomThreshold = createdTotal - pool.initialSize();
         reduction = Math.min(reduction, bottomThreshold);
         return Math.max(reduction, 0);
     }

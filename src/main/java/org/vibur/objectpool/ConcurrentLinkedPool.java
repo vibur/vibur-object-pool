@@ -18,8 +18,8 @@ package org.vibur.objectpool;
 
 import org.vibur.objectpool.listener.Listener;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,7 +29,7 @@ import static java.util.Objects.requireNonNull;
 import static org.vibur.objectpool.util.ArgumentUtils.forbidIllegalArgument;
 
 /**
- * An object pool based on a {@link ConcurrentLinkedQueue} guarded by a {@link Semaphore}. This
+ * An object pool based on a {@link ConcurrentLinkedDeque} guarded by a {@link Semaphore}. This
  * object pool does not provide any validation whether the currently restored object
  * has been taken before that from the object pool or whether this object is currently in taken state.
  * Correct usage of the pool is established by programming convention in the application.
@@ -53,7 +53,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     private final Listener<T> listener;
 
     private final Semaphore takeSemaphore;
-    private final Queue<T> available;
+    private final Deque<T> available;
+    private final boolean fifo;
 
     private final int initialSize;
     private final int maxSize;
@@ -100,6 +101,31 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      */
     public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
                                 int initialSize, int maxSize, boolean fair, Listener<T> listener) {
+        this(poolObjectFactory, initialSize, maxSize, fair, listener, true);
+    }
+
+    /**
+     * Creates a new {@code ConcurrentLinkedPool} with the given
+     * {@link PoolObjectFactory}, initial and max sizes, fairness setting.
+     *
+     * @param poolObjectFactory the factory which will be used to create new objects
+     *                          in this object pool as well as to control their lifecycle
+     * @param initialSize       the object pool initial size, i.e. the initial number of
+     *                          allocated in the object pool objects; this parameter never changes
+     * @param maxSize           the object pool max size, i.e. the max number of allocated
+     *                          in the object pool objects; this parameter never changes
+     * @param fair              the object pool fairness setting with regards to waiting threads
+     * @param listener          if not {@code null}, this listener instance methods will be called
+     *                          when the pool executes {@code take} or {@code restore} operations
+     * @param fifo              if {@code true} the underlying {@code ConcurrentLinkedDeque} will be used as a FIFO
+     *                          data structure, i.e., as a queue, otherwise it will be used as a LIFO data structure,
+     *                          i.e., as a stack.
+     * @throws IllegalArgumentException if one of the following holds:<br>
+     *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
+     * @throws NullPointerException if {@code poolObjectFactory} is null
+     */
+    public ConcurrentLinkedPool(PoolObjectFactory<T> poolObjectFactory,
+                                int initialSize, int maxSize, boolean fair, Listener<T> listener, boolean fifo) {
         forbidIllegalArgument(initialSize < 0);
         forbidIllegalArgument(maxSize < 1);
         forbidIllegalArgument(maxSize < initialSize);
@@ -110,17 +136,21 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         this.initialSize = initialSize;
         this.maxSize = maxSize;
         this.takeSemaphore = new Semaphore(maxSize, fair);
+        this.fifo = fifo;
 
-        this.available = new ConcurrentLinkedQueue<>();
+        this.available = new ConcurrentLinkedDeque<>();
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
-            available.add(create());
+            available.addLast(create());
             createdTotal.incrementAndGet();
         }
     }
 
     private T create() {
-        return requireNonNull(poolObjectFactory.create());
+        T object = poolObjectFactory.create();
+        if (object == null)
+            throw new NullPointerException();
+        return object;
     }
 
     @Override
@@ -165,7 +195,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
             return null;
         }
 
-        T object = available.poll();
+        T object = available.pollFirst();
         object = prepareToTake(object);
         if (listener != null)
             listener.onTake(object);
@@ -179,7 +209,8 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     @Override
     public void restore(T object, boolean valid) {
-        requireNonNull(object);
+        if (object == null)
+            throw new NullPointerException();
         if (isTerminated()) {
             createdTotal.decrementAndGet();
             poolObjectFactory.destroy(object);
@@ -189,8 +220,12 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         if (listener != null)
             listener.onRestore(object);
         object = prepareToRestore(object, valid);
-        if (object != null)
-            available.add(object);
+        if (object != null) {
+            if (fifo)
+                available.addLast(object);
+            else
+                available.addFirst(object);
+        }
         takeSemaphore.release();
     }
 
@@ -307,7 +342,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
                 createdTotal.incrementAndGet();
                 return cnt;
             }
-            T object = available.poll();
+            T object = fifo ? available.pollFirst() : available.pollLast();
             if (object == null) {
                 createdTotal.incrementAndGet();
                 return cnt;
