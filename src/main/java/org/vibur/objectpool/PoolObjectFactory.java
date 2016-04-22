@@ -17,11 +17,11 @@
 package org.vibur.objectpool;
 
 /**
- * Defines an interface which is to be implemented by the factory that will be used by the object
- * pools defined in this package, in order to control the lifecycle of the objects in the pools.
+ * Defines the interface that will be implemented by the factory used by the object pools
+ * defined in the package, in order to control the lifecycle of the objects in the pools.
  *
  * @author Simeon Malchev
- * @param <T> the type of objects held in the concrete object pool
+ * @param <T> the type of objects held in the client object pool
  */
 public interface PoolObjectFactory<T> {
 

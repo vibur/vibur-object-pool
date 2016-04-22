@@ -19,7 +19,9 @@ package org.vibur.objectpool;
 import org.vibur.objectpool.listener.Listener;
 
 import java.util.Deque;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,7 +55,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
     private final Listener<T> listener;
 
     private final Semaphore takeSemaphore;
-    private final Deque<T> available;
+    private final Queue<T> available;
     private final boolean fifo;
 
     private final int initialSize;
@@ -119,7 +121,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
      *                          when the pool executes {@code take} or {@code restore} operations
      * @param fifo              if {@code true} the underlying {@code ConcurrentLinkedDeque} will be used as a FIFO
      *                          data structure, i.e., as a queue, otherwise it will be used as a LIFO data structure,
-     *                          i.e., as a stack.
+     *                          i.e., as a stack
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
      * @throws NullPointerException if {@code poolObjectFactory} is null
@@ -136,12 +138,16 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         this.initialSize = initialSize;
         this.maxSize = maxSize;
         this.takeSemaphore = new Semaphore(maxSize, fair);
-        this.fifo = fifo;
 
-        this.available = new ConcurrentLinkedDeque<>();
+        this.fifo = fifo;
+        if (fifo)
+            this.available = new ConcurrentLinkedQueue<>();
+        else
+            this.available = new ConcurrentLinkedDeque<>();
+
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
-            available.addLast(create());
+            available.add(create());
             createdTotal.incrementAndGet();
         }
     }
@@ -195,7 +201,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
             return null;
         }
 
-        T object = available.pollFirst();
+        T object = available.poll();
         object = prepareToTake(object);
         if (listener != null)
             listener.onTake(object);
@@ -222,9 +228,9 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         object = prepareToRestore(object, valid);
         if (object != null) {
             if (fifo)
-                available.addLast(object);
+                available.add(object);
             else
-                available.addFirst(object);
+                ((Deque<T>) available).addFirst(object);
         }
         takeSemaphore.release();
     }
@@ -342,7 +348,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
                 createdTotal.incrementAndGet();
                 return cnt;
             }
-            T object = fifo ? available.pollFirst() : available.pollLast();
+            T object = fifo ? available.poll() : ((Deque<T>) available).pollLast();
             if (object == null) {
                 createdTotal.incrementAndGet();
                 return cnt;
