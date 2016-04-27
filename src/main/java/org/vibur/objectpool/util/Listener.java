@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Simeon Malchev
+ * Copyright 2014 Simeon Malchev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
 package org.vibur.objectpool.util;
 
 /**
+ * An instance of this interface can be supplied to the pool at its creation time, and its methods will be called
+ * upon calling the pool take and restore operations.
+ *
  * @author Simeon Malchev
  */
-public final class ArgumentUtils {
+public interface Listener<T> {
 
-    private ArgumentUtils() { }
+    void onTake(T object);
 
-    public static void forbidIllegalArgument(boolean condition) {
-        if (condition)
-            throw new IllegalArgumentException();
-    }
+    void onRestore(T object);
 }
+

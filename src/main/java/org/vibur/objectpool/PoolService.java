@@ -16,7 +16,7 @@
 
 package org.vibur.objectpool;
 
-import org.vibur.objectpool.listener.Listener;
+import org.vibur.objectpool.util.Listener;
 
 import java.util.concurrent.TimeUnit;
 

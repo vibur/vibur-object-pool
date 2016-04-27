@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.vibur.objectpool.listener;
+package org.vibur.objectpool.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

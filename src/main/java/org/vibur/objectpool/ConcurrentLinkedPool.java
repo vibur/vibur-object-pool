@@ -16,7 +16,7 @@
 
 package org.vibur.objectpool;
 
-import org.vibur.objectpool.listener.Listener;
+import org.vibur.objectpool.util.Listener;
 
 import java.util.Deque;
 import java.util.Queue;
@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.requireNonNull;
-import static org.vibur.objectpool.util.ArgumentUtils.forbidIllegalArgument;
+import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument;
 
 /**
  * An object pool based on a {@link ConcurrentLinkedDeque} guarded by a {@link Semaphore}. This
