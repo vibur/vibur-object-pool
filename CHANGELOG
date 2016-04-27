@@ -1,4 +1,4 @@
-Version 9.0 (26/04/2016)
+Version 9.0 (30/04/2016)
 ========================
 * Migrated the source code base to Java 1.7 and implemented AutoCloseable for ConcurrentLinkedPool - issue #1.
 * Fixed issue #2 - call destroy() on returned objects after pool termination; the implication of this fix is
@@ -6,6 +6,8 @@ Version 9.0 (26/04/2016)
   physical connection will be closed, too.
 * Added a new parameter to the ConcurrentLinkedPool constructor in order to allow the underlying objects storing
   data structure used by the pool to be either FIFO or LIFO. Before it was always FIFO.
+* Refactoring - moved ThreadedPoolReducer and Listener interfaces and their implementation classes under
+  org.vibur.objectpool.util package.
 
 Version 8.0 (02/02/2016)
 ========================
