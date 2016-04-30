@@ -1,3 +1,4 @@
+<img align="left" src="http://www.vibur.org/img/vibur-130x130.png" alt="Vibur logo"> 
 Vibur Object Pool is a general-purpose concurrent Java object pool that is built entirely using standard 
 Java concurrency utilities, does not use any synchronized blocks or methods, and does not have any 
 external dependencies.
