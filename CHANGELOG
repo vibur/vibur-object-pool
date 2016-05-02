@@ -1,4 +1,4 @@
-Version 9.0 (30/04/2016)
+Version 9.0 (02/05/2016)
 ========================
 * Migrated the source code base to Java 1.7 and implemented AutoCloseable for ConcurrentLinkedPool - issue #1.
 * Fixed issue #2 - call destroy() on returned objects after pool termination; the implication of this fix is
