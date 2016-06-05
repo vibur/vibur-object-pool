@@ -140,10 +140,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.fifo = fifo;
-        if (fifo)
-            this.available = new ConcurrentLinkedQueue<>();
-        else
-            this.available = new ConcurrentLinkedDeque<>();
+        this.available = fifo ? new ConcurrentLinkedQueue<T>() : new ConcurrentLinkedDeque<T>();
 
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
