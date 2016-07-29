@@ -35,8 +35,6 @@ public interface ThreadedPoolReducer {
 
     /**
      * Returns the state of the underlying thread.
-     *
-     * @return see above
      */
     Thread.State getState();
 

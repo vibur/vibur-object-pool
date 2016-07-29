@@ -165,7 +165,7 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(0, clp.taken());
 
         // reduce the number of created objects in the pool by 5 and test
-        int reduction = clp.reduceCreated(5, false);
+        int reduction = clp.reduceCreatedBy(5, false);
         assertEquals(5, reduction);
 
         assertEquals(1, clp.initialSize());

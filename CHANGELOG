@@ -1,3 +1,8 @@
+Version 10.0 (31/07/2016)
+=========================
+* Renamed reduceCreated() to reduceCreatedBy() and added reduceCreatedTo() method in the BasePool interface.
+* JavaDoc fixes, importantly, addressed https://github.com/vibur/vibur-object-pool/issues/3.
+
 Version 9.0 (02/05/2016)
 ========================
 * Migrated the source code base to Java 1.7 and implemented AutoCloseable for ConcurrentLinkedPool - issue #1.

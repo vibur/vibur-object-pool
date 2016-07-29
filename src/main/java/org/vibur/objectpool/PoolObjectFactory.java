@@ -27,7 +27,7 @@ public interface PoolObjectFactory<T> {
 
     /**
      * Creates a new object for the calling object pool. This object is presumed to be ready (and valid)
-     * for immediate use. Should <strong>never</strong> return {@code null}.
+     * for immediate use. Should <b>never</b> return {@code null}.
      *
      * <p>This method will be called by the constructors of {@link ConcurrentLinkedPool},
      * and by any of its {@code take...} methods, if the {@code take...} methods were able to obtain a permit
@@ -76,7 +76,7 @@ public interface PoolObjectFactory<T> {
     /**
      * A method which will be called when an object from the object pool needs to be destroyed,
      * which is when the {@link #readyToTake} or {@link #readyToRestore} methods have returned
-     * {@code false}, or when the pool is shrinking its size (via calling {@code reduceCreated}),
+     * {@code false}, or when the pool is shrinking its size (via calling {@code reduceCreatedBy/To}),
      * or when the pool is terminating. The simplest implementation of this method may simply
      * do nothing, however if there are any allocated resources associated with the to-be-destroyed
      * object, like network connections or similar, this is the ideal place where they can be

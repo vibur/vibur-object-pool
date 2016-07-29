@@ -80,15 +80,27 @@ public interface BasePool extends AutoCloseable {
 
 
     /**
-     * Tries to remove (and destroy) up to {@code reduction} objects from the object pool.
-     * May bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
+     * Tries to remove (and destroy) up to {@code reduceBy} objects from the object pool. This method may
+     * bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
      *
-     * @param reduction         the desired amount of objects to be removed
+     * @param reduceBy          the desired amount of objects to be removed
      * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
      *                          reduced to less than {@link #initialSize()}
      * @return the actual amount of objects removed
      */
-    int reduceCreated(int reduction, boolean ignoreInitialSize);
+    int reduceCreatedBy(int reduceBy, boolean ignoreInitialSize);
+
+    /**
+     * Tries to remove (and destroy) such number of objects from the object pool that the number of
+     * {@link #createdTotal()} objects in the pool to become equal of {@code reduceTo}. This method may bring
+     * the object pool {@link #createdTotal()} to a number smaller than its {@link #initialSize()}.
+     *
+     * @param reduceTo          the desired amount of created objects to remain in the pool
+     * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
+     *                          reduced to less than {@link #initialSize()}
+     * @return the actual amount of objects removed
+     */
+    int reduceCreatedTo(int reduceTo, boolean ignoreInitialSize);
 
     /**
      * Tries to remove (and destroy) as many created objects from this object pool as possible.
@@ -112,4 +124,11 @@ public interface BasePool extends AutoCloseable {
      * @return {@code true} if the object pool is terminated
      */
     boolean isTerminated();
+
+    /**
+     * A synonym for {@link #terminate()}. Overrides the {@link AutoCloseable}'s method in order to overrule
+     * the throwing of a checked {@code Exception}.
+     */
+    @Override
+    void close();
 }

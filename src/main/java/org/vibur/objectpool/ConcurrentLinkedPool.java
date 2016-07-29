@@ -32,7 +32,7 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
 
 /**
  * An object pool based on a {@link ConcurrentLinkedDeque} guarded by a {@link Semaphore}. This
- * object pool does not provide any validation whether the currently restored object
+ * object pool does <b>not</b> provide any validation whether the currently restored object
  * has been taken before that from the object pool or whether this object is currently in taken state.
  * Correct usage of the pool is established by programming convention in the application.
  *
@@ -192,7 +192,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         return newObject();
     }
 
-    protected T newObject() {
+    private T newObject() {
         if (isTerminated()) {
             takeSemaphore.release();
             return null;
@@ -303,7 +303,7 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
     @Override
     public int drainCreated() {
-        return reduceCreated(Integer.MAX_VALUE, true);
+        return reduceCreatedTo(0, true);
     }
 
     @Override
@@ -335,24 +335,41 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
 
     @Override
-    public int reduceCreated(int reduction, boolean ignoreInitialSize) {
-        if (reduction < 0)
-            throw new IllegalArgumentException();
+    public int reduceCreatedBy(int reduceBy, boolean ignoreInitialSize) {
+        forbidIllegalArgument(reduceBy < 0);
 
-        for (int cnt = 0; cnt < reduction; cnt++) {
-            int newTotal = createdTotal.decrementAndGet();
-            if (!ignoreInitialSize && newTotal < initialSize) {
-                createdTotal.incrementAndGet();
+        for (int cnt = 0; cnt < reduceBy; cnt++) {
+            if (!reduceByOne(ignoreInitialSize))
                 return cnt;
-            }
-            T object = fifo ? available.poll() : ((Deque<T>) available).pollLast();
-            if (object == null) {
-                createdTotal.incrementAndGet();
-                return cnt;
-            }
-            poolObjectFactory.destroy(object);
         }
-        return reduction;
+        return reduceBy;
+    }
+
+    @Override
+    public int reduceCreatedTo(int reduceTo, boolean ignoreInitialSize) {
+        forbidIllegalArgument(reduceTo < 0);
+
+        int cnt;
+        for (cnt = 0; createdTotal() > reduceTo; cnt++) {
+            if (!reduceByOne(ignoreInitialSize))
+                return cnt;
+        }
+        return cnt;
+    }
+
+    private boolean reduceByOne(boolean ignoreInitialSize) {
+        int newTotal = createdTotal.decrementAndGet();
+        if (!ignoreInitialSize && newTotal < initialSize) {
+            createdTotal.incrementAndGet();
+            return false;
+        }
+        T object = fifo ? available.poll() : ((Deque<T>) available).pollLast();
+        if (object == null) {
+            createdTotal.incrementAndGet();
+            return false;
+        }
+        poolObjectFactory.destroy(object);
+        return true;
     }
 
 
@@ -367,11 +384,6 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
         drainCreated();
     }
 
-    /**
-     * A synonym for {@link #terminate()}.
-     * <p>
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
         terminate();

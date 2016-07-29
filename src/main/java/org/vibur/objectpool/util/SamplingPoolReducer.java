@@ -17,7 +17,6 @@
 package org.vibur.objectpool.util;
 
 import org.vibur.objectpool.BasePool;
-import org.vibur.objectpool.PoolService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -56,22 +55,22 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     private volatile boolean terminated = false;
 
     /**
-     * Creates a new {@link SamplingPoolReducer} with the given {@link PoolService} and
+     * Creates a new {@link SamplingPoolReducer} with the given {@link BasePool} and
      * {@code timeInterval} settings. The created pool reducer is not started and needs to be
      * explicitly started via calling the {@link #start()} method.
      *
      * @param pool the pool that is to be reduced if necessary
      * @param timeInterval the time period after which the {@link SamplingPoolReducer} will try to
      *                     possibly reduce the number of created but unused objects in the
-     *                     given {@code poolService}
+     *                     given {@code pool}
      * @param unit the time unit of the {@code timeInterval} argument
      * @param samples how many times the {@link SamplingPoolReducer} will wake up during the given
      *                {@code timeInterval} period in order to sample various information from
-     *                the given {@code poolService}
+     *                the given {@code pool}
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code timeInterval <= 0 || samples <= 0}
      * @throws NullPointerException if one of the following holds:<br>
-     *         {@code poolService == null || unit == null}
+     *         {@code pool == null || unit == null}
      */
     public SamplingPoolReducer(BasePool pool, long timeInterval, TimeUnit unit, int samples) {
         forbidIllegalArgument(timeInterval <= 0);
@@ -126,7 +125,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         int reduced = -1;
         Throwable thrown = null;
         try {
-            reduced = pool.reduceCreated(reduction, false);
+            reduced = pool.reduceCreatedBy(reduction, false);
         } catch (RuntimeException | Error e) {
             thrown = e;
         } finally {

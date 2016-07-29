@@ -56,12 +56,14 @@ public interface PoolService<T> extends BasePool {
     T takeUninterruptibly();
 
     /**
-     * Takes an object from the object pool if there is such available. This is a blocking call which
-     * waits up to the specified {@code timeout}  for an object to become available. If the calling
-     * thread is interrupted while waiting this call will return {@code null} and the thread's
-     * interrupted status will be set to {@code true}.
+     * Tries to take an object from the object pool if there is one available. This is a blocking call that
+     * waits for an object to become available up to the specified {@code timeout} plus the object creation
+     * time if no available and valid object was found in the pool. If the calling thread is interrupted
+     * while waiting this call will return {@code null} and the thread's interrupted status will be set to
+     * {@code true}.
      *
-     * @param timeout the maximum time to wait for an object to become available in the object pool
+     * @param timeout the maximum time to wait for an object to become available in the object pool;
+     *                this timeout does not include the object creation time, see above
      * @param unit the time unit of the {@code timeout} argument
      * @return an object taken from the object pool or {@code null} if the specified timeout expires
      * or if it was interrupted while waiting
@@ -77,7 +79,7 @@ public interface PoolService<T> extends BasePool {
     T tryTake();
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong>
+     * Restores (returns) an object to the object pool. The object pool will <b>not</b>
      * validate whether the currently restored object has been taken before that from this object pool
      * or whether it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
      *
@@ -86,7 +88,7 @@ public interface PoolService<T> extends BasePool {
     void restore(T object);
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <strong>not</strong>
+     * Restores (returns) an object to the object pool. The object pool will <b>not</b>
      * validate whether the currently restored object has been taken before that from this object pool
      * or whether it is currently in taken state.
      *
@@ -100,7 +102,7 @@ public interface PoolService<T> extends BasePool {
     /**
      * Returns the {@link Listener} interface instance associated with this object pool, if any.
      *
-     * @return  see above. {@code null} means no {@code Listener} is associated with this object pool.
+     * @return  see above; {@code null} means no {@code Listener} is associated with this object pool.
      */
     Listener<T> listener();
 
