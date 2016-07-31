@@ -164,7 +164,7 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
 
-        // reduce the number of created objects in the pool by 5 and test
+        // reduce the number of the created objects in the pool BY 5 and test
         int reduction = clp.reduceCreatedBy(5, false);
         assertEquals(5, reduction);
 
@@ -196,9 +196,21 @@ public class ConcurrentLinkedPoolTest {
         assertEquals(10, clp.remainingCapacity());
         assertEquals(0, clp.taken());
 
+        // reduce the number of the created objects in the pool TO 3 and test
+        reduction = clp.reduceCreatedTo(3, false);
+        assertEquals(7, reduction);
+
+        assertEquals(1, clp.initialSize());
+        assertEquals(10, clp.maxSize());
+
+        assertEquals(3, clp.createdTotal());
+        assertEquals(3, clp.remainingCreated());
+        assertEquals(10, clp.remainingCapacity());
+        assertEquals(0, clp.taken());
+
         // drain all created objects from the pool and test
         int drained = clp.drainCreated();
-        assertEquals(10, drained);
+        assertEquals(3, drained);
 
         assertEquals(1, clp.initialSize());
         assertEquals(10, clp.maxSize());
