@@ -88,10 +88,14 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     @Override
     public void start() {
-        reducerThread.setName(toString());
+        reducerThread.setName(getThreadName());
         reducerThread.setDaemon(true);
         reducerThread.setPriority(Thread.MAX_PRIORITY - 2);
         reducerThread.start();
+    }
+
+    protected String getThreadName() {
+        return reducerThread.getName();
     }
 
     private class PoolReducerRunnable implements Runnable {
