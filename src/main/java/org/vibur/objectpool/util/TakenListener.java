@@ -16,9 +16,7 @@
 
 package org.vibur.objectpool.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,7 +49,7 @@ public class TakenListener<T> implements Listener<T> {
         taken.remove(object);
     }
 
-    public List<T> getTaken() {
-        return new ArrayList<>(taken);
+    public T[] getTaken(T[] a) {
+        return taken.toArray(a);
     }
 }
