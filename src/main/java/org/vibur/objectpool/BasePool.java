@@ -35,7 +35,7 @@ public interface BasePool extends AutoCloseable {
     int taken();
 
     /**
-     * Returns the number of remaining created objects which currently exist in this object pool.
+     * Returns the number of remaining created objects which are currently available in this object pool.
      * This number is less than or equal to the object pool {@link #remainingCapacity()}.
      * Typically used for testing and debugging purposes.
      *
