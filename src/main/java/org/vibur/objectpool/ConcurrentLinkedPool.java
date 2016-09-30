@@ -144,8 +144,13 @@ public class ConcurrentLinkedPool<T> implements PoolService<T> {
 
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
-            available.add(create());
-            createdTotal.incrementAndGet();
+            try {
+                available.add(create());
+                createdTotal.incrementAndGet();
+            } catch (RuntimeException | Error e) {
+                drainCreated();
+                throw e;
+            }
         }
     }
 
