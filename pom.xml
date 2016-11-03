@@ -93,6 +93,9 @@
     </properties>
 
     <dependencies>
+        <!-- Disruptor dependency will be used only if MultithreadConcurrentQueueCollection
+             is injected as a ConcurrentCollection in ConcurrentPool. If the client's application
+             wants to use and inject MCQC, it needs to provide the below dependency. -->
         <dependency>
             <groupId>com.conversantmedia</groupId>
             <artifactId>disruptor</artifactId>
