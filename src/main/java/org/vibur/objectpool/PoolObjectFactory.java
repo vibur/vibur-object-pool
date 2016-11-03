@@ -29,7 +29,7 @@ public interface PoolObjectFactory<T> {
      * Creates a new object for the calling object pool. This object is presumed to be ready (and valid)
      * for immediate use. Should <b>never</b> return {@code null}.
      *
-     * <p>This method will be called by the constructors of {@link ConcurrentLinkedPool},
+     * <p>This method will be called by the constructors of {@link ConcurrentPool},
      * and by any of its {@code take...} methods, if the {@code take...} methods were able to obtain a permit
      * from the counting {@code Semaphore} guarding the pool, but there was not an available and valid object
      * in the pool. I.e. this is the case when a new object is created (lazily) in the pool on request.
@@ -40,9 +40,8 @@ public interface PoolObjectFactory<T> {
 
     /**
      * A validation/activation hook which will be called by the {@code take...} methods of
-     * {@link ConcurrentLinkedPool} when an object from
-     * the object pool is requested by the application. This is an optional operation
-     * which concrete implementation may simply always return {@code true}.
+     * {@link ConcurrentPool} when an object from the object pool is requested by the application.
+     * This is an optional operation which concrete implementation may simply always return {@code true}.
      *
      * <p>If there is a particular activation or validation which needs to be done
      * for the taken from the pool object, this is the ideal place where it can be done.
@@ -57,10 +56,9 @@ public interface PoolObjectFactory<T> {
 
     /**
      * A validation/passivation hook which will be called by the {@code restore} methods of
-     * {@link ConcurrentLinkedPool} when an object taken
-     * before that from the object pool is about to be restored (returned back) to the pool.
-     * This is an optional operation which concrete implementation may simply always return
-     * {@code true}.
+     * {@link ConcurrentPool} when an object taken before that from the object pool is about to be
+     * restored (returned back) to the pool. This is an optional operation which concrete implementation
+     * may simply always return {@code true}.
      *
      * <p>If there is a particular passivation or validation which needs to be done
      * for the restored to the pool object, this is the ideal place where it can be done.

@@ -18,7 +18,7 @@ package org.vibur.objectpool.util;
 
 import org.junit.After;
 import org.junit.Test;
-import org.vibur.objectpool.ConcurrentLinkedPool;
+import org.vibur.objectpool.ConcurrentPool;
 import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
 
@@ -33,51 +33,51 @@ import static org.junit.Assert.assertNotNull;
  */
 public class SamplingPoolReducerTest {
 
-    private PoolService<Object> clp = null;
+    private PoolService<Object> pool = null;
 
     @After
     public void tearDown() throws Exception {
-        if (clp != null )
-            clp.terminate();
-        clp = null;
+        if (pool != null )
+            pool.terminate();
+        pool = null;
     }
 
     @Test
     public void testPoolShrinking() throws Exception {
-        clp = new ConcurrentLinkedPool<>(new SimpleObjectFactory(), 10, 100, false);
+        pool = new ConcurrentPool<>(new CLDConcurrentCollection<>(), new SimpleObjectFactory(), 10, 100, false);
 
         // tests the initial pool state
-        assertEquals(10, clp.initialSize());
-        assertEquals(100, clp.maxSize());
+        assertEquals(10, pool.initialSize());
+        assertEquals(100, pool.maxSize());
 
-        assertEquals(10, clp.createdTotal());
-        assertEquals(10, clp.remainingCreated());
-        assertEquals(100, clp.remainingCapacity());
-        assertEquals(0, clp.taken());
+        assertEquals(10, pool.createdTotal());
+        assertEquals(10, pool.remainingCreated());
+        assertEquals(100, pool.remainingCapacity());
+        assertEquals(0, pool.taken());
 
         // takes 90 objects and test
         Object[] objs = new Object[90];
         for (int i = 0; i < 90; i++) {
-            objs[i] = clp.take();
+            objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
-        assertEquals(90, clp.createdTotal());
-        assertEquals(0, clp.remainingCreated());
-        assertEquals(10, clp.remainingCapacity());
-        assertEquals(90, clp.taken());
+        assertEquals(90, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(10, pool.remainingCapacity());
+        assertEquals(90, pool.taken());
 
         // restores 30 objects and test
         for (int i = 0; i < 30; i++) {
-            clp.restore(objs[i]);
+            pool.restore(objs[i]);
         }
-        assertEquals(90, clp.createdTotal());
-        assertEquals(30, clp.remainingCreated());
-        assertEquals(40, clp.remainingCapacity());
-        assertEquals(60, clp.taken());
+        assertEquals(90, pool.createdTotal());
+        assertEquals(30, pool.remainingCreated());
+        assertEquals(40, pool.remainingCapacity());
+        assertEquals(60, pool.taken());
 
         // creates, starts and then terminates the pool reducer
         final CountDownLatch finishLatch = new CountDownLatch(2);
-        ThreadedPoolReducer poolReducer = new SamplingPoolReducer(clp, 400, TimeUnit.MILLISECONDS, 3) {
+        ThreadedPoolReducer poolReducer = new SamplingPoolReducer(pool, 400, TimeUnit.MILLISECONDS, 3) {
             @Override
             protected void afterReduce(int reduction, int reduced, Throwable thrown) {
                 super.afterReduce(reduction, reduced, thrown);
@@ -93,9 +93,9 @@ public class SamplingPoolReducerTest {
         // and on the second call the reduction will be 12, as this is the number
         // of remaining created elements in the pool (smaller than 20% of 72 which is 14.4),
         // i.e. 90 - 18 - 12 = 60 elements created total.
-        assertEquals(60, clp.createdTotal());
-        assertEquals(0, clp.remainingCreated());
-        assertEquals(40, clp.remainingCapacity());
-        assertEquals(60, clp.taken());
+        assertEquals(60, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(40, pool.remainingCapacity());
+        assertEquals(60, pool.taken());
     }
 }
