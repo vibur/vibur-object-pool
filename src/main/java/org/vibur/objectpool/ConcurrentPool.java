@@ -28,9 +28,9 @@ import static java.util.Objects.requireNonNull;
 import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument;
 
 /**
- * An object pool based on a {@link ConcurrentCollection} guarded by a {@link Semaphore}. If the provided by
- * the Pool sub-class {@code ConcurrentCollection} has native implementation for {@code addFirst()} then
- * the Pool sub-class will operate in LIFO mode, otherwise in FIFO mode.
+ * An object pool based on a {@link ConcurrentCollection} guarded by a {@link Semaphore}. If the injected
+ * in the Pool {@code ConcurrentCollection} has native implementation for {@code addFirst()} then
+ * this Pool will operate in LIFO mode, otherwise in FIFO mode.
  *
  * <p>This object pool does <b>not</b> provide any validation whether the currently restored object
  * has been taken before that from the object pool or whether this object is currently in taken state.
@@ -64,10 +64,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
     private final AtomicBoolean terminated = new AtomicBoolean(false);
 
     /**
-     * Creates a new {@code AbstractConcurrentPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting.
+     * Creates a new {@code ConcurrentPool} with the given {@link PoolObjectFactory}, initial and max sizes,
+     * and fairness setting.
      *
-     * @param available         the concurrent collection that will stores the pooled objects
+     * @param available         the concurrent collection that will store the pooled objects
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
@@ -85,10 +85,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
     }
 
     /**
-     * Creates a new {@code AbstractConcurrentPool} with the given
-     * {@link PoolObjectFactory}, initial and max sizes, fairness setting.
+     * Creates a new {@code ConcurrentPool} with the given {@link PoolObjectFactory}, initial and max sizes,
+     * and fairness setting.
      *
-     * @param available         the concurrent collection that will stores the pooled objects
+     * @param available         the concurrent collection that will store the pooled objects
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
