@@ -51,11 +51,11 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  */
 public class ConcurrentPool<T> implements PoolService<T> {
 
-    private final PoolObjectFactory<T> poolObjectFactory;
-    private final Listener<T> listener;
-
     private final ConcurrentCollection<T> available;
     private final Semaphore takeSemaphore;
+
+    private final PoolObjectFactory<T> poolObjectFactory;
+    private final Listener<T> listener;
 
     private final int initialSize;
     private final int maxSize;
