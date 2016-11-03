@@ -16,36 +16,41 @@
 
 package org.vibur.objectpool.util;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+
 
 /**
- * A {@link ConcurrentLinkedDeque} based implementation of {@link ConcurrentCollection}.
+ * A {@link MultithreadConcurrentQueue} based implementation of {@link ConcurrentCollection}.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this {@code ConcurrentCollection}
  */
-public class CLDConcurrentCollection<T> implements ConcurrentCollection<T> {
+public class MultithreadConcurrentQueueCollection<T> implements ConcurrentCollection<T> {
 
-    private final Deque<T> deque = new ConcurrentLinkedDeque<T>();
+    private final ConcurrentQueue<T> queue;
 
-    @Override
-    public void addFirst(T object) {
-        deque.addFirst(object);
+    public MultithreadConcurrentQueueCollection(int capacity) {
+        queue = new MultithreadConcurrentQueue<>(capacity);
     }
 
     @Override
-    public void addLast(T object) {
-        deque.add(object);
+    public void offerFirst(T object) {
+        offerLast(object);
+    }
+
+    @Override
+    public void offerLast(T object) {
+        queue.offer(object);
     }
 
     @Override
     public T pollFirst() {
-        return deque.poll();
+        return queue.poll();
     }
 
     @Override
     public T pollLast() {
-        return deque.pollLast();
+        return pollFirst();
     }
 }

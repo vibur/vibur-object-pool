@@ -17,10 +17,10 @@
 package org.vibur.objectpool.util;
 
 /**
- * A concurrent collection that provides 4 access methods: {@link #addFirst}, {@link #addLast}, {@link #pollFirst},
+ * A concurrent collection that provides 4 access methods: {@link #offerFirst}, {@link #offerLast}, {@link #pollFirst},
  * and {@link #pollLast}. If the implementing sub-class delegates the above methods to a Collection that does not
- * have native implementation for {@code addFirst()} and {@code pollLast()} it can implement these methods
- * in the same way as {@code addLast()} and {@code pollFirst()}, respectively.
+ * have native implementation for {@code offerFirst()} and {@code pollLast()} it can implement these methods
+ * in the same way as {@code offerLast()} and {@code pollFirst()}, respectively.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this {@code ConcurrentCollection}
@@ -32,14 +32,14 @@ public interface ConcurrentCollection<T> {
      *
      * @param object the given object
      */
-    void addFirst(T object);
+    void offerFirst(T object);
 
     /**
      * Adds the given {@code object} at the tail of the {@code ConcurrentCollection}.
      *
      * @param object the given object
      */
-    void addLast(T object);
+    void offerLast(T object);
 
     /**
      * Polls an {@code object} from the head of the {@code ConcurrentCollection}.

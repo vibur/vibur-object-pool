@@ -44,7 +44,7 @@ public class SamplingPoolReducerTest {
 
     @Test
     public void testPoolShrinking() throws Exception {
-        pool = new ConcurrentPool<>(new CLDConcurrentCollection<>(), new SimpleObjectFactory(), 10, 100, false);
+        pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 10, 100, false);
 
         // tests the initial pool state
         assertEquals(10, pool.initialSize());

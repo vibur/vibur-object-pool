@@ -19,7 +19,7 @@ package org.vibur.objectpool.perf;
 import org.vibur.objectpool.ConcurrentPool;
 import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
-import org.vibur.objectpool.util.CLDConcurrentCollection;
+import org.vibur.objectpool.util.ConcurrentLinkedDequeCollection;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,7 @@ public class ConcurrentPoolTestPerf {
     private static final int INITIAL_SIZE = 50;
     private static final int MAX_SIZE = 200;
     private static final long TIMEOUT_MS = 2000;
-    private static final boolean FAIR = true;
+    private static final boolean FAIR = false;
 
     // threads metrics:
     private static final int ITERATIONS = 100;
@@ -53,7 +53,7 @@ public class ConcurrentPoolTestPerf {
         // Each tryTake() call has a TIMEOUT_MS and the number of unsuccessful takes is recorded.
         // Measures and reports the total time taken by the test in ms.
 
-        PoolService<Object> pool = new ConcurrentPool<>(new CLDConcurrentCollection<>(),
+        PoolService<Object> pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(),
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR, null);
 
         AtomicInteger errors = new AtomicInteger(0);

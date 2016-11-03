@@ -16,36 +16,36 @@
 
 package org.vibur.objectpool.util;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * A {@link ConcurrentLinkedQueue} based implementation of {@link ConcurrentCollection}.
+ * A {@link ConcurrentLinkedDeque} based implementation of {@link ConcurrentCollection}.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this {@code ConcurrentCollection}
  */
-public class CLQConcurrentCollection<T> implements ConcurrentCollection<T> {
+public class ConcurrentLinkedDequeCollection<T> implements ConcurrentCollection<T> {
 
-    private final Queue<T> queue = new ConcurrentLinkedQueue<T>();
+    private final Deque<T> deque = new ConcurrentLinkedDeque<T>();
 
     @Override
-    public void addFirst(T object) {
-        addLast(object);
+    public void offerFirst(T object) {
+        deque.addFirst(object);
     }
 
     @Override
-    public void addLast(T object) {
-        queue.add(object);
+    public void offerLast(T object) {
+        deque.add(object);
     }
 
     @Override
     public T pollFirst() {
-        return queue.poll();
+        return deque.poll();
     }
 
     @Override
     public T pollLast() {
-        return pollFirst();
+        return deque.pollLast();
     }
 }

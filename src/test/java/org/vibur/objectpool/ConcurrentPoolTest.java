@@ -18,8 +18,8 @@ package org.vibur.objectpool;
 
 import org.junit.After;
 import org.junit.Test;
-import org.vibur.objectpool.util.CLDConcurrentCollection;
-import org.vibur.objectpool.util.CLQConcurrentCollection;
+import org.vibur.objectpool.util.ConcurrentLinkedDequeCollection;
+import org.vibur.objectpool.util.ConcurrentLinkedQueueCollection;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +39,7 @@ public class ConcurrentPoolTest {
 
     @Test
     public void testSimpleTakes() throws Exception {
-        pool = new ConcurrentPool<>(new CLQConcurrentCollection<>(), new SimpleObjectFactory(), 1, 3, false);
+        pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 3, false);
 
         Object obj1 = pool.take();
         Object obj2 = pool.take();
@@ -63,7 +63,7 @@ public class ConcurrentPoolTest {
 
     @Test
     public void testSimpleMetrics() throws Exception {
-        pool = new ConcurrentPool<>(new CLQConcurrentCollection<>(), new SimpleObjectFactory(), 1, 10, false);
+        pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
         // tests the initial pool state
         assertFalse(pool.isTerminated());
@@ -135,7 +135,7 @@ public class ConcurrentPoolTest {
 
     @Test
     public void testPoolReductions() throws Exception {
-        pool = new ConcurrentPool<>(new CLDConcurrentCollection<>(), new SimpleObjectFactory(), 1, 10, false);
+        pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
         // takes all objects and test
         Object[] objs = new Object[10];
@@ -235,7 +235,7 @@ public class ConcurrentPoolTest {
 
     @Test
     public void testNoValidations() throws Exception {
-        pool = new ConcurrentPool<>(new CLDConcurrentCollection<>(), new SimpleObjectFactory(), 1, 2, false);
+        pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 2, false);
 
         // takes one object and test
         Object obj1 = pool.take();

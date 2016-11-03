@@ -29,7 +29,7 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
 
 /**
  * An object pool based on a {@link ConcurrentCollection} guarded by a {@link Semaphore}. If the injected
- * in the Pool {@code ConcurrentCollection} has native implementation for {@code addFirst()} then
+ * in the Pool {@code ConcurrentCollection} has native implementation for {@code offerFirst()} then
  * this Pool will operate in LIFO mode, otherwise in FIFO mode.
  *
  * <p>This object pool does <b>not</b> provide any validation whether the currently restored object
@@ -119,7 +119,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         this.createdTotal = new AtomicInteger(0);
         for (int i = 0; i < initialSize; i++) {
             try {
-                available.addLast(create());
+                available.offerLast(create());
                 createdTotal.incrementAndGet();
             } catch (RuntimeException | Error e) {
                 drainCreated();
@@ -205,7 +205,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
         object = prepareToRestore(object, valid);
         if (object != null)
-            available.addFirst(object);
+            available.offerFirst(object);
         takeSemaphore.release();
     }
 
