@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ConcurrentLinkedQueueCollection<T> implements ConcurrentCollection<T> {
 
-    private final Queue<T> queue = new ConcurrentLinkedQueue<T>();
+    private final Queue<T> queue = new ConcurrentLinkedQueue<>();
 
     @Override
     public void offerFirst(T object) {

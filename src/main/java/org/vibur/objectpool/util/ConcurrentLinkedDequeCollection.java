@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class ConcurrentLinkedDequeCollection<T> implements ConcurrentCollection<T> {
 
-    private final Deque<T> deque = new ConcurrentLinkedDeque<T>();
+    private final Deque<T> deque = new ConcurrentLinkedDeque<>();
 
     @Override
     public void offerFirst(T object) {
