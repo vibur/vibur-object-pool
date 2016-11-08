@@ -116,7 +116,7 @@ public class ConcurrentPoolTestPerf {
                     else
                         errors.incrementAndGet();
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
                 errors.incrementAndGet();
             } finally {
                 doneSignal.countDown();
