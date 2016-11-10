@@ -3,6 +3,8 @@ Version 12.0 (11/11/2016)
 * Added Conversant Disruptor as an optional concurrent queue/collection used by ConcurrentPool.
 * Refactoring to accommodate third-party collections having interface different than java.util.Queue/Deque,
   particularly introduced the ConcurrentCollection adapter interface.
+  To configure ConcurrentPool with Conversant Disruptor:
+    pool = new ConcurrentPool<>(new MultithreadConcurrentQueueCollection<>(100), new ObjectFactory(), 1, 100, true);
 
 Version 11.0 (18/09/2016)
 =========================
