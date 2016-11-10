@@ -36,18 +36,18 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  * has been taken before that from the object pool or whether this object is currently in taken state.
  * Correct usage of the pool is established by programming convention in the application.
  *
- * <p>This object pool provides support for fairness with regards to the waiting takers threads.
+ * <p>The pool provides support for fairness with regards to the waiting takers threads.
  * The creation of new objects and their lifecycle are controlled by a supplied during the
  * object pool creation time {@link PoolObjectFactory}. If a {@code Listener} instance has been
  * supplied when instantiating the pool, its methods will be when the pool executes {@code take}
  * or {@code restore} operations.
  *
- * <p>This object pool has support for shrinking (reduction) of the number of
+ * <p>This pool also has support for shrinking (reduction) of the number of
  * allocated on the pool objects. Note that the shrinking may reduce the
  * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
  *
  * @author Simeon Malchev
- * @param <T> the type of objects held in this object pool
+ * @param <T> the type of objects held in the pool
  */
 public class ConcurrentPool<T> implements PoolService<T> {
 
@@ -117,14 +117,18 @@ public class ConcurrentPool<T> implements PoolService<T> {
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
         this.createdTotal = new AtomicInteger(0);
-        for (int i = 0; i < initialSize; i++) {
-            try {
+        addInitialObjects();
+    }
+
+    private void addInitialObjects() {
+        try {
+            for (int i = 0; i < initialSize; i++) {
                 available.offerLast(create());
                 createdTotal.incrementAndGet();
-            } catch (RuntimeException | Error e) {
-                drainCreated();
-                throw e;
             }
+        } catch (RuntimeException | Error e) {
+            drainCreated();
+            throw e;
         }
     }
 
