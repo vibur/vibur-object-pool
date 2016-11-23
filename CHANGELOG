@@ -1,3 +1,7 @@
+Version 13.0 (23/11/2016)
+=========================
+* Added ConcurrentStackCollection as a stack pair of MultithreadConcurrentQueueCollection.
+
 Version 12.0 (11/11/2016)
 =========================
 * Added Conversant Disruptor as an optional concurrent queue/collection used by ConcurrentPool.
