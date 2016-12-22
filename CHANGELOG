@@ -1,3 +1,7 @@
+Version 14.0 (22/12/2016)
+=========================
+* Minor refactoring; catching-up with Vibur DBCP version 14.0.
+
 Version 13.0 (23/11/2016)
 =========================
 * Added ConcurrentStackCollection as a stack pair of MultithreadConcurrentQueueCollection.
