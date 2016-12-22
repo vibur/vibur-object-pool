@@ -143,7 +143,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T take() {
         try {
             takeSemaphore.acquire();
-            return newObject();
+            return poolObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -153,7 +153,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T takeUninterruptibly() {
         takeSemaphore.acquireUninterruptibly();
-        return newObject();
+        return poolObject();
     }
 
     @Override
@@ -161,7 +161,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         try {
             if (!takeSemaphore.tryAcquire(timeout, unit))
                 return null;
-            return newObject();
+            return poolObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -172,10 +172,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
             return null;
-        return newObject();
+        return poolObject();
     }
 
-    private T newObject() {
+    private T poolObject() {
         if (isTerminated()) {
             takeSemaphore.release();
             return null;
