@@ -1,3 +1,7 @@
+Version 15.0 (04/01/2017)
+=========================
+* Catching-up with Vibur DBCP version 15.0.
+
 Version 14.0 (22/12/2016)
 =========================
 * Minor refactoring; catching-up with Vibur DBCP version 14.0.
