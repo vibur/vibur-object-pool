@@ -81,7 +81,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <java.version>1.7</java.version>
-        <disruptor.version>1.2.8</disruptor.version>
+        <disruptor.version>1.2.10</disruptor.version>
         <junit.version>4.12</junit.version>
 
         <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
