@@ -21,11 +21,11 @@ import org.vibur.objectpool.util.Listener;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Defines the object pool operations. These operations include the {@code take} and
- * {@code restore} methods. The {@code restore} method do not provide any validation whether
- * the currently restored object has been taken before from the pool or whether the object is
- * currently in taken state. Correct usage of these operations is established by programming
- * convention in the application.
+ * Defines the object pool operations. These operations include the {@code take} and {@code restore} pool
+ * methods. The pool may lazily create objects upon {@code take} request; not all objects need to exist
+ * and be valid in the pool at all times. The {@code restore} methods do not provide any validation whether
+ * the currently restored object has been taken before that from the pool or whether it is in taken state.
+ * Correct usage of the {@code restore} operations is established by programming convention in the application.
  *
  * <p>The object pool implementation may support an optional fairness parameter (usually provided via the
  * pool constructor) that defines the pool behaviour with regards to waiting takers threads, as well as
@@ -39,7 +39,8 @@ public interface PoolService<T> extends BasePool {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call that
-     * waits indefinitely until an object becomes available. If the calling thread is interrupted
+     * waits indefinitely until an object becomes available; the object may need to be created as
+     * described in {@link #tryTake(long, TimeUnit)}. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
@@ -49,7 +50,8 @@ public interface PoolService<T> extends BasePool {
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call that
-     * waits indefinitely until an object becomes available.
+     * waits indefinitely until an object becomes available; the object may need to be created as
+     * described in {@link #tryTake(long, TimeUnit)}.
      *
      * @return an object taken from the object pool
      */
@@ -57,10 +59,10 @@ public interface PoolService<T> extends BasePool {
 
     /**
      * Tries to take an object from the object pool if there is one available. This is a blocking call that
-     * waits for an object to become available up to the specified {@code timeout} plus the object creation
-     * time if no ready and valid object was found in the pool. If the calling thread is interrupted
-     * while waiting this call will return {@code null} and the thread's interrupted status will be set to
-     * {@code true}.
+     * waits for an object to become available up to the specified {@code timeout}, plus optionally the object
+     * creation time - the last can happen when the pool capacity is not reached but no ready and valid
+     * object existed in the pool. If the calling thread is interrupted while waiting this call will
+     * return {@code null} and the thread's interrupted status will be set to {@code true}.
      *
      * @param timeout the maximum time to wait for an object to become available in the object pool;
      *                this timeout does not include the object creation time, see above
