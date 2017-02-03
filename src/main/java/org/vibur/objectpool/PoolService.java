@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 public interface PoolService<T> extends BasePool {
 
     /**
-     * Takes an object from the object pool if there is such available. This is a blocking call which
+     * Takes an object from the object pool if there is such available. This is a blocking call that
      * waits indefinitely until an object becomes available. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
@@ -48,7 +48,7 @@ public interface PoolService<T> extends BasePool {
     T take();
 
     /**
-     * Takes an object from the object pool if there is such available. This is a blocking call which
+     * Takes an object from the object pool if there is such available. This is a blocking call that
      * waits indefinitely until an object becomes available.
      *
      * @return an object taken from the object pool
@@ -58,7 +58,7 @@ public interface PoolService<T> extends BasePool {
     /**
      * Tries to take an object from the object pool if there is one available. This is a blocking call that
      * waits for an object to become available up to the specified {@code timeout} plus the object creation
-     * time if no available and valid object was found in the pool. If the calling thread is interrupted
+     * time if no ready and valid object was found in the pool. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will be set to
      * {@code true}.
      *
@@ -71,8 +71,9 @@ public interface PoolService<T> extends BasePool {
     T tryTake(long timeout, TimeUnit unit);
 
     /**
-     * Tries to take an object from the object pool if there is one which is immediately available. Returns
-     * {@code null} if no object is available at the moment of the call.
+     * Tries to take an object from the object pool if there is one that is immediately available; the object may
+     * need to be created as described in {@link #tryTake(long, TimeUnit)}. Returns {@code null} if no object is
+     * available at the moment of the call.
      *
      * @return an object from the object pool or {@code null} if there is no object available in the object pool
      */
