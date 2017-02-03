@@ -232,7 +232,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
             return object;
         } catch (RuntimeException | Error e) {
-            recoverInnerState(1);
+            recoverInnerState();
             throw e;
         }
     }
@@ -252,14 +252,14 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
             return object;
         } catch (RuntimeException | Error e) {
-            recoverInnerState(1);
+            recoverInnerState();
             throw e;
         }
     }
 
-    private void recoverInnerState(int permits) {
-        createdTotal.addAndGet(-permits);
-        takeSemaphore.release(permits);
+    private void recoverInnerState() {
+        createdTotal.decrementAndGet();
+        takeSemaphore.release(1);
     }
 
 
@@ -270,7 +270,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int taken() {
-        return isTerminated() ? createdTotal() : calculateTaken();
+        return !isTerminated() ? calculateTaken() : createdTotal();
     }
 
     private int calculateTaken() {
@@ -279,7 +279,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int remainingCreated() {
-        return isTerminated() ? 0 : createdTotal() - calculateTaken();
+        return !isTerminated() ? createdTotal() - calculateTaken() : 0;
     }
 
     @Override
@@ -289,8 +289,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public String toString() {
-        return super.toString() + (isTerminated() ? "[terminated]"
-            : "[remainingCreated = " + remainingCreated() + "]");
+        return super.toString() + (!isTerminated() ? "[remainingCreated = " + remainingCreated() + "]" : "[terminated]");
     }
 
 
@@ -301,7 +300,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int remainingCapacity() {
-        return isTerminated() ? 0 : takeSemaphore.availablePermits();
+        return !isTerminated() ? takeSemaphore.availablePermits() : 0;
     }
 
     @Override
