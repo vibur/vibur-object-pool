@@ -60,7 +60,7 @@ public interface PoolService<T> extends BasePool {
     /**
      * Tries to take an object from the object pool if there is one available. This is a blocking call that
      * waits for an object to become available up to the specified {@code timeout}, plus optionally the object
-     * creation time - the last can happen when the pool capacity is not reached but no ready and valid
+     * creation time - the last can happen when the pool capacity is not reached yet but no ready and valid
      * object existed in the pool. If the calling thread is interrupted while waiting this call will
      * return {@code null} and the thread's interrupted status will be set to {@code true}.
      *
@@ -82,7 +82,7 @@ public interface PoolService<T> extends BasePool {
     T tryTake();
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <b>not</b>
+     * Restores (returns) an object to the object pool. The object pool does <b>not</b>
      * validate whether the currently restored object has been taken before that from this object pool
      * or whether it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
      *
@@ -91,7 +91,7 @@ public interface PoolService<T> extends BasePool {
     void restore(T object);
 
     /**
-     * Restores (returns) an object to the object pool. The object pool will <b>not</b>
+     * Restores (returns) an object to the object pool. The object pool does <b>not</b>
      * validate whether the currently restored object has been taken before that from this object pool
      * or whether it is currently in taken state.
      *

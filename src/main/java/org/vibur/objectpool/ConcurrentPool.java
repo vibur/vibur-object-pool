@@ -29,13 +29,14 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
 
 /**
  * An object pool based on a {@link ConcurrentCollection} guarded by a {@link Semaphore}. If the injected
- * in the Pool {@code ConcurrentCollection} has native implementation for {@code offerFirst()} then
- * this Pool will operate in LIFO mode, otherwise in FIFO mode.
+ * in the pool {@code ConcurrentCollection} has native implementation for {@code offerFirst()} then
+ * this pool will operate in LIFO mode, otherwise in FIFO mode.
  *
- * <p>This pool lazily creates objects upon {@code take} request; not all objects need to exist
- * and be valid in the pool at all times.  The {@code restore} methods do not provide any validation whether
- * the currently restored object has been taken before that from the pool or whether it is in taken state.
- * Correct usage of the {@code restore} operations is established by programming convention in the application.
+ * <p>This pool lazily creates objects upon {@link #tryTake take} request if no ready and valid object exists
+ * in the pool at the moment of the call; not all objects need to exist and be valid in the pool at all times.
+ * The {@link #restore} methods do not provide any validation whether the currently restored object has been taken
+ * before that from the pool or whether it is in taken state. Correct usage of the {@code restore} operations is
+ * established by programming convention in the application.
  *
  * <p>The pool provides support for fairness with regards to the waiting takers threads.
  * The creation of new objects and their lifecycle are controlled by a supplied during the
