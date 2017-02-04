@@ -29,10 +29,10 @@ public interface PoolObjectFactory<T> {
      * Creates a new object for the calling object pool. This object is presumed to be ready (and valid)
      * for immediate use. Should <b>never</b> return {@code null}.
      *
-     * <p>This method will be called by the constructors of {@link ConcurrentPool},
-     * and by any of its {@code take...} methods, if the {@code take...} methods were able to obtain a permit
-     * from the counting {@code Semaphore} guarding the pool, but there was not an available and valid object
-     * in the pool. I.e. this is the case when a new object is created (lazily) in the pool on request.
+     * <p>This method will be called by the constructors of {@link ConcurrentPool}, and by any of its
+     * {@code take...} methods if they were able to obtain a permit from the counting {@code Semaphore}
+     * guarding the pool, but there was no ready and valid object in the pool. I.e., this is the case when
+     * a new object is created lazily in the pool upon request.
      *
      * @return a new object for this object pool
      */
