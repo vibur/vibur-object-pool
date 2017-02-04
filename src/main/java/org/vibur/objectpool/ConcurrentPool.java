@@ -32,21 +32,21 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  * in the pool {@code ConcurrentCollection} has native implementation for {@code offerFirst()} then
  * this pool will operate in LIFO mode, otherwise in FIFO mode.
  *
- * <p>This pool lazily creates objects upon {@link #tryTake take} request if no ready and valid object exists
- * in the pool at the moment of the call; not all objects need to exist and be valid in the pool at all times.
+ * <p>This pool enforces a maximum limit on the number of objects that can be contained or taken out of it at
+ * any time. The pool will lazily create an object upon {@link #tryTake take} request if no ready and valid object
+ * exists in it at the time of the call; not all objects need to exist and be valid in the pool at all times.
  * The {@link #restore} methods do not provide any validation whether the currently restored object has been taken
  * before that from the pool or whether it is in taken state. Correct usage of the {@code restore} operations is
  * established by programming convention in the application.
  *
  * <p>The pool provides support for fairness with regards to the waiting takers threads.
- * The creation of new objects and their lifecycle are controlled by a supplied during the
- * object pool creation time {@link PoolObjectFactory}. If a {@code Listener} instance has been
- * supplied when instantiating the pool, its methods will be when the pool executes {@code take}
+ * The creation of new objects and their lifecycle are controlled by the supplied during the
+ * pool creation time {@link PoolObjectFactory}. If a {@code Listener} instance has been
+ * supplied when instantiating the pool, its methods will be called when the pool executes {@code take}
  * or {@code restore} operations.
  *
- * <p>This pool also has support for shrinking (reduction) of the number of
- * allocated on the pool objects. Note that the shrinking may reduce the
- * {@link #createdTotal()} to less than the  pool {@link #initialSize()}.
+ * <p>This pool also provides support for shrinking (reduction) of the number of allocated in it objects.
+ * Note that the shrinking may reduce the {@link #createdTotal()} to less than the pool {@link #initialSize()}.
  *
  * @author Simeon Malchev
  * @param <T> the type of objects held in the pool

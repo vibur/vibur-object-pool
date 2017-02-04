@@ -22,9 +22,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Defines the object pool operations. These operations include the {@code take} and {@code restore} pool
- * methods. The pool may lazily create objects upon {@code take} request; not all objects need to exist
- * and be valid in the pool at all times. The {@code restore} methods do not provide any validation whether
- * the currently restored object has been taken before that from the pool or whether it is in taken state.
+ * methods.
+ *
+ * <p>This pool enforces a maximum limit on the number of objects that can be contained or taken out
+ * of it at any time. The pool may lazily create an object upon {@code take} request; not all objects need
+ * to exist and be valid in the pool at all times. The {@code restore} methods do not provide any validation
+ * whether the currently restored object has been taken before that from the pool or whether it is in taken state.
  * Correct usage of the {@code restore} operations is established by programming convention in the application.
  *
  * <p>The object pool implementation may support an optional fairness parameter (usually provided via the
