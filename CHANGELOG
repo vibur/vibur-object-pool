@@ -1,3 +1,8 @@
+Version 16.2 (06/02/2017)
+=========================
+* Javadoc improvements.
+* Minor refactoring.
+
 Version 16.1 (11/01/2017)
 =========================
 * Catching-up with Vibur DBCP version 16.1.
