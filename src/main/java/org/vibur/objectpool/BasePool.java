@@ -114,14 +114,14 @@ public interface BasePool extends AutoCloseable {
     /**
      * Terminates this object pool. Once terminated the object pool cannot be more revived.
      * All take and restore operations called on a terminated object pool should throw
-     * an exception or be ignored. Invocation has no additional effect if already terminated.
+     * an exception or be ignored. This method can be invoked multiple times.
      */
     void terminate();
 
     /**
      * Returns the current terminated state of this object pool.
      *
-     * @return {@code true} if the object pool is terminated
+     * @return {@code true} if the object pool is terminated; false otherwise
      */
     boolean isTerminated();
 

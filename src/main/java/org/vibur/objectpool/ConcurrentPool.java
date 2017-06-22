@@ -145,7 +145,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T take() {
         try {
             takeSemaphore.acquire();
-            return poolObject();
+            return getObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -155,7 +155,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T takeUninterruptibly() {
         takeSemaphore.acquireUninterruptibly();
-        return poolObject();
+        return getObject();
     }
 
     @Override
@@ -163,7 +163,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         try {
             if (!takeSemaphore.tryAcquire(timeout, unit))
                 return null;
-            return poolObject();
+            return getObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -174,20 +174,21 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
             return null;
-        return poolObject();
+        return getObject();
     }
 
-    private T poolObject() {
-        if (isTerminated()) {
-            takeSemaphore.release();
-            return null;
-        }
-
+    private T getObject() {
         T object = available.pollFirst();
         object = prepareToTake(object);
 
         if (listener != null)
             listener.onTake(object);
+
+        if (isTerminated() && object != null) {
+            restore(object, false);
+            return null;
+        }
+
         return object;
     }
 
@@ -200,11 +201,6 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public void restore(T object, boolean valid) {
         if (object == null)
             throw new NullPointerException();
-        if (isTerminated()) {
-            createdTotal.decrementAndGet();
-            poolObjectFactory.destroy(object);
-            return;
-        }
 
         if (listener != null)
             listener.onRestore(object);
@@ -213,6 +209,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
         if (object != null)
             available.offerFirst(object);
         takeSemaphore.release();
+
+        if (isTerminated() && valid)
+            terminate();
     }
 
     private T prepareToTake(T object) {
@@ -261,7 +260,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     private void recoverInnerState() {
         createdTotal.decrementAndGet();
-        takeSemaphore.release(1);
+        takeSemaphore.release();
     }
 
 
@@ -334,7 +333,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         int cnt;
         for (cnt = 0; createdTotal() > reduceTo; cnt++) {
             if (!reduceByOne(ignoreInitialSize))
-                return cnt;
+                break;
         }
         return cnt;
     }
@@ -357,13 +356,12 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public void terminate() {
-        if (terminated.getAndSet(true))
-            return;
-
-        // best effort to unblock any waiting on the takeSemaphore threads
-        takeSemaphore.release(takeSemaphore.getQueueLength() + 4096);
+        boolean wasTerminated = terminated.getAndSet(true);
 
         drainCreated();
+
+        if (!wasTerminated)
+            takeSemaphore.release(takeSemaphore.getQueueLength() + 4096); // best effort to unblock any waiting on the takeSemaphore threads
     }
 
     @Override
