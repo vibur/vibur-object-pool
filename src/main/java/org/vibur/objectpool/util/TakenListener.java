@@ -49,7 +49,7 @@ public class TakenListener<T> implements Listener<T> {
         taken.remove(object);
     }
 
-    public T[] getTaken(T[] a) {
+    protected T[] getTaken(T[] a) {
         return taken.toArray(a);
     }
 }
