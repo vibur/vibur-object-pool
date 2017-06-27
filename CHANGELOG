@@ -1,3 +1,7 @@
+Version 18.0 (28/06/2017)
+=========================
+* Catching-up with Vibur DBCP version 18.0.
+
 Version 17.1 (23/06/2017)
 =========================
 * Changed the object handling flow on take/restore when the pool is terminated.
