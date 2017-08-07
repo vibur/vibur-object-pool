@@ -43,41 +43,47 @@ public interface PoolService<T> extends BasePool {
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call that
      * waits indefinitely until an object becomes available; the object may need to be created as
-     * described in {@link #tryTake(long, TimeUnit)}. If the calling thread is interrupted
+     * described in {@link #tryTake(long, TimeUnit, long[])}. If the calling thread is interrupted
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
+     * @param waitedNanos used to report the time waited, see {@link #tryTake(long, TimeUnit, long[])}
      * @return an object taken from the object pool or {@code null} if was interrupted while waiting
      */
-    T take();
+    T take(long[] waitedNanos);
 
     /**
      * Takes an object from the object pool if there is such available. This is a blocking call that
      * waits indefinitely until an object becomes available; the object may need to be created as
-     * described in {@link #tryTake(long, TimeUnit)}.
+     * described in {@link #tryTake(long, TimeUnit, long[])}.
      *
+     * @param waitedNanos used to report the time waited, see {@link #tryTake(long, TimeUnit, long[])}
      * @return an object taken from the object pool
      */
-    T takeUninterruptibly();
+    T takeUninterruptibly(long[] waitedNanos);
 
     /**
      * Tries to take an object from the object pool if there is one available. This is a blocking call that
-     * waits for an object to become available up to the specified {@code timeout}, plus optionally the object
-     * creation time - the last can happen when the pool capacity is not reached yet but no ready and valid
-     * object existed in the pool. If the calling thread is interrupted while waiting this call will
-     * return {@code null} and the thread's interrupted status will be set to {@code true}.
+     * waits for an object to become available up to the specified {@code timeout}. The total method execution
+     * time may also include the object creation time - an object can be (lazily) created in the pool when the pool
+     * capacity is not reached yet but no ready and valid object existed in the pool. If the calling thread is
+     * interrupted while waiting this call will return {@code null} and the thread's interrupted status will be set
+     * to {@code true}.
      *
      * @param timeout the maximum time to wait for an object to become available in the object pool;
      *                this timeout does not include the object creation time, see above
      * @param unit the time unit of the {@code timeout} argument
+     * @param waitedNanos this parameter may be used by the implementation to report the pure nanoseconds time waited
+     *                    (excluding any object creation time) for the returned object to become available; if supported
+     *                    by the implementation, the time waited will be stored at index {code 0} of this array
      * @return an object taken from the object pool or {@code null} if the specified timeout expires
      * or if it was interrupted while waiting
      */
-    T tryTake(long timeout, TimeUnit unit);
+    T tryTake(long timeout, TimeUnit unit, long[] waitedNanos);
 
     /**
      * Tries to take an object from the object pool if there is one that is immediately available; the object may
-     * need to be created as described in {@link #tryTake(long, TimeUnit)}. Returns {@code null} if no object is
+     * need to be created as described in {@link #tryTake(long, TimeUnit, long[])}. Returns {@code null} if no object is
      * available at the moment of the call.
      *
      * @return an object from the object pool or {@code null} if there is no object available in the object pool

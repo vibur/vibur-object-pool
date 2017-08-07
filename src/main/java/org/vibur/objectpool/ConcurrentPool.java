@@ -55,6 +55,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     private final ConcurrentCollection<T> available;
     private final Semaphore takeSemaphore;
+    private final boolean reportTimeWaited;
 
     private final PoolObjectFactory<T> poolObjectFactory;
     private final Listener<T> listener;
@@ -83,7 +84,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
      */
     public ConcurrentPool(ConcurrentCollection<T> available, PoolObjectFactory<T> poolObjectFactory,
                           int initialSize, int maxSize, boolean fair) {
-        this(available, poolObjectFactory, initialSize, maxSize, fair, null);
+        this(available, poolObjectFactory, initialSize, maxSize, fair, null, false);
     }
 
     /**
@@ -100,12 +101,14 @@ public class ConcurrentPool<T> implements PoolService<T> {
      * @param fair              the object pool fairness setting with regards to waiting threads
      * @param listener          if not {@code null}, this listener instance methods will be called
      *                          when the pool executes {@code take} or {@code restore} operations
+     * @param reportTimeWaited  if {@code true} the pool take operations will report the time waited to acquire
+     *                          a permit from {@code Semaphore} guarding the pool
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
      * @throws NullPointerException if {@code available} or {@code poolObjectFactory} are null
      */
     public ConcurrentPool(ConcurrentCollection<T> available, PoolObjectFactory<T> poolObjectFactory,
-                          int initialSize, int maxSize, boolean fair, Listener<T> listener) {
+                          int initialSize, int maxSize, boolean fair, Listener<T> listener, boolean reportTimeWaited) {
         forbidIllegalArgument(initialSize < 0);
         forbidIllegalArgument(maxSize < 1);
         forbidIllegalArgument(maxSize < initialSize);
@@ -117,6 +120,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         this.initialSize = initialSize;
         this.maxSize = maxSize;
         this.takeSemaphore = new Semaphore(maxSize, fair);
+        this.reportTimeWaited = reportTimeWaited;
 
         this.createdTotal = new AtomicInteger(0);
         addInitialObjects();
@@ -125,7 +129,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     private void addInitialObjects() {
         try {
             for (int i = 0; i < initialSize; i++) {
-                available.offerLast(create());
+                available.offerLast(requireNonNull(poolObjectFactory.create()));
                 createdTotal.incrementAndGet();
             }
         } catch (RuntimeException | Error e) {
@@ -134,18 +138,19 @@ public class ConcurrentPool<T> implements PoolService<T> {
         }
     }
 
-    private T create() {
-        T object = poolObjectFactory.create();
-        if (object == null)
-            throw new NullPointerException();
-        return object;
-    }
-
     @Override
-    public T take() {
+    public T take(long[] waitedNanos) {
         try {
-            takeSemaphore.acquire();
+            long startTime = reportTimeWaited ? System.nanoTime() : 0;
+            try {
+                takeSemaphore.acquire();
+            } finally {
+                if (reportTimeWaited)
+                    waitedNanos[0] = System.nanoTime() - startTime;
+            }
+
             return getObject();
+
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -153,17 +158,32 @@ public class ConcurrentPool<T> implements PoolService<T> {
     }
 
     @Override
-    public T takeUninterruptibly() {
-        takeSemaphore.acquireUninterruptibly();
+    public T takeUninterruptibly(long[] waitedNanos) {
+        long startTime = reportTimeWaited ? System.nanoTime() : 0;
+        try {
+            takeSemaphore.acquireUninterruptibly();
+        } finally {
+            if (reportTimeWaited)
+                waitedNanos[0] = System.nanoTime() - startTime;
+        }
+
         return getObject();
     }
 
     @Override
-    public T tryTake(long timeout, TimeUnit unit) {
+    public T tryTake(long timeout, TimeUnit unit, long[] waitedNanos) {
         try {
-            if (!takeSemaphore.tryAcquire(timeout, unit))
-                return null;
+            long startTime = reportTimeWaited ? System.nanoTime() : 0;
+            try {
+                if (!takeSemaphore.tryAcquire(timeout, unit))
+                    return null;
+            } finally {
+                if (reportTimeWaited)
+                    waitedNanos[0] = System.nanoTime() - startTime;
+            }
+
             return getObject();
+
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -199,8 +219,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public void restore(T object, boolean valid) {
-        if (object == null)
-            throw new NullPointerException();
+        requireNonNull(object);
 
         if (listener != null)
             listener.onRestore(object);
@@ -218,7 +237,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         try {
             if (object == null) {
                 createdTotal.incrementAndGet();
-                object = create();
+                object = requireNonNull(poolObjectFactory.create());
             }
             else {
                 boolean ready = false;
@@ -229,7 +248,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                         poolObjectFactory.destroy(object);
                 }
                 if (!ready)
-                    object = create();
+                    object = requireNonNull(poolObjectFactory.create());
             }
             return object;
         } catch (RuntimeException | Error e) {
