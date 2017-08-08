@@ -18,7 +18,7 @@ package org.vibur.objectpool.util;
 
 /**
  * An instance of this interface can be supplied to the pool at its creation time, and its methods will be called
- * upon calling the pool take and restore operations.
+ * upon calling the pool {@code take} and {@code restore} operations.
  *
  * @author Simeon Malchev
  */

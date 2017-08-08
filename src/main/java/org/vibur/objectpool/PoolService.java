@@ -35,6 +35,8 @@ import java.util.concurrent.TimeUnit;
  * an optional {@code Listener} interface which methods will be called when a {@code take} or
  * {@code restore} pool method executes.
  *
+ * <p>The pool <b>cannot</b> contain {@code null} objects.
+ *
  * @author Simeon Malchev
  * @param <T> the type of objects held in this object pool
  */
@@ -47,8 +49,16 @@ public interface PoolService<T> extends BasePool {
      * while waiting this call will return {@code null} and the thread's interrupted status will
      * be set to {@code true}.
      *
-     * @param waitedNanos used to report the time waited, see {@link #tryTake(long, TimeUnit, long[])}
      * @return an object taken from the object pool or {@code null} if was interrupted while waiting
+     */
+    T take();
+
+    /**
+     * A counterpart of {@link #take()} that allows the time waited to obtain an object from the pool to
+     * be reported back to the caller.
+     *
+     * @param waitedNanos used to report the time waited, see {@link #tryTake(long, TimeUnit, long[])}
+     * @return an object taken from the object pool or {@code null} if it was interrupted while waiting
      */
     T take(long[] waitedNanos);
 
@@ -56,6 +66,14 @@ public interface PoolService<T> extends BasePool {
      * Takes an object from the object pool if there is such available. This is a blocking call that
      * waits indefinitely until an object becomes available; the object may need to be created as
      * described in {@link #tryTake(long, TimeUnit, long[])}.
+     *
+     * @return an object taken from the object pool
+     */
+    T takeUninterruptibly();
+
+    /**
+     * A counterpart of {@link #takeUninterruptibly()} that allows the time waited to obtain an object from the pool to
+     * be reported back to the caller.
      *
      * @param waitedNanos used to report the time waited, see {@link #tryTake(long, TimeUnit, long[])}
      * @return an object taken from the object pool
@@ -73,9 +91,21 @@ public interface PoolService<T> extends BasePool {
      * @param timeout the maximum time to wait for an object to become available in the object pool;
      *                this timeout does not include the object creation time, see above
      * @param unit the time unit of the {@code timeout} argument
-     * @param waitedNanos this parameter may be used by the implementation to report the pure nanoseconds time waited
-     *                    (excluding any object creation time) for the returned object to become available; if supported
-     *                    by the implementation, the time waited will be stored at index {code 0} of this array
+     * @return an object taken from the object pool or {@code null} if the specified timeout expires
+     * or if it was interrupted while waiting
+     */
+    T tryTake(long timeout, TimeUnit unit);
+
+    /**
+     * A counterpart of {@link #tryTake(long, TimeUnit)} that allows the time waited to obtain an object from the pool
+     * to be reported back to the caller.
+     *
+     * @param timeout the maximum time to wait for an object to become available in the object pool;
+     *                this timeout does not include the object creation time
+     * @param unit the time unit of the {@code timeout} argument
+     * @param waitedNanos this parameter is used to report the nanoseconds time waited for an object to become
+     *                    available in the pool, excluding any object creation time; the time waited will be stored
+     *                    at index {code 0} of this array; the array must be of size of at least one
      * @return an object taken from the object pool or {@code null} if the specified timeout expires
      * or if it was interrupted while waiting
      */
@@ -83,17 +113,17 @@ public interface PoolService<T> extends BasePool {
 
     /**
      * Tries to take an object from the object pool if there is one that is immediately available; the object may
-     * need to be created as described in {@link #tryTake(long, TimeUnit, long[])}. Returns {@code null} if no object is
-     * available at the moment of the call.
+     * need to be created as described in {@link #tryTake(long, TimeUnit, long[])}. Returns {@code null} if no object
+     * is available in the pool at the time of the call.
      *
-     * @return an object from the object pool or {@code null} if there is no object available in the object pool
+     * @return an object from the object pool or {@code null} if no object was available
      */
     T tryTake();
 
     /**
      * Restores (returns) an object to the object pool. The object pool does <b>not</b>
      * validate whether the currently restored object has been taken before that from this object pool
-     * or whether it is currently in taken state. Equivalent to calling {@code restore(Object, true)}.
+     * or whether it is currently in taken state. Equivalent to calling {@code restore(object, true)}.
      *
      * @param object an object to be restored (returned) to this object pool
      */

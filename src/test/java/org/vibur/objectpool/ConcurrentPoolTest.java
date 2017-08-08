@@ -31,14 +31,14 @@ public class ConcurrentPoolTest {
     private PoolService<Object> pool = null;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (pool != null )
             pool.terminate();
         pool = null;
     }
 
     @Test
-    public void testSimpleTakes() throws Exception {
+    public void testSimpleTakes() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 3, false);
 
         Object obj1 = pool.take();
@@ -62,7 +62,7 @@ public class ConcurrentPoolTest {
     }
 
     @Test
-    public void testSimpleMetrics() throws Exception {
+    public void testSimpleMetrics() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
         // tests the initial pool state
@@ -134,7 +134,7 @@ public class ConcurrentPoolTest {
     }
 
     @Test
-    public void testPoolReductions() throws Exception {
+    public void testPoolReductions() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
         // takes all objects and test
@@ -234,7 +234,7 @@ public class ConcurrentPoolTest {
     }
 
     @Test
-    public void testNoValidations() throws Exception {
+    public void testNoValidations() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 2, false);
 
         // takes one object and test
@@ -258,5 +258,17 @@ public class ConcurrentPoolTest {
         assertEquals(3, pool.remainingCapacity());
         assertEquals(2, pool.createdTotal());
         assertEquals(2, pool.maxSize());
+    }
+
+    @Test
+    public void testTimeWaited() {
+        pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 2, false);
+
+        // takes one object and test
+        long[] timeWaited = {-1};
+        Object obj1 = pool.take(timeWaited);
+
+        assertNotNull(obj1);
+        assertTrue(timeWaited[0] >= 0);
     }
 }

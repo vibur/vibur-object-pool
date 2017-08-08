@@ -36,14 +36,14 @@ public class SamplingPoolReducerTest {
     private PoolService<Object> pool = null;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (pool != null )
             pool.terminate();
         pool = null;
     }
 
     @Test
-    public void testPoolShrinking() throws Exception {
+    public void testPoolShrinking() throws InterruptedException {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 10, 100, false);
 
         // tests the initial pool state
