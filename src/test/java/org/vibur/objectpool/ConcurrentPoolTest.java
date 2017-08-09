@@ -17,7 +17,9 @@
 package org.vibur.objectpool;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.vibur.objectpool.util.ConcurrentLinkedDequeCollection;
 import org.vibur.objectpool.util.ConcurrentLinkedQueueCollection;
 
@@ -29,6 +31,9 @@ import static org.junit.Assert.*;
 public class ConcurrentPoolTest {
 
     private PoolService<Object> pool = null;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @After
     public void tearDown() {
@@ -54,11 +59,9 @@ public class ConcurrentPoolTest {
         pool.restore(obj1);
         pool.restore(obj2);
         pool.restore(obj3);
-        try {
-            pool.restore(null);
-            fail();
-        } catch (NullPointerException ignored) {
-        }
+
+        exception.expect(NullPointerException.class);
+        pool.restore(null);
     }
 
     @Test

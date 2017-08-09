@@ -112,8 +112,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
                         sample = 1;
                         minRemainingCreated = Integer.MAX_VALUE;
                     }
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) { }
             }
         }
     }
