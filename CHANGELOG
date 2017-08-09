@@ -1,3 +1,10 @@
+Version 19.0 (09/08/2017)
+=========================
+* Introduced 3 new methods in the PoolService interface that are counterparts of the existing take(),
+  takeUninterruptibly(), and tryTake() methods respectively. The newly introduced methods allow
+  the real time spent waiting for an object to become available in the pool to be reported back to the
+  caller via the waitedNanos parameter.
+
 Version 18.0 (28/06/2017)
 =========================
 * Catching-up with Vibur DBCP version 18.0.
