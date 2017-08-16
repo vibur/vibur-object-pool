@@ -1,3 +1,7 @@
+Version 19.1 (17/08/2017)
+=========================
+* Catching-up with Vibur DBCP version 19.1.
+
 Version 19.0 (09/08/2017)
 =========================
 * Introduced 3 new methods in the PoolService interface that are counterparts of the existing take(),
