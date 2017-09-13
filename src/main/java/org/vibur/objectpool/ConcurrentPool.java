@@ -226,7 +226,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         if (listener != null)
             listener.onTake(object);
 
-        if (isTerminated() && object != null) {
+        if (isTerminated()) {
             restore(object, false);
             return null;
         }
