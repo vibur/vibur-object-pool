@@ -65,6 +65,17 @@ public class ConcurrentPoolTest {
     }
 
     @Test
+    public void testInterrupted() {
+        pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 3, false);
+
+        Thread.currentThread().interrupt();
+        Object obj1 = pool.take();
+
+        assertNull(obj1);
+        assertTrue(Thread.interrupted()); // clears the interrupted flag in order to not affect subsequent tests
+    }
+
+    @Test
     public void testSimpleMetrics() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
