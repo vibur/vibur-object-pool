@@ -112,7 +112,9 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
                         sample = 1;
                         minRemainingCreated = Integer.MAX_VALUE;
                     }
-                } catch (InterruptedException ignored) { }
+                } catch (InterruptedException ignored) {
+                    terminated = true;
+                }
             }
         }
     }
@@ -175,7 +177,6 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     @Override
     public void terminate() {
-        terminated = true;
         reducerThread.interrupt();
     }
 }
