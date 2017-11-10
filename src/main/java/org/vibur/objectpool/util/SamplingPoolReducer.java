@@ -52,7 +52,6 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     private final int samples;
 
     private final Thread reducerThread;
-    private volatile boolean terminated = false;
 
     /**
      * Creates a new {@link SamplingPoolReducer} with the given {@link BasePool} and
@@ -103,7 +102,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         public void run() {
             int sample = 1;
             minRemainingCreated = Integer.MAX_VALUE;
-            while (!terminated) {
+            for (;;) {
                 try {
                     unit.sleep(sleepTimeout);
                     samplePool();
@@ -113,7 +112,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
                         minRemainingCreated = Integer.MAX_VALUE;
                     }
                 } catch (InterruptedException ignored) {
-                    terminated = true;
+                    break;
                 }
             }
         }
