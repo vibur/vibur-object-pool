@@ -21,6 +21,7 @@ import org.vibur.objectpool.BasePool;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument;
 
 /**
@@ -43,16 +44,14 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  */
 public class SamplingPoolReducer implements ThreadedPoolReducer {
 
-    protected static final double MAX_REDUCTION_FRACTION = 0.2;
-    protected int minRemainingCreated;
-
     private final BasePool pool;
-    private final long sleepTimeout;
-    private final TimeUnit unit;
+    private final long sleepNanoTime;
     private final int samples;
 
     private final Thread reducerThread;
-    private volatile boolean terminated = false;
+
+    protected static final double MAX_REDUCTION_FRACTION = 0.2;
+    protected int minRemainingCreated;
 
     /**
      * Creates a new {@link SamplingPoolReducer} with the given {@link BasePool} and
@@ -76,11 +75,10 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         forbidIllegalArgument(timeInterval <= 0);
         forbidIllegalArgument(samples <= 0);
 
-        this.sleepTimeout = timeInterval / samples;
-        forbidIllegalArgument(sleepTimeout == 0);
+        this.sleepNanoTime = unit.toNanos(timeInterval) / samples;
+        forbidIllegalArgument(sleepNanoTime == 0);
 
         this.pool = requireNonNull(pool);
-        this.unit = requireNonNull(unit);
         this.samples = samples;
 
         this.reducerThread = new Thread(new PoolReducerRunnable());
@@ -103,9 +101,9 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         public void run() {
             int sample = 1;
             minRemainingCreated = Integer.MAX_VALUE;
-            while (!terminated) {
+            for (;;) {
                 try {
-                    unit.sleep(sleepTimeout);
+                    NANOSECONDS.sleep(sleepNanoTime);
                     samplePool();
                     if (sample++ % samples == 0) {
                         reducePool();
@@ -113,7 +111,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
                         minRemainingCreated = Integer.MAX_VALUE;
                     }
                 } catch (InterruptedException ignored) {
-                    terminated = true;
+                    break;
                 }
             }
         }
