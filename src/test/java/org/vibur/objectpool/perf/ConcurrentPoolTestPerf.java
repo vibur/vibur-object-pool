@@ -73,7 +73,7 @@ public class ConcurrentPoolTestPerf {
         doneSignal.await();
 
         System.out.println(String.format("Total execution time %f ms, unsuccessful takes %d.",
-                (System.nanoTime() - start) / 1000000.0, errors.get()));
+                (System.nanoTime() - start) * 0.000_001, errors.get()));
 
         pool.terminate();
     }

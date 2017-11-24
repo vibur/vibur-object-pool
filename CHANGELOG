@@ -1,3 +1,7 @@
+Version 21.0 (22/11/2017)
+=========================
+* Transitioned the SamplingPoolReducer time measuring to nanoseconds.
+
 Version 20.0 (26/09/2017)
 =========================
 * Added a test for getting object from interrupted thread.
