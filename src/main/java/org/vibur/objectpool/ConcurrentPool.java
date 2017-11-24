@@ -55,6 +55,8 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  */
 public class ConcurrentPool<T> implements PoolService<T> {
 
+    private static final int RESERVED = 4096;
+
     private final ConcurrentCollection<T> available;
     private final Semaphore takeSemaphore;
 
@@ -111,6 +113,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         forbidIllegalArgument(initialSize < 0);
         forbidIllegalArgument(maxSize < 1);
         forbidIllegalArgument(maxSize < initialSize);
+        forbidIllegalArgument(maxSize > Integer.MAX_VALUE - RESERVED);
 
         this.available = requireNonNull(available);
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
@@ -402,7 +405,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         drainCreated();
 
         if (!wasTerminated)
-            takeSemaphore.release(takeSemaphore.getQueueLength() + 4096); // best effort to unblock any waiting on the takeSemaphore threads
+            takeSemaphore.release(takeSemaphore.getQueueLength() + RESERVED); // best effort to unblock any waiting on the takeSemaphore threads
     }
 
     @Override
