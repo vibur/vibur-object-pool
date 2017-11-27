@@ -1,3 +1,7 @@
+Version 21.1 (27/11/2017)
+=========================
+* Catching-up with Vibur DBCP version 21.1.
+
 Version 21.0 (22/11/2017)
 =========================
 * Transitioned the SamplingPoolReducer time measuring to nanoseconds.
