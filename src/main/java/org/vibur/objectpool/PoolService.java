@@ -122,21 +122,24 @@ public interface PoolService<T> extends BasePool {
 
     /**
      * Restores (returns) an object to the object pool. The object pool does <b>not</b>
-     * validate whether the currently restored object has been taken before that from this object pool
-     * or whether it is currently in taken state. Equivalent to calling {@code restore(object, true)}.
+     * verify whether the currently restored object has been taken before that from this object pool
+     * or whether it is currently in taken state. Equivalent to calling {@link #restore(Object, boolean)
+     * restore(object, true)}.
      *
-     * @param object an object to be restored (returned) to this object pool
+     * @param object the object to be restored / returned
+     * @throws NullPointerException if the given object is {@code null}
      */
     void restore(T object);
 
     /**
      * Restores (returns) an object to the object pool. The object pool does <b>not</b>
-     * validate whether the currently restored object has been taken before that from this object pool
+     * verify whether the currently restored object has been taken before that from this object pool
      * or whether it is currently in taken state.
      *
-     * @param object an object to be restored (returned) to this object pool
-     * @param valid  if {@code true} the restored object is presumed to be in valid (healthy) state,
-     *               otherwise it is treated as invalid
+     * @param object the object to be restored / returned
+     * @param valid if {@code false}, the object is treated as invalid; otherwise a secondary validation on the object
+     *              will be performed
+     * @throws NullPointerException if the given object is {@code null}
      */
     void restore(T object, boolean valid);
 

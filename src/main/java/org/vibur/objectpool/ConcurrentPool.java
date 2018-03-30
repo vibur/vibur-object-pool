@@ -142,7 +142,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T take() {
         try {
             takeSemaphore.acquire();
-            return getObject();
+            return takeObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -159,7 +159,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 waitedNanos[0] = System.nanoTime() - startTime;
             }
 
-            return getObject();
+            return takeObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -169,7 +169,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T takeUninterruptibly() {
         takeSemaphore.acquireUninterruptibly();
-        return getObject();
+        return takeObject();
     }
 
     @Override
@@ -181,7 +181,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
             waitedNanos[0] = System.nanoTime() - startTime;
         }
 
-        return getObject();
+        return takeObject();
     }
 
     @Override
@@ -189,7 +189,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
         try {
             if (!takeSemaphore.tryAcquire(timeout, unit))
                 return null;
-            return getObject();
+            return takeObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -207,7 +207,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 waitedNanos[0] = System.nanoTime() - startTime;
             }
 
-            return getObject();
+            return takeObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
             return null;
@@ -218,12 +218,11 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public T tryTake() {
         if (!takeSemaphore.tryAcquire())
             return null;
-        return getObject();
+        return takeObject();
     }
 
-    private T getObject() {
-        T object = available.pollFirst();
-        object = prepareToTake(object);
+    private T takeObject() {
+        T object = prepareToTake(available.pollFirst());
 
         if (listener != null)
             listener.onTake(object);
@@ -243,13 +242,12 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public void restore(T object, boolean valid) {
-        requireNonNull(object);
+        boolean ready = readyToRestore(requireNonNull(object), valid);
 
         if (listener != null)
             listener.onRestore(object);
 
-        object = prepareToRestore(object, valid);
-        if (object != null)
+        if (ready)
             available.offerFirst(object);
         takeSemaphore.release();
 
@@ -257,6 +255,16 @@ public class ConcurrentPool<T> implements PoolService<T> {
             terminate();
     }
 
+    /**
+     * Verifies whether the given object is valid and whether it can be given to the calling application.
+     * If the object is {@code null}, a new object will be created and returned. If the object
+     * is not {@code null}, it will be validated and if the validation fails, a new object will be created
+     * and returned; otherwise a reference to the object itself will be returned. This method <b>never</b>
+     * returns {@code null}.
+     *
+     * @param object the object to be validated
+     * @return see above
+     */
     private T prepareToTake(T object) {
         try {
             if (object == null) {
@@ -274,6 +282,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 if (!ready)
                     object = requireNonNull(poolObjectFactory.create());
             }
+
             return object;
         } catch (RuntimeException | Error e) {
             recoverInnerState();
@@ -281,7 +290,16 @@ public class ConcurrentPool<T> implements PoolService<T> {
         }
     }
 
-    private T prepareToRestore(T object, boolean valid) {
+    /**
+     * Verifies whether the given object is valid and whether it can be restored back to the pool. Returns {@code true}
+     * if the object is valid; otherwise returns {@code false}.
+     *
+     * @param object the object that is to be restored to the pool and that needs to be validated
+     * @param valid if {@code false}, the object is treated as invalid; otherwise a secondary validation on the object
+     *              will be performed
+     * @return see above
+     */
+    private boolean readyToRestore(T object, boolean valid) {
         try {
             boolean ready = false;
             try {
@@ -290,11 +308,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 if (!ready)
                     poolObjectFactory.destroy(object);
             }
-            if (!ready) {
+            if (!ready)
                 createdTotal.decrementAndGet();
-                object = null;
-            }
-            return object;
+
+            return ready;
         } catch (RuntimeException | Error e) {
             recoverInnerState();
             throw e;
