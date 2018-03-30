@@ -1,3 +1,9 @@
+Version 22.1 (30/03/2018)
+=========================
+* Small refactoring in ConcurrentPool; moved the call to readyToRestore(..) to happen before the call to
+  listener.onRestore(..).
+* Various javadoc improvements.
+
 Version 22.0 (08/02/2018)
 =========================
 * Catching-up with Vibur DBCP version 22.0.
