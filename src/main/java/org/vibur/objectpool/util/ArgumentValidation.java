@@ -24,7 +24,8 @@ public final class ArgumentValidation {
     private ArgumentValidation() { }
 
     public static void forbidIllegalArgument(boolean condition) {
-        if (condition)
+        if (condition) {
             throw new IllegalArgumentException();
+        }
     }
 }

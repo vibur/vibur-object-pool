@@ -111,8 +111,9 @@ public class ConcurrentPoolTestPerf {
                         doWork(millis);
                         pool.restore(obj);
                     }
-                    else
+                    else {
                         errors.incrementAndGet();
+                    }
                 }
             } catch (InterruptedException ignored) {
                 errors.incrementAndGet();
@@ -123,8 +124,9 @@ public class ConcurrentPoolTestPerf {
     }
 
     private static void doWork(long millis) {
-        if (millis <= 0)
+        if (millis <= 0) {
             return;
+        }
 
         try {
             Thread.sleep(millis);

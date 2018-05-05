@@ -37,8 +37,9 @@ public class SamplingPoolReducerTest {
 
     @After
     public void tearDown() {
-        if (pool != null )
+        if (pool != null ) {
             pool.terminate();
+        }
         pool = null;
     }
 

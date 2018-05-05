@@ -187,8 +187,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T tryTake(long timeout, TimeUnit unit) {
         try {
-            if (!takeSemaphore.tryAcquire(timeout, unit))
+            if (!takeSemaphore.tryAcquire(timeout, unit)) {
                 return null;
+            }
             return takeObject();
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt(); // ignore and reset
@@ -201,8 +202,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
         try {
             long startTime = System.nanoTime();
             try {
-                if (!takeSemaphore.tryAcquire(timeout, unit))
+                if (!takeSemaphore.tryAcquire(timeout, unit)) {
                     return null;
+                }
             } finally {
                 waitedNanos[0] = System.nanoTime() - startTime;
             }
@@ -216,16 +218,18 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public T tryTake() {
-        if (!takeSemaphore.tryAcquire())
+        if (!takeSemaphore.tryAcquire()) {
             return null;
+        }
         return takeObject();
     }
 
     private T takeObject() {
         T object = prepareToTake(available.pollFirst());
 
-        if (listener != null)
+        if (listener != null) {
             listener.onTake(object);
+        }
 
         if (isTerminated()) {
             restore(object, false);
@@ -244,15 +248,18 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public void restore(T object, boolean valid) {
         boolean ready = readyToRestore(requireNonNull(object), valid);
 
-        if (listener != null)
+        if (listener != null) {
             listener.onRestore(object);
+        }
 
-        if (ready)
+        if (ready) {
             available.offerFirst(object);
+        }
         takeSemaphore.release();
 
-        if (isTerminated() && valid)
+        if (isTerminated() && valid) {
             terminate();
+        }
     }
 
     /**
@@ -276,11 +283,13 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 try {
                     ready = poolObjectFactory.readyToTake(object);
                 } finally {
-                    if (!ready)
+                    if (!ready) {
                         poolObjectFactory.destroy(object);
+                    }
                 }
-                if (!ready)
+                if (!ready) {
                     object = requireNonNull(poolObjectFactory.create());
+                }
             }
 
             return object;
@@ -305,11 +314,13 @@ public class ConcurrentPool<T> implements PoolService<T> {
             try {
                 ready = valid && poolObjectFactory.readyToRestore(object);
             } finally {
-                if (!ready)
+                if (!ready) {
                     poolObjectFactory.destroy(object);
+                }
             }
-            if (!ready)
+            if (!ready) {
                 createdTotal.decrementAndGet();
+            }
 
             return ready;
         } catch (RuntimeException | Error e) {
@@ -380,8 +391,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
         forbidIllegalArgument(reduceBy < 0);
 
         for (int cnt = 0; cnt < reduceBy; cnt++) {
-            if (!reduceByOne(ignoreInitialSize))
+            if (!reduceByOne(ignoreInitialSize)) {
                 return cnt;
+            }
         }
         return reduceBy;
     }
@@ -392,8 +404,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
         int cnt;
         for (cnt = 0; createdTotal() > reduceTo; cnt++) {
-            if (!reduceByOne(ignoreInitialSize))
+            if (!reduceByOne(ignoreInitialSize)) {
                 break;
+            }
         }
         return cnt;
     }
@@ -420,8 +433,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
         drainCreated();
 
-        if (!wasTerminated)
+        if (!wasTerminated) {
             takeSemaphore.release(takeSemaphore.getQueueLength() + RESERVED); // best effort to unblock any waiting on the takeSemaphore threads
+        }
     }
 
     @Override

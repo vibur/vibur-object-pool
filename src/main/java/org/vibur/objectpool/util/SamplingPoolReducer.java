@@ -164,8 +164,9 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      *               a RuntimeException or an Error
      */
     protected void afterReduce(int reduction, int reduced, Throwable thrown) {
-        if (thrown != null)
+        if (thrown != null) {
             terminate();
+        }
     }
 
     @Override
