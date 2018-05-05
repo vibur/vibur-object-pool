@@ -1,3 +1,7 @@
+Version 22.2 (05/05/2018)
+=========================
+* Catching-up with Vibur DBCP version 22.2.
+
 Version 22.1 (30/03/2018)
 =========================
 * Small refactoring in ConcurrentPool; moved the call to readyToRestore(..) to happen before the call to
