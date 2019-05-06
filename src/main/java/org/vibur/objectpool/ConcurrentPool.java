@@ -132,9 +132,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 available.offerLast(requireNonNull(poolObjectFactory.create()));
                 createdTotal.incrementAndGet();
             }
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable t) {
             drainCreated();
-            throw e;
+            throw t;
         }
     }
 
@@ -293,9 +293,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
 
             return object;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable t) {
             recoverInnerState();
-            throw e;
+            throw t;
         }
     }
 
@@ -323,9 +323,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
 
             return ready;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable t) {
             recoverInnerState();
-            throw e;
+            throw t;
         }
     }
 
