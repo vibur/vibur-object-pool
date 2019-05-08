@@ -149,6 +149,70 @@ public class ConcurrentPoolTest {
     }
 
     @Test
+    public void testSimpleMetricsWhenExceptionIsThrownFromObjectFactory() {
+        ExceptionThrowingObjectFactory objectFactory = new ExceptionThrowingObjectFactory();
+        pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), objectFactory, 1, 10, false);
+
+        // tests the initial pool state
+        assertFalse(pool.isTerminated());
+        assertEquals(1, pool.initialSize());
+        assertEquals(10, pool.maxSize());
+
+        assertEquals(1, pool.createdTotal());
+        assertEquals(1, pool.remainingCreated());
+        assertEquals(10, pool.remainingCapacity());
+        assertEquals(0, pool.taken());
+
+        objectFactory.throwInReadyToTake = true;
+        // tries to take one object and test
+        try {
+            pool.take();
+            fail("Exception expected");
+        } catch (Exception e) {
+            assertSame(Exception.class, e.getClass());
+            assertEquals("undeclared checked exception thrown for testing purposes", e.getMessage());
+        }
+        assertEquals(0, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(10, pool.remainingCapacity());
+        assertEquals(0, pool.taken());
+
+        objectFactory.throwInReadyToTake = false;
+        // takes one object and test
+        Object obj1 = pool.take();
+        assertNotNull(obj1);
+        assertEquals(1, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(9, pool.remainingCapacity());
+        assertEquals(1, pool.taken());
+
+        // tries to restore the taken object and test
+        objectFactory.throwInReadyToRestore = true;
+        try {
+            pool.restore(obj1);
+            fail("RuntimeException expected");
+        } catch (RuntimeException e) {
+            assertSame(RuntimeException.class, e.getClass());
+            assertEquals("runtime exception thrown for testing purposes", e.getMessage());
+        }
+        assertEquals(0, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(10, pool.remainingCapacity());
+        assertEquals(0, pool.taken());
+
+        // terminates the pool and test
+        pool.terminate();
+        assertTrue(pool.isTerminated());
+        assertEquals(1, pool.initialSize());
+        assertEquals(10, pool.maxSize());
+
+        assertEquals(0, pool.createdTotal());
+        assertEquals(0, pool.remainingCreated());
+        assertEquals(0, pool.remainingCapacity());
+        assertEquals(0, pool.taken());
+    }
+
+    @Test
     public void testPoolReductions() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 

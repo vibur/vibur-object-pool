@@ -36,7 +36,7 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  * the reducer's {@link #start()} method is called, and will be alive until the
  * {@link #terminate()} method is called or until the calling application exits.
  *
- * <p>Note that if a Throwable is thrown by the overridable
+ * <p>Note that if an exception is thrown by the overridable
  * {@link #afterReduce(int, int, Throwable)} method hook, it will terminate the
  * SamplingPoolReducer, including the reducer's background daemon thread.
  *
@@ -129,7 +129,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
         Throwable thrown = null;
         try {
             reduced = pool.reduceCreatedBy(reduction, false);
-        } catch (Throwable t) {
+        } catch (Throwable t) { // equivalent to catching "RuntimeException | Error", however, better for Kotlin interoperability
             thrown = t;
         } finally {
             afterReduce(reduction, reduced, thrown);
@@ -155,7 +155,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
 
     /**
      * An after reduce pool hook. The default implementation will {@code terminate()} this pool reducer
-     * if {@code thrown != null}. Note that if this method throws a Throwable, this
+     * if {@code thrown != null}. Note that if this method throws an exception, this
      * will terminate the pool reducer, too.
      *
      * @param reduction the intended reduction number

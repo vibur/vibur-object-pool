@@ -132,7 +132,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 available.offerLast(requireNonNull(poolObjectFactory.create()));
                 createdTotal.incrementAndGet();
             }
-        } catch (Throwable t) {
+        } catch (Throwable t) { // equivalent to catching "RuntimeException | Error", however, better for Kotlin interoperability
             drainCreated();
             throw t;
         }
@@ -293,7 +293,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
 
             return object;
-        } catch (Throwable t) {
+        } catch (Throwable t) { // equivalent to catching "RuntimeException | Error", however, better for Kotlin interoperability
             recoverInnerState();
             throw t;
         }
@@ -323,7 +323,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
             }
 
             return ready;
-        } catch (Throwable t) {
+        } catch (Throwable t) { // equivalent to catching "RuntimeException | Error", however, better for Kotlin interoperability
             recoverInnerState();
             throw t;
         }
