@@ -1,3 +1,9 @@
+Version 23.0 (15/05/2019)
+=========================
+* Implemented catching and processing of undeclared checked exception in ConcurrentPool and SamplingPoolReducer.
+  Such exceptions can be easily thrown from PoolObjectFactory if its implementation is in Kotlin. This processing
+  logic is in addition to the existing logic for processing of RuntimeExceptions.
+
 Version 22.2 (05/05/2018)
 =========================
 * Catching-up with Vibur DBCP version 22.2.
