@@ -15,7 +15,7 @@ The project maven coordinates are:
 <dependency>
   <groupId>org.vibur</groupId>
   <artifactId>vibur-object-pool</artifactId>
-  <version>23.0</version>
+  <version>24.0</version>
 </dependency>   
 ```
 

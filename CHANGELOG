@@ -1,3 +1,7 @@
+Version 24.0 (28/11/2019)
+=========================
+* Updated the disruptor dependency in pom.xml to <optional>true</optional>.
+
 Version 23.0 (15/05/2019)
 =========================
 * Implemented catching and processing of undeclared checked exception in ConcurrentPool and SamplingPoolReducer.
