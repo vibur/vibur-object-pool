@@ -1,3 +1,7 @@
+Version 25.0 (30/11/2019)
+=========================
+* Allowed the ConcurrentPool ConcurrentCollection parameter to be a pre-initialized collection (or empty as before).
+
 Version 24.0 (28/11/2019)
 =========================
 * Updated the disruptor dependency in pom.xml to <optional>true</optional>.
