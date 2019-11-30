@@ -53,4 +53,9 @@ public class ConcurrentStackCollection<T> implements ConcurrentCollection<T> {
     public T pollLast() {
         return pollFirst();
     }
+
+    @Override
+    public int size() {
+        return stack.size();
+    }
 }

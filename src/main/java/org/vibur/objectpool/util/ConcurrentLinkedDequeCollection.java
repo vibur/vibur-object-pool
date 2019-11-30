@@ -48,4 +48,9 @@ public class ConcurrentLinkedDequeCollection<T> implements ConcurrentCollection<
     public T pollLast() {
         return deque.pollLast();
     }
+
+    @Override
+    public int size() {
+        return deque.size();
+    }
 }

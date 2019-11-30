@@ -53,4 +53,9 @@ public class MultithreadConcurrentQueueCollection<T> implements ConcurrentCollec
     public T pollLast() {
         return pollFirst();
     }
+
+    @Override
+    public int size() {
+        return queue.size();
+    }
 }

@@ -74,7 +74,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
      * Creates a new {@code ConcurrentPool} with the given {@link PoolObjectFactory}, initial and max sizes,
      * and fairness setting.
      *
-     * @param available         the concurrent collection that will store the pooled objects
+     * @param available         the concurrent collection that will store the pooled objects;
+     *                          it must be an empty collection or a collection pre-initialized with
+     *                          {@code initialSize} objects
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
@@ -95,7 +97,9 @@ public class ConcurrentPool<T> implements PoolService<T> {
      * Creates a new {@code ConcurrentPool} with the given {@link PoolObjectFactory}, initial and max sizes,
      * and fairness setting.
      *
-     * @param available         the concurrent collection that will store the pooled objects
+     * @param available         the concurrent collection that will store the pooled objects;
+     *                          it must be an empty collection or a collection pre-initialized with
+     *                          {@code initialSize} objects
      * @param poolObjectFactory the factory which will be used to create new objects
      *                          in this object pool as well as to control their lifecycle
      * @param initialSize       the object pool initial size, i.e. the initial number of
@@ -113,6 +117,8 @@ public class ConcurrentPool<T> implements PoolService<T> {
                           int initialSize, int maxSize, boolean fair, Listener<T> listener) {
         forbidIllegalArgument(initialSize < 0);
         forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE);
+        int availableSize = available.size();
+        forbidIllegalArgument(availableSize != 0 && availableSize != initialSize);
 
         this.available = requireNonNull(available);
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
@@ -122,8 +128,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
         this.maxSize = maxSize;
         this.takeSemaphore = new Semaphore(maxSize, fair);
 
-        this.createdTotal = new AtomicInteger(0);
-        addInitialObjects();
+        this.createdTotal = new AtomicInteger(availableSize);
+        if (availableSize == 0) {
+            addInitialObjects();
+        }
     }
 
     private void addInitialObjects() {

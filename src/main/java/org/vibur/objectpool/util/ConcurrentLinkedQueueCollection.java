@@ -48,4 +48,9 @@ public class ConcurrentLinkedQueueCollection<T> implements ConcurrentCollection<
     public T pollLast() {
         return pollFirst();
     }
+
+    @Override
+    public int size() {
+        return queue.size();
+    }
 }

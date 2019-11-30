@@ -54,4 +54,11 @@ public interface ConcurrentCollection<T> {
      * @return the tail Collection object if available; {@code null} otherwise
      */
     T pollLast();
+
+    /**
+     * Returns the number of elements in this collection.
+     *
+     * @return the number of elements in this collection
+     */
+    int size();
 }
