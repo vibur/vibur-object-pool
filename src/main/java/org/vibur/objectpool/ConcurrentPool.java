@@ -115,10 +115,11 @@ public class ConcurrentPool<T> implements PoolService<T> {
      */
     public ConcurrentPool(ConcurrentCollection<T> available, PoolObjectFactory<T> poolObjectFactory,
                           int initialSize, int maxSize, boolean fair, Listener<T> listener) {
-        forbidIllegalArgument(initialSize < 0);
-        forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE);
-        int availableSize = available.size();
-        forbidIllegalArgument(availableSize != 0 && availableSize != initialSize);
+		forbidIllegalArgument(initialSize < 0, String.format("Initial size %s should be >= 0", initialSize));
+		forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE, String.format(
+				"maxSize %s should be between %s %s this is now not the case", maxSize, MAX_ALLOWED_SIZE, initialSize));
+		int availableSize = available.size();
+		forbidIllegalArgument(availableSize != 0 && availableSize != initialSize, String.format("availableSize == initialSize (%s != %s)", availableSize, initialSize));
 
         this.available = requireNonNull(available);
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
@@ -396,7 +397,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int reduceCreatedBy(int reduceBy, boolean ignoreInitialSize) {
-        forbidIllegalArgument(reduceBy < 0);
+		forbidIllegalArgument(reduceBy < 0, String.format("reduceBy %s should be >= 0", reduceBy));
 
         for (int cnt = 0; cnt < reduceBy; cnt++) {
             if (!reduceByOne(ignoreInitialSize)) {
@@ -408,7 +409,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int reduceCreatedTo(int reduceTo, boolean ignoreInitialSize) {
-        forbidIllegalArgument(reduceTo < 0);
+		forbidIllegalArgument(reduceTo < 0,String.format("reduceTo %s should be >= 0", reduceTo));
 
         int cnt;
         for (cnt = 0; createdTotal() > reduceTo; cnt++) {
