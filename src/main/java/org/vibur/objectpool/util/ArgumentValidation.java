@@ -28,4 +28,10 @@ public final class ArgumentValidation {
             throw new IllegalArgumentException();
         }
     }
+
+    public static void forbidIllegalArgument(boolean condition, String param) {
+        if (condition) {
+            throw new IllegalArgumentException("Illegal value for parameter: \"" + param + "\"");
+        }
+    }
 }

@@ -72,11 +72,11 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      *         {@code pool == null || unit == null}
      */
     public SamplingPoolReducer(BasePool pool, long timeInterval, TimeUnit unit, int samples) {
-        forbidIllegalArgument(timeInterval <= 0);
-        forbidIllegalArgument(samples <= 0);
+        forbidIllegalArgument(timeInterval <= 0, "timeInterval");
+        forbidIllegalArgument(samples <= 0, "samples");
 
         this.sleepNanoTime = unit.toNanos(timeInterval) / samples;
-        forbidIllegalArgument(sleepNanoTime == 0);
+        forbidIllegalArgument(sleepNanoTime == 0, "sleepNanoTime");
 
         this.pool = requireNonNull(pool);
         this.samples = samples;

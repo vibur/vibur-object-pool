@@ -115,10 +115,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
      */
     public ConcurrentPool(ConcurrentCollection<T> available, PoolObjectFactory<T> poolObjectFactory,
                           int initialSize, int maxSize, boolean fair, Listener<T> listener) {
-        forbidIllegalArgument(initialSize < 0);
-        forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE);
+        forbidIllegalArgument(initialSize < 0, "initialSize");
+        forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE, "maxSize");
         int availableSize = available.size();
-        forbidIllegalArgument(availableSize != 0 && availableSize != initialSize);
+        forbidIllegalArgument(availableSize != 0 && availableSize != initialSize, "available");
 
         this.available = requireNonNull(available);
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
@@ -396,7 +396,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int reduceCreatedBy(int reduceBy, boolean ignoreInitialSize) {
-        forbidIllegalArgument(reduceBy < 0);
+        forbidIllegalArgument(reduceBy < 0, "reduceBy");
 
         for (int cnt = 0; cnt < reduceBy; cnt++) {
             if (!reduceByOne(ignoreInitialSize)) {
@@ -408,7 +408,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public int reduceCreatedTo(int reduceTo, boolean ignoreInitialSize) {
-        forbidIllegalArgument(reduceTo < 0);
+        forbidIllegalArgument(reduceTo < 0, "reduceTo");
 
         int cnt;
         for (cnt = 0; createdTotal() > reduceTo; cnt++) {
