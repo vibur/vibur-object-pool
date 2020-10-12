@@ -82,7 +82,7 @@
 
         <java.version>1.7</java.version>
         <disruptor.version>1.2.10</disruptor.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
         <maven.bundle.plugin.version>3.3.0</maven.bundle.plugin.version>
