@@ -16,28 +16,18 @@
 
 package org.vibur.objectpool;
 
-import sun.misc.Unsafe;
-
-import java.lang.reflect.Field;
-
 /**
  * @author Simeon Malchev
  */
 public class ExceptionThrowingObjectFactory implements PoolObjectFactory<Object> {
 
-    private static Unsafe unsafe;
-    static {
-        try {
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            unsafe = (Unsafe) f.get(null);
-        } catch (ReflectiveOperationException e) {
-            throw new Error(e);
-        }
-    }
-
     boolean throwInReadyToTake = false;
     boolean throwInReadyToRestore = false;
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void throwAny(Throwable t) throws T {
+        throw (T) t;
+    }
 
     @Override
     public Object create() {
@@ -47,7 +37,7 @@ public class ExceptionThrowingObjectFactory implements PoolObjectFactory<Object>
     @Override
     public boolean readyToTake(Object obj) {
         if (throwInReadyToTake) {
-            unsafe.throwException(new Exception("undeclared checked exception thrown for testing purposes"));
+            throwAny(new Exception("undeclared checked exception thrown for testing purposes"));
         }
         return true;
     }

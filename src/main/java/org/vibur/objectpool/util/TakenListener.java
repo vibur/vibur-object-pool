@@ -32,11 +32,11 @@ public class TakenListener<T> implements Listener<T> {
     private final Set<T> taken;
 
     public TakenListener() {
-        taken = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
+        taken = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
     public TakenListener(int initialCapacity) {
-        taken = Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>(initialCapacity));
+        taken = Collections.newSetFromMap(new ConcurrentHashMap<>(initialCapacity));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TakenListener<T> implements Listener<T> {
     }
 
     @Override
-    public void onRestore(T object) {
+    public void onRestore(T object, boolean valid) {
         taken.remove(object);
     }
 

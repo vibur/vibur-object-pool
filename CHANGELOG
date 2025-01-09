@@ -1,3 +1,9 @@
+Version 26.0 (09/01/2025)
+=========================
+* Migrated the source code base to Java 10.
+* Updated all project dependencies to latest versions.
+* Removed support for OSGi, added Automatic-Module-Name for Java 9 modules.
+
 Version 25.0 (30/11/2019)
 =========================
 * Allowed the ConcurrentPool ConcurrentCollection parameter to be a pre-initialized collection (or empty as before).

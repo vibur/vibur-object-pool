@@ -16,8 +16,9 @@
 
 package org.vibur.objectpool.util;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
 import org.vibur.objectpool.ConcurrentPool;
 import org.vibur.objectpool.PoolService;
 import org.vibur.objectpool.SimpleObjectFactory;
@@ -25,8 +26,8 @@ import org.vibur.objectpool.SimpleObjectFactory;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Simeon Malchev
@@ -35,7 +36,7 @@ public class SamplingPoolReducerTest {
 
     private PoolService<Object> pool = null;
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (pool != null ) {
             pool.terminate();
@@ -57,8 +58,8 @@ public class SamplingPoolReducerTest {
         assertEquals(0, pool.taken());
 
         // takes 90 objects and test
-        Object[] objs = new Object[90];
-        for (int i = 0; i < 90; i++) {
+        var objs = new Object[90];
+        for (var i = 0; i < 90; i++) {
             objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
@@ -68,7 +69,7 @@ public class SamplingPoolReducerTest {
         assertEquals(90, pool.taken());
 
         // restores 30 objects and test
-        for (int i = 0; i < 30; i++) {
+        for (var i = 0; i < 30; i++) {
             pool.restore(objs[i]);
         }
         assertEquals(90, pool.createdTotal());
@@ -77,7 +78,7 @@ public class SamplingPoolReducerTest {
         assertEquals(60, pool.taken());
 
         // creates, starts and then terminates the pool reducer
-        final CountDownLatch finishLatch = new CountDownLatch(2);
+        final var finishLatch = new CountDownLatch(2);
         ThreadedPoolReducer poolReducer = new SamplingPoolReducer(pool, 400, TimeUnit.MILLISECONDS, 500) {
             @Override
             protected void afterReduce(int reduction, int reduced, Throwable thrown) {

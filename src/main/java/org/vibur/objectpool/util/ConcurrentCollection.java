@@ -18,7 +18,7 @@ package org.vibur.objectpool.util;
 
 /**
  * An adapter interface to a concurrent collection that provides 4 access methods: {@link #offerFirst},
- * {@link #offerLast}, {@link #pollFirst}, and {@link #pollLast}. If the implementing sub-class delegates the above
+ * {@link #offerLast}, {@link #pollFirst}, and {@link #pollLast}. If the implementing subclass delegates the above
  * methods to a Collection that does not have native implementation for {@code offerFirst()} or {@code pollLast()}
  * it can implement these methods in the same way as {@code offerLast()} or {@code pollFirst()}, and the vice versa.
  *

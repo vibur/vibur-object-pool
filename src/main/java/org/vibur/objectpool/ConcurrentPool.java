@@ -39,7 +39,7 @@ import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument
  * before that from the pool or whether it is in taken state. Correct usage of the {@code restore} operations is
  * established by programming convention in the application.
  *
- * <p>The pool provides support for fairness with regards to the waiting takers threads.
+ * <p>The pool provides support for fairness with regard to the waiting takers threads.
  * The creation of new objects and their lifecycle are controlled by the supplied during the
  * pool creation time {@link PoolObjectFactory}. If a {@code Listener} instance has been
  * supplied when instantiating the pool, its methods will be called when the pool executes {@code take}
@@ -83,7 +83,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
      *                          allocated in the object pool objects; this parameter never changes
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects; this parameter never changes
-     * @param fair              the object pool fairness setting with regards to waiting threads
+     * @param fair              the object pool fairness setting with regard to waiting threads
      * @throws IllegalArgumentException if one of the following holds:<br>
      *         {@code initialSize < 0 || maxSize < 1 || maxSize < initialSize}
      * @throws NullPointerException if {@code available} or {@code poolObjectFactory} are null
@@ -106,7 +106,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
      *                          allocated in the object pool objects; this parameter never changes
      * @param maxSize           the object pool max size, i.e. the max number of allocated
      *                          in the object pool objects; this parameter never changes
-     * @param fair              the object pool fairness setting with regards to waiting threads
+     * @param fair              the object pool fairness setting with regard to waiting threads
      * @param listener          if not {@code null}, this listener instance methods will be called
      *                          when the pool executes {@code take} or {@code restore} operations
      * @throws IllegalArgumentException if one of the following holds:<br>
@@ -117,10 +117,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
                           int initialSize, int maxSize, boolean fair, Listener<T> listener) {
         forbidIllegalArgument(initialSize < 0, "initialSize");
         forbidIllegalArgument(maxSize < 1 || maxSize < initialSize || maxSize > MAX_ALLOWED_SIZE, "maxSize");
-        int availableSize = available.size();
+        var availableSize = available.size(); // implicit null check of available collection
         forbidIllegalArgument(availableSize != 0 && availableSize != initialSize, "available");
 
-        this.available = requireNonNull(available);
+        this.available = available;
         this.poolObjectFactory = requireNonNull(poolObjectFactory);
         this.listener = listener;
 
@@ -136,7 +136,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     private void addInitialObjects() {
         try {
-            for (int i = 0; i < initialSize; i++) {
+            for (var i = 0; i < initialSize; i++) {
                 available.offerLast(requireNonNull(poolObjectFactory.create()));
                 createdTotal.incrementAndGet();
             }
@@ -160,7 +160,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T take(long[] waitedNanos) {
         try {
-            long startTime = System.nanoTime();
+            var startTime = System.nanoTime();
             try {
                 takeSemaphore.acquire();
             } finally {
@@ -182,7 +182,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public T takeUninterruptibly(long[] waitedNanos) {
-        long startTime = System.nanoTime();
+        var startTime = System.nanoTime();
         try {
             takeSemaphore.acquireUninterruptibly();
         } finally {
@@ -208,7 +208,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     @Override
     public T tryTake(long timeout, TimeUnit unit, long[] waitedNanos) {
         try {
-            long startTime = System.nanoTime();
+            var startTime = System.nanoTime();
             try {
                 if (!takeSemaphore.tryAcquire(timeout, unit)) {
                     return null;
@@ -233,7 +233,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     }
 
     private T takeObject() {
-        T object = prepareToTake(available.pollFirst());
+        var object = prepareToTake(available.pollFirst());
 
         if (listener != null) {
             listener.onTake(object);
@@ -254,10 +254,10 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public void restore(T object, boolean valid) {
-        boolean ready = readyToRestore(requireNonNull(object), valid);
+        var ready = readyToRestore(requireNonNull(object), valid);
 
         if (listener != null) {
-            listener.onRestore(object);
+            listener.onRestore(object, valid);
         }
 
         if (ready) {
@@ -287,7 +287,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
                 object = requireNonNull(poolObjectFactory.create());
             }
             else {
-                boolean ready = false;
+                var ready = false;
                 try {
                     ready = poolObjectFactory.readyToTake(object);
                 } finally {
@@ -318,7 +318,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
      */
     private boolean readyToRestore(T object, boolean valid) {
         try {
-            boolean ready = false;
+            var ready = false;
             try {
                 ready = valid && poolObjectFactory.readyToRestore(object);
             } finally {
@@ -398,7 +398,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
     public int reduceCreatedBy(int reduceBy, boolean ignoreInitialSize) {
         forbidIllegalArgument(reduceBy < 0, "reduceBy");
 
-        for (int cnt = 0; cnt < reduceBy; cnt++) {
+        for (var cnt = 0; cnt < reduceBy; cnt++) {
             if (!reduceByOne(ignoreInitialSize)) {
                 return cnt;
             }
@@ -420,12 +420,12 @@ public class ConcurrentPool<T> implements PoolService<T> {
     }
 
     private boolean reduceByOne(boolean ignoreInitialSize) {
-        int newTotal = createdTotal.decrementAndGet();
+        var newTotal = createdTotal.decrementAndGet();
         if (!ignoreInitialSize && newTotal < initialSize) {
             createdTotal.incrementAndGet();
             return false;
         }
-        T object = available.pollLast();
+        var object = available.pollLast();
         if (object == null) {
             createdTotal.incrementAndGet();
             return false;
@@ -437,7 +437,7 @@ public class ConcurrentPool<T> implements PoolService<T> {
 
     @Override
     public void terminate() {
-        boolean wasTerminated = terminated.getAndSet(true);
+        var wasTerminated = terminated.getAndSet(true);
 
         drainCreated();
 

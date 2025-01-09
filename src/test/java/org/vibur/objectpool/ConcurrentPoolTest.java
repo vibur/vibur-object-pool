@@ -16,14 +16,19 @@
 
 package org.vibur.objectpool;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.vibur.objectpool.util.ConcurrentLinkedDequeCollection;
 import org.vibur.objectpool.util.ConcurrentLinkedQueueCollection;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Simeon Malchev
@@ -32,10 +37,7 @@ public class ConcurrentPoolTest {
 
     private PoolService<Object> pool = null;
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
-    @After
+    @AfterEach
     public void tearDown() {
         if (pool != null ) {
             pool.terminate();
@@ -47,10 +49,10 @@ public class ConcurrentPoolTest {
     public void testSimpleTakes() {
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 3, false);
 
-        Object obj1 = pool.take();
-        Object obj2 = pool.take();
-        Object obj3 = pool.take();
-        Object obj4 = pool.tryTake();
+        var obj1 = pool.take();
+        var obj2 = pool.take();
+        var obj3 = pool.take();
+        var obj4 = pool.tryTake();
 
         assertNotNull(obj1);
         assertNotNull(obj2);
@@ -61,8 +63,7 @@ public class ConcurrentPoolTest {
         pool.restore(obj2);
         pool.restore(obj3);
 
-        exception.expect(NullPointerException.class);
-        pool.restore(null);
+        assertThrows(NullPointerException.class, () -> pool.restore(null));
     }
 
     @Test
@@ -70,7 +71,7 @@ public class ConcurrentPoolTest {
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), new SimpleObjectFactory(), 1, 3, false);
 
         Thread.currentThread().interrupt();
-        Object obj1 = pool.take();
+        var obj1 = pool.take();
 
         assertNull(obj1);
         assertTrue(Thread.interrupted()); // clears the interrupted flag in order to not affect subsequent tests
@@ -91,7 +92,7 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // takes one object and test
-        Object obj1 = pool.take();
+        var obj1 = pool.take();
         assertNotNull(obj1);
         assertEquals(1, pool.createdTotal());
         assertEquals(0, pool.remainingCreated());
@@ -106,8 +107,8 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // takes all objects and test
-        Object[] objs = new Object[10];
-        for (int i = 0; i < 10; i++) {
+        var objs = new Object[10];
+        for (var i = 0; i < 10; i++) {
             objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
@@ -119,7 +120,7 @@ public class ConcurrentPoolTest {
         assertEquals(10, pool.taken());
 
         // restores the first 6 objects and test
-        for (int i = 0; i < 6; i++) {
+        for (var i = 0; i < 6; i++) {
             pool.restore(objs[i]);
         }
         assertEquals(10, pool.createdTotal());
@@ -128,7 +129,7 @@ public class ConcurrentPoolTest {
         assertEquals(4, pool.taken());
 
         // restores the remaining 4 objects and test
-        for (int i = 6; i < 10; i++) {
+        for (var i = 6; i < 10; i++) {
             pool.restore(objs[i]);
         }
         assertEquals(10, pool.createdTotal());
@@ -150,7 +151,7 @@ public class ConcurrentPoolTest {
 
     @Test
     public void testSimpleMetricsWhenExceptionIsThrownFromObjectFactory() {
-        ExceptionThrowingObjectFactory objectFactory = new ExceptionThrowingObjectFactory();
+        var objectFactory = new ExceptionThrowingObjectFactory();
         pool = new ConcurrentPool<>(new ConcurrentLinkedQueueCollection<>(), objectFactory, 1, 10, false);
 
         // tests the initial pool state
@@ -179,7 +180,7 @@ public class ConcurrentPoolTest {
 
         objectFactory.throwInReadyToTake = false;
         // takes one object and test
-        Object obj1 = pool.take();
+        var obj1 = pool.take();
         assertNotNull(obj1);
         assertEquals(1, pool.createdTotal());
         assertEquals(0, pool.remainingCreated());
@@ -217,12 +218,12 @@ public class ConcurrentPoolTest {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 10, false);
 
         // takes all objects and test
-        Object[] objs = new Object[10];
-        for (int i = 0; i < 10; i++) {
+        var objs = new Object[10];
+        for (var i = 0; i < 10; i++) {
             objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
-        Object obj1 = pool.tryTake();
+        var obj1 = pool.tryTake();
         assertNull(obj1);
 
         assertEquals(1, pool.initialSize());
@@ -234,7 +235,7 @@ public class ConcurrentPoolTest {
         assertEquals(10, pool.taken());
 
         // restores all objects and test
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             pool.restore(objs[i]);
         }
         assertEquals(10, pool.createdTotal());
@@ -243,7 +244,7 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // reduce the number of the created objects in the pool BY 5 and test
-        int reduction = pool.reduceCreatedBy(5, false);
+        var reduction = pool.reduceCreatedBy(5, false);
         assertEquals(5, reduction);
 
         assertEquals(1, pool.initialSize());
@@ -255,14 +256,14 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // now takes again all objects
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
         obj1 = pool.tryTake();
         assertNull(obj1);
         // then restores again all objects and test
-        for (int i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             pool.restore(objs[i]);
         }
 
@@ -287,7 +288,7 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // drain all created objects from the pool and test
-        int drained = pool.drainCreated();
+        var drained = pool.drainCreated();
         assertEquals(3, drained);
 
         assertEquals(1, pool.initialSize());
@@ -299,7 +300,7 @@ public class ConcurrentPoolTest {
         assertEquals(0, pool.taken());
 
         // now takes 5 objects and test
-        for (int i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
             objs[i] = pool.take();
             assertNotNull(objs[i]);
         }
@@ -317,13 +318,13 @@ public class ConcurrentPoolTest {
         pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(), new SimpleObjectFactory(), 1, 2, false);
 
         // takes one object and test
-        Object obj1 = pool.take();
+        var obj1 = pool.take();
         assertNotNull(obj1);
         // takes second object and test
-        Object obj2 = pool.take();
+        var obj2 = pool.take();
         assertNotNull(obj2);
         // tries to take third object and test
-        Object obj3 = pool.tryTake();
+        var obj3 = pool.tryTake();
         assertNull(obj3);
 
         pool.restore(obj1);
@@ -345,7 +346,7 @@ public class ConcurrentPoolTest {
 
         // takes one object and test
         long[] timeWaited = {-1};
-        Object obj1 = pool.take(timeWaited);
+        var obj1 = pool.take(timeWaited);
 
         assertNotNull(obj1);
         assertTrue(timeWaited[0] >= 0);

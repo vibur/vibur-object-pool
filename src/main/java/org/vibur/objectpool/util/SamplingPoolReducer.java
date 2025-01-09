@@ -25,7 +25,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.vibur.objectpool.util.ArgumentValidation.forbidIllegalArgument;
 
 /**
- * A sampling pool reducer util, which is waken up a given number of times during
+ * A sampling pool reducer util, which is awakened up a given number of times during
  * a predefined period of time, and checks whether the number of available
  * allocated objects in the object pool needs to be reduced.
  *
@@ -99,7 +99,7 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     private class PoolReducerRunnable implements Runnable {
         @Override
         public void run() {
-            int sample = 1;
+            var sample = 1;
             minRemainingCreated = Integer.MAX_VALUE;
             for (;;) {
                 try {
@@ -118,14 +118,14 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
     }
 
     protected void samplePool() {
-        int remainingCreated = pool.remainingCreated();
+        var remainingCreated = pool.remainingCreated();
         minRemainingCreated = Math.min(minRemainingCreated, remainingCreated);
     }
 
     protected void reducePool() {
-        int reduction = calculateReduction();
+        var reduction = calculateReduction();
 
-        int reduced = -1;
+        var reduced = -1;
         Throwable thrown = null;
         try {
             reduced = pool.reduceCreatedBy(reduction, false);
@@ -145,10 +145,10 @@ public class SamplingPoolReducer implements ThreadedPoolReducer {
      * @return the calculated reduction number
      */
     protected int calculateReduction() {
-        int createdTotal = pool.createdTotal();
-        int maxReduction = (int) Math.ceil(createdTotal * MAX_REDUCTION_FRACTION);
-        int reduction = Math.min(minRemainingCreated, maxReduction);
-        int bottomThreshold = createdTotal - pool.initialSize();
+        var createdTotal = pool.createdTotal();
+        var maxReduction = (int) Math.ceil(createdTotal * MAX_REDUCTION_FRACTION);
+        var reduction = Math.min(minRemainingCreated, maxReduction);
+        var bottomThreshold = createdTotal - pool.initialSize();
         reduction = Math.min(reduction, bottomThreshold);
         return Math.max(reduction, 0);
     }

@@ -81,7 +81,7 @@ public interface BasePool extends AutoCloseable {
 
     /**
      * Tries to remove (and destroy) up to {@code reduceBy} objects from the object pool. This method may
-     * bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
+     * bring the object pool {@link #createdTotal()} to a number less than its {@link #initialSize()}.
      *
      * @param reduceBy          the desired amount of objects to be removed
      * @param ignoreInitialSize specifies whether the {@link #createdTotal()} may be
@@ -104,7 +104,7 @@ public interface BasePool extends AutoCloseable {
 
     /**
      * Tries to remove (and destroy) as many created objects from this object pool as possible.
-     * May bring the object pool {@link #createdTotal()} to a number less then its {@link #initialSize()}.
+     * May bring the object pool {@link #createdTotal()} to a number less than its {@link #initialSize()}.
      *
      * @return the actual amount of objects removed (and destroyed)
      */

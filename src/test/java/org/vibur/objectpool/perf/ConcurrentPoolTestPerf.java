@@ -56,24 +56,24 @@ public class ConcurrentPoolTestPerf {
         PoolService<Object> pool = new ConcurrentPool<>(new ConcurrentLinkedDequeCollection<>(),
                 new SimpleObjectFactory(), INITIAL_SIZE, MAX_SIZE, FAIR, null);
 
-        AtomicInteger errors = new AtomicInteger(0);
+        var errors = new AtomicInteger(0);
 
-        CountDownLatch startSignal = new CountDownLatch(1);
-        CountDownLatch readySignal = new CountDownLatch(THREADS_COUNT);
-        CountDownLatch doneSignal = new CountDownLatch(THREADS_COUNT);
+        var startSignal = new CountDownLatch(1);
+        var readySignal = new CountDownLatch(THREADS_COUNT);
+        var doneSignal = new CountDownLatch(THREADS_COUNT);
 
-        for (int i = 0; i < THREADS_COUNT; i++) {
-            Thread thread = new Thread(new Worker(pool, errors, DO_WORK_FOR_MS, TIMEOUT_MS, readySignal, startSignal, doneSignal));
+        for (var i = 0; i < THREADS_COUNT; i++) {
+            var thread = new Thread(new Worker(pool, errors, DO_WORK_FOR_MS, TIMEOUT_MS, readySignal, startSignal, doneSignal));
             thread.start();
         }
 
         readySignal.await();
-        long start = System.nanoTime();
+        var start = System.nanoTime();
         startSignal.countDown();
         doneSignal.await();
 
-        System.out.println(String.format("Total execution time %f ms, unsuccessful takes %d.",
-                (System.nanoTime() - start) * 0.000_001, errors.get()));
+        System.out.printf("Total execution time %f ms, unsuccessful takes %d.%n",
+                (System.nanoTime() - start) * 0.000_001, errors.get());
 
         pool.terminate();
     }
@@ -105,8 +105,8 @@ public class ConcurrentPoolTestPerf {
                 readySignal.countDown();
                 startSignal.await();
 
-                for (int i = 0; i < ITERATIONS; i++) {
-                    Object obj = pool.tryTake(timeout, TimeUnit.MILLISECONDS);
+                for (var i = 0; i < ITERATIONS; i++) {
+                    var obj = pool.tryTake(timeout, TimeUnit.MILLISECONDS);
                     if (obj != null) {
                         doWork(millis);
                         pool.restore(obj);

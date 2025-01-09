@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Correct usage of the {@code restore} operations is established by programming convention in the application.
  *
  * <p>The object pool implementation may support an optional fairness parameter (usually provided via the
- * pool constructor) that defines the pool behaviour with regards to waiting takers threads, as well as
+ * pool constructor) that defines the pool behaviour with regard to waiting takers threads, as well as
  * an optional {@code Listener} interface which methods will be called when a {@code take} or
  * {@code restore} pool method executes.
  *
